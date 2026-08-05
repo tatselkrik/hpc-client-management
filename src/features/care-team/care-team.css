@@ -1,0 +1,721 @@
+.care-team-page {
+  width: 100%;
+  max-width: none;
+}
+
+.care-team-header {
+  margin-bottom: 18px;
+}
+
+.care-team-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.care-team-panel {
+  min-width: 0;
+}
+
+.care-team-panel-side {
+  position: sticky;
+  top: 24px;
+}
+
+.care-team-section-header {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.care-team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.care-team-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-soft);
+}
+
+.care-team-card-copy {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.care-team-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.care-team-card-top h4 {
+  margin: 0 0 8px;
+  font-size: 19px;
+}
+
+.care-team-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(47, 111, 219, 0.12);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.care-team-member-email {
+  margin: 8px 0 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.care-team-member-meta,
+.care-team-helper-copy,
+.care-team-status {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.care-team-card-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.care-team-role-editor,
+.care-team-role-display,
+.care-team-assignment-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.care-team-role-editor select,
+.care-team-assignment-editor select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.care-team-assignment-editor {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.care-team-role-display strong {
+  font-size: 16px;
+}
+
+.care-team-role-lock-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.care-team-remove-button {
+  align-self: flex-end;
+}
+
+.care-team-admin-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.care-team-invite-form {
+  display: grid;
+  gap: 16px;
+}
+
+.care-team-invite-form .form-grid {
+  grid-template-columns: 1fr;
+}
+
+.care-team-admin-note {
+  border-style: solid;
+}
+
+@media (max-width: 1100px) {
+.care-team-layout {
+    grid-template-columns: 1fr;
+  }
+
+.care-team-panel-side {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+.care-team-card,
+  .care-team-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+.care-team-role-editor,
+  .care-team-role-display {
+    min-width: 0;
+  }
+}
+
+/* Care Team roster refinements */
+
+.care-team-card {
+  align-items: center;
+}
+
+.care-team-member-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.care-team-member-identity .care-team-card-top h4 {
+  margin: 0;
+}
+
+.care-team-avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #4c956c 0%, #2f6fdb 100%);
+  color: var(--text-on-primary);
+  font-size: 22px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+}
+
+.care-team-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.care-team-card-actions {
+  align-items: center;
+}
+
+.care-team-role-editor,
+.care-team-role-display {
+  justify-content: center;
+}
+
+.care-team-remove-button {
+  align-self: center;
+  margin-top: 0;
+  min-height: 46px;
+}
+
+@media (max-width: 760px) {
+.care-team-card,
+  .care-team-card-actions {
+    align-items: stretch;
+  }
+
+.care-team-member-identity {
+    width: 100%;
+  }
+
+.care-team-remove-button {
+    align-self: stretch;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 720px) {
+.profile-info-grid,
+  .profile-name-edit-row {
+    grid-template-columns: 1fr;
+  }
+
+.profile-name-save-button {
+    width: 100%;
+  }
+}
+
+/* Care Team roster: keep long names from colliding with controls */
+
+.care-team-card {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.care-team-member-identity {
+  width: 100%;
+  align-items: flex-start;
+}
+
+.care-team-member-identity .care-team-card-top h4 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.care-team-card-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) auto;
+  align-items: center;
+  justify-content: start;
+  gap: 12px;
+  padding-left: 66px;
+}
+
+.care-team-role-editor,
+.care-team-role-display {
+  min-width: 0;
+}
+
+.care-team-role-editor select {
+  min-width: 0;
+}
+
+.care-team-remove-button {
+  justify-self: start;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+.care-team-card-actions {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+  }
+
+.care-team-remove-button {
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
+/* Care Team roster: fill the controls row and keep own-role cards left aligned */
+
+.care-team-card-actions {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 180px);
+  justify-content: stretch;
+  align-items: stretch;
+  gap: 12px;
+  padding-left: 0;
+}
+
+.care-team-role-editor,
+.care-team-role-display {
+  width: 100%;
+}
+
+.care-team-role-editor select,
+.care-team-remove-button {
+  width: 100%;
+  min-height: 46px;
+}
+
+.care-team-remove-button {
+  justify-self: stretch;
+  align-self: stretch;
+}
+
+.care-team-card-actions:has(.care-team-role-display) {
+  grid-template-columns: 1fr;
+  justify-content: start;
+  align-items: start;
+}
+
+.care-team-card-actions:has(.care-team-role-display) .care-team-role-display {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.care-team-card-actions:has(.care-team-role-display) .care-team-role-lock-note {
+  text-align: left;
+}
+
+@media (max-width: 760px) {
+.care-team-card-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Care Team roster: vertically center the avatar and member name */
+
+.care-team-member-identity {
+  align-items: center;
+}
+
+.care-team-member-identity .care-team-card-copy {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
+.care-team-member-identity .care-team-card-top {
+  align-items: center;
+  width: 100%;
+}
+
+.care-team-member-identity .care-team-card-top h4 {
+  margin: 0;
+}
+
+/* Care Team removal confirmation modal */
+
+.care-team-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.care-team-confirm-modal {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-elevated);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+}
+
+.care-team-confirm-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.care-team-confirm-kicker {
+  color: #c14848;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.care-team-confirm-copy h3 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.care-team-confirm-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.care-team-confirm-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.care-team-confirm-details span {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.care-team-confirm-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.care-team-confirm-secondary {
+  background: var(--surface-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.care-team-confirm-secondary:hover {
+  background: var(--surface-alt);
+}
+
+.care-team-confirm-danger {
+  background: #c14848;
+  color: var(--text-on-primary);
+}
+
+.care-team-confirm-danger:hover {
+  background: #a83d3d;
+}
+
+@media (max-width: 560px) {
+.care-team-confirm-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.care-team-card-actions {
+  grid-template-columns: minmax(220px, 1fr) minmax(120px, 160px);
+  align-items: end;
+  gap: 12px;
+}
+
+.care-team-role-control-stack {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.care-team-role-editor,
+.care-team-assignment-editor {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+}
+
+.care-team-role-editor select,
+.care-team-assignment-editor select {
+  width: 100%;
+  min-width: 0;
+}
+
+.care-team-remove-button {
+  align-self: end;
+}
+
+.care-team-card-actions:has(.care-team-role-control-stack:only-child),
+.care-team-card-actions:has(.care-team-role-display):not(:has(.care-team-remove-button)) {
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+.care-team-card-actions {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+.care-team-remove-button {
+    width: 100%;
+  }
+}
+
+/* Phase 1 follow-up: Care Team roster control alignment. */
+
+.care-team-card-actions {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) minmax(112px, max-content);
+  align-items: end;
+  justify-content: end;
+  gap: 12px;
+  width: 100%;
+}
+
+.care-team-role-control-stack {
+  width: 100%;
+  max-width: 380px;
+  justify-self: stretch;
+  display: grid;
+  gap: 10px;
+  justify-items: stretch;
+}
+
+.care-team-role-control-stack > .care-team-role-editor,
+.care-team-role-control-stack > .care-team-assignment-editor {
+  width: 100%;
+  max-width: 380px;
+  min-width: 0;
+  align-items: stretch;
+  justify-items: stretch;
+  text-align: left;
+}
+
+.care-team-role-editor,
+.care-team-assignment-editor {
+  text-align: left;
+}
+
+.care-team-role-editor select,
+.care-team-assignment-editor select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  text-align: left;
+}
+
+.care-team-remove-button {
+  align-self: end;
+  justify-self: start;
+  width: auto;
+  min-width: 112px;
+}
+
+.care-team-card-actions:has(.care-team-role-control-stack:only-child),
+.care-team-card-actions:has(.care-team-role-display):not(:has(.care-team-remove-button)) {
+  grid-template-columns: minmax(220px, 380px);
+  justify-content: end;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+.care-team-card-actions,
+  .care-team-card-actions:has(.care-team-role-control-stack:only-child),
+  .care-team-card-actions:has(.care-team-role-display):not(:has(.care-team-remove-button)) {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+.care-team-role-control-stack,
+  .care-team-role-control-stack > .care-team-role-editor,
+  .care-team-role-control-stack > .care-team-assignment-editor {
+    max-width: none;
+  }
+
+.care-team-remove-button {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+/* Phase 1 polish: Care Team alignment and compact action controls. */
+
+.care-team-card-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  justify-content: stretch;
+  gap: 14px;
+  width: 100%;
+}
+
+.care-team-role-control-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  justify-self: stretch;
+  justify-items: stretch;
+}
+
+.care-team-role-control-stack > .care-team-role-editor,
+.care-team-role-control-stack > .care-team-assignment-editor {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  justify-items: stretch;
+  align-items: start;
+  text-align: left;
+  justify-content: stretch;
+}
+
+.care-team-role-control-stack > .care-team-role-editor,
+.care-team-role-control-stack > .care-team-role-editor *,
+.care-team-role-control-stack > .care-team-assignment-editor,
+.care-team-role-control-stack > .care-team-assignment-editor * {
+  text-align: left;
+}
+
+.care-team-role-control-stack > .care-team-role-editor select,
+.care-team-role-control-stack > .care-team-assignment-editor select {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  justify-self: stretch;
+}
+
+.care-team-remove-button {
+  align-self: end;
+  justify-self: end;
+  min-width: 118px;
+}
+
+.care-team-card-actions:has(.care-team-role-display):not(:has(.care-team-remove-button)) {
+  grid-template-columns: 1fr;
+  justify-content: stretch;
+}
+
+@media (max-width: 760px) {
+.care-team-card-actions {
+    grid-template-columns: 1fr;
+  }
+
+.care-team-remove-button {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+
+/* Care Team role changes that require an HPC Representative assignment. */
+.care-team-assignment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.care-team-assignment-actions .small-button {
+  min-width: 112px;
+}
+
+@media (max-width: 760px) {
+  .care-team-assignment-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .care-team-assignment-actions .small-button {
+    width: 100%;
+  }
+}
+
+/* Moved from settings.css: care-team roster metadata */
+
+.care-team-representative-label {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}

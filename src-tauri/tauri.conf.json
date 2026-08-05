@@ -1,0 +1,47 @@
+﻿{
+    "$schema":  "https://schema.tauri.app/config/2",
+    "productName":  "HPC Client Management",
+    "version":  "0.1.0",
+    "identifier":  "com.example.hpcclientmanagement",
+    "build":  {
+                  "beforeDevCommand":  "npm run dev",
+                  "devUrl":  "http://localhost:1420",
+                  "beforeBuildCommand":  "npm run build",
+                  "frontendDist":  "../dist"
+              },
+    "app":  {
+                "windows":  [
+                                {
+                                    "title":  "HPC Client Management",
+                                    "width":  800,
+                                    "height":  600,
+                                    "devtools":  false
+                                }
+                            ],
+                "security":  {
+                                 "csp":  {
+                                             "default-src":  "\u0027self\u0027",
+                                             "script-src":  "\u0027self\u0027",
+                                             "style-src":  "\u0027self\u0027 \u0027unsafe-inline\u0027",
+                                             "img-src":  "\u0027self\u0027 data: blob: asset: http://asset.localhost https://*.supabase.co",
+                                             "font-src":  "\u0027self\u0027 data:",
+                                             "connect-src":  "\u0027self\u0027 ipc: http://ipc.localhost https://*.supabase.co wss://*.supabase.co",
+                                             "frame-src":  "\u0027self\u0027 blob: data: https://*.supabase.co",
+                                             "object-src":  "\u0027none\u0027",
+                                             "base-uri":  "\u0027self\u0027",
+                                             "frame-ancestors":  "\u0027none\u0027"
+                                         }
+                             }
+            },
+    "bundle":  {
+                   "active":  true,
+                   "targets":  "all",
+                   "icon":  [
+                                "icons/32x32.png",
+                                "icons/128x128.png",
+                                "icons/128x128@2x.png",
+                                "icons/icon.icns",
+                                "icons/icon.ico"
+                            ]
+               }
+}

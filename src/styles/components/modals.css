@@ -1,0 +1,29 @@
+/* Shared modal defaults. */
+.app-modal-overlay,
+.phone-upload-modal-overlay,
+.settings-confirm-overlay {
+  background: rgba(15, 23, 42, 0.36);
+  backdrop-filter: blur(6px);
+}
+
+.app-modal,
+.phone-upload-modal,
+.care-team-confirm-modal,
+.settings-confirm-modal {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+}
+
+.app-modal-header,
+.phone-upload-modal-header {
+  gap: var(--space-3);
+}
+
+.app-modal-actions,
+.phone-upload-modal-actions,
+.settings-confirm-actions,
+.care-team-confirm-actions {
+  gap: var(--space-3);
+}

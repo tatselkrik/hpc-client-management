@@ -1,0 +1,451 @@
+﻿/* Dark appearance overrides. */
+:root[data-theme="dark"] .app-modal-warning {
+  border-color: rgba(248, 113, 113, 0.36);
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecaca;
+}
+
+:root[data-theme="dark"] .compact-select {
+  background-color: var(--surface-elevated);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .compact-select option {
+  background: var(--surface-elevated);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .active-filter-row,
+:root[data-theme="dark"] .client-summary-card,
+:root[data-theme="dark"] .filter-chip,
+:root[data-theme="dark"] .download-link-button {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .client-summary-item {
+  background: rgba(12, 20, 32, 0.72);
+}
+
+:root[data-theme="dark"] .client-summary-warning {
+  color: #f5c071;
+}
+
+:root[data-theme="dark"] .overview-unsaved-banner,
+:root[data-theme="dark"] .cssrs-unsaved-banner {
+  color: #f5c071;
+}
+
+:root[data-theme="dark"] .login-card,
+:root[data-theme="dark"] .icon-button,
+:root[data-theme="dark"] .sidebar,
+:root[data-theme="dark"] .profile-card,
+:root[data-theme="dark"] .clients-searchbar,
+:root[data-theme="dark"] .documents-searchbar,
+:root[data-theme="dark"] .sort-dropdown-menu,
+:root[data-theme="dark"] .info-card,
+:root[data-theme="dark"] .panel,
+:root[data-theme="dark"] .clients-sidebar,
+:root[data-theme="dark"] .documents-sidebar-panel,
+:root[data-theme="dark"] .documents-preview-panel,
+:root[data-theme="dark"] .notes-editor,
+:root[data-theme="dark"] .note-card,
+:root[data-theme="dark"] .form-section,
+:root[data-theme="dark"] .profile-panel,
+:root[data-theme="dark"] .client-meta-chip,
+:root[data-theme="dark"] .settings-module-card,
+:root[data-theme="dark"] .settings-preview-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="dark"] .sidebar {
+  background: var(--sidebar-bg);
+}
+
+:root[data-theme="dark"] .profile-card.active {
+  background: linear-gradient(180deg, #74a7ff 0%, #5c96fb 100%);
+  color: var(--button-primary-text);
+  border-color: rgba(116, 167, 255, 0.42);
+  box-shadow: 0 10px 22px rgba(116, 167, 255, 0.24);
+}
+
+:root[data-theme="dark"] .profile-card.active .profile-card-copy strong {
+  color: var(--button-primary-text);
+}
+
+:root[data-theme="dark"] .profile-card.active .profile-card-copy span {
+  color: rgba(11, 18, 32, 0.78);
+}
+
+:root[data-theme="dark"] .login-form input,
+:root[data-theme="dark"] .search-input,
+:root[data-theme="dark"] .textarea-input,
+:root[data-theme="dark"] .form-label input,
+:root[data-theme="dark"] .form-label select,
+:root[data-theme="dark"] .form-label textarea,
+:root[data-theme="dark"] .analytics-filter-field input,
+:root[data-theme="dark"] .analytics-filter-field select {
+  background: rgba(12, 20, 32, 0.86);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .login-warning-text {
+  color: #f0c36d;
+}
+
+:root[data-theme="dark"] .collapse-button:hover {
+  background: rgba(116, 167, 255, 0.12);
+}
+
+:root[data-theme="dark"] .client-list-item.active,
+:root[data-theme="dark"] .document-list-item.active {
+  background: rgba(116, 167, 255, 0.18);
+  border-color: rgba(116, 167, 255, 0.26);
+  color: #dce9ff;
+}
+
+:root[data-theme="dark"] .settings-contact-card,
+:root[data-theme="dark"] .settings-address-card {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .dashboard-announcement-banner {
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="dark"] .dashboard-announcement-info {
+  background: rgba(116, 167, 255, 0.16);
+}
+
+:root[data-theme="dark"] .dashboard-announcement-important {
+  background: rgba(240, 169, 75, 0.18);
+}
+
+:root[data-theme="dark"] .dashboard-announcement-urgent {
+  background: rgba(231, 111, 81, 0.2);
+}
+
+:root[data-theme="dark"] .dashboard-announcement-badge,
+:root[data-theme="dark"] .settings-toggle-row {
+  background: rgba(12, 20, 32, 0.72);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .overview-unsaved-banner {
+  background: rgba(240, 169, 75, 0.16);
+  border-color: rgba(240, 169, 75, 0.34);
+  color: #f0c36d;
+}
+
+:root[data-theme="dark"] .tiny-action-button {
+  background: rgba(12, 20, 32, 0.72);
+  border-color: var(--border);
+  color: #a9c4f8;
+}
+
+:root[data-theme="dark"] .tiny-action-button:hover {
+  background: rgba(116, 167, 255, 0.12);
+}
+
+:root[data-theme="dark"] .settings-module-badge.live {
+  color: #86d6a8;
+  border-color: rgba(134, 214, 168, 0.24);
+  background: rgba(134, 214, 168, 0.1);
+}
+
+:root[data-theme="dark"] .settings-audit-filter-button {
+  background: rgba(12, 20, 32, 0.72);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .settings-audit-filter-button.active {
+  background: rgba(116, 167, 255, 0.16);
+  border-color: rgba(116, 167, 255, 0.28);
+  color: #dce9ff;
+}
+
+:root[data-theme="dark"] .settings-audit-entry {
+  background: rgba(12, 20, 32, 0.72);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .dashboard-loading-pill,
+:root[data-theme="dark"] .dashboard-client-link,
+:root[data-theme="dark"] .dashboard-last-client-card {
+  background: rgba(12, 20, 32, 0.72);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .settings-backup-secondary-button {
+  background: var(--primary);
+  color: var(--button-primary-text);
+  border: none;
+}
+
+:root[data-theme="dark"] .settings-backup-secondary-button:hover {
+  background: var(--primary-hover);
+  color: var(--button-primary-text);
+}
+
+:root[data-theme="dark"] .settings-backup-preview,
+:root[data-theme="dark"] .settings-backup-count-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-summary-card,
+:root[data-theme="dark"] .analytics-donut-center,
+:root[data-theme="dark"] .analytics-column-track {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-bar-track {
+  background: rgba(116, 167, 255, 0.08);
+}
+
+:root[data-theme="dark"] .cssrs-tab-panel {
+  --cssrs-card-bg: rgba(20, 32, 48, 0.98);
+  --cssrs-soft-bg: rgba(12, 20, 32, 0.82);
+  --cssrs-table-head-bg: rgba(18, 29, 45, 0.94);
+  --cssrs-neutral-bg: rgba(10, 16, 27, 0.92);
+  --cssrs-note-bg: rgba(116, 167, 255, 0.14);
+  --cssrs-note-border: rgba(116, 167, 255, 0.28);
+  --cssrs-note-text: #e6efff;
+  --cssrs-badge-bg: linear-gradient(
+    180deg,
+    rgba(42, 64, 97, 0.9) 0%,
+    rgba(27, 43, 69, 0.95) 100%
+  );
+  --cssrs-badge-border: rgba(116, 167, 255, 0.22);
+  --cssrs-badge-value: #dce9ff;
+  --cssrs-subtle-text: #b8c8de;
+  --cssrs-option-border: #45607c;
+  --cssrs-option-checked-bg: rgba(116, 167, 255, 0.14);
+  --cssrs-risk-divider: rgba(47, 68, 97, 0.8);
+}
+
+:root[data-theme="dark"] .analytics-segmented-controls {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-segmented-control:hover {
+  background: rgba(116, 167, 255, 0.12);
+}
+
+:root[data-theme="dark"] .analytics-export-status.success,
+:root[data-theme="dark"] .analytics-record-card-delta.up {
+  color: #8fd3ad;
+}
+
+:root[data-theme="dark"] .analytics-export-status.error,
+:root[data-theme="dark"] .analytics-record-card-delta.down {
+  color: #ffb09c;
+}
+
+:root[data-theme="dark"] .analytics-record-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="dark"] .analytics-record-card-icon-progress {
+  background: rgba(116, 167, 255, 0.16);
+}
+
+:root[data-theme="dark"] .analytics-record-card-icon-documents {
+  background: rgba(134, 214, 168, 0.12);
+  color: #86d6a8;
+}
+
+:root[data-theme="dark"] .analytics-record-card-icon-assessments {
+  background: rgba(167, 139, 250, 0.16);
+  color: #c4b5fd;
+}
+
+:root[data-theme="dark"] .app-modal {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .phone-upload-modal {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="dark"] .phone-upload-modal-warning {
+  border-color: rgba(240, 169, 75, 0.3);
+  background: rgba(240, 169, 75, 0.16);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .phone-upload-close-button,
+:root[data-theme="dark"] .phone-upload-copy-button,
+:root[data-theme="dark"] .phone-upload-secondary-button,
+:root[data-theme="dark"] .phone-upload-meta-card,
+:root[data-theme="dark"] .phone-upload-instructions,
+:root[data-theme="dark"] .phone-upload-qr-panel {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .phone-upload-qr-placeholder,
+:root[data-theme="dark"] .phone-upload-qr-image {
+  background: rgba(12, 20, 32, 0.86);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .phone-upload-status-uploaded,
+:root[data-theme="dark"] .phone-upload-status-completed {
+  color: #8fd3ad;
+}
+
+:root[data-theme="dark"] .phone-upload-status-expired,
+:root[data-theme="dark"] .phone-upload-status-cancelled {
+  color: #ffb09c;
+}
+
+:root[data-theme="dark"] .care-team-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .care-team-role-editor select {
+  background: rgba(12, 20, 32, 0.86);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .profile-info-item,
+:root[data-theme="dark"] .profile-password-guidance,
+:root[data-theme="dark"] .profile-mfa-factor-card,
+:root[data-theme="dark"] .profile-mfa-qr-card,
+:root[data-theme="dark"] .profile-mfa-secret-block,
+:root[data-theme="dark"] .profile-secondary-button {
+  background: var(--surface-soft);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .profile-mfa-state-badge {
+  background: rgba(116, 167, 255, 0.16);
+  border-color: rgba(116, 167, 255, 0.28);
+  color: #dce9ff;
+}
+
+:root[data-theme="dark"] .profile-secondary-button:hover {
+  background: var(--surface-alt);
+}
+
+:root[data-theme="dark"] .care-team-confirm-modal {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .care-team-confirm-secondary {
+  background: rgba(12, 20, 32, 0.72);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .care-team-confirm-danger {
+  background: #c14848;
+  color: #fff;
+}
+
+:root[data-theme="dark"] .settings-announcement-details > div,
+:root[data-theme="dark"] .settings-backup-safety-note,
+:root[data-theme="dark"] .settings-confirm-modal {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .settings-audit-refine-control select,
+:root[data-theme="dark"] .settings-audit-refine-control input {
+  background: rgba(12, 20, 32, 0.86);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .settings-announcement-secondary-button,
+:root[data-theme="dark"] .settings-confirm-secondary {
+  background: rgba(12, 20, 32, 0.72);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-drilldown-page-size select {
+  background: var(--surface-overlay);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-drilldown-page-size select option {
+  background: #111827;
+  color: #e8f1ff;
+}
+
+:root[data-theme="dark"] .analytics-quality-card,
+:root[data-theme="dark"] .analytics-drilldown-table,
+:root[data-theme="dark"] .analytics-definition-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-icon-value-item {
+  background: var(--surface-overlay);
+}
+
+:root[data-theme="dark"] .analytics-line-stroke {
+  stroke: #77a8ff !important;
+}
+
+:root[data-theme="dark"] .analytics-line-point {
+  stroke: #77a8ff !important;
+  fill: var(--surface) !important;
+}
+
+:root[data-theme="dark"] .analytics-filter-panel,
+:root[data-theme="dark"] .analytics-panel,
+:root[data-theme="dark"] .analytics-summary-card,
+:root[data-theme="dark"] .analytics-record-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .analytics-section-header .settings-clinic-kicker,
+:root[data-theme="dark"] .analytics-panel-header .settings-clinic-kicker,
+:root[data-theme="dark"] .analytics-summary-label,
+:root[data-theme="dark"] .analytics-record-card-title,
+:root[data-theme="dark"] .analytics-summary-value,
+:root[data-theme="dark"] .analytics-record-card-value,
+:root[data-theme="dark"] .analytics-recharts-donut-center strong {
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .analytics-page .secondary-button.analytics-export-button {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .settings-preview-card:not(.settings-preview-card-dark):not(.settings-preview-card-clinic-dark) .settings-preview-window {
+  background: #ffffff;
+  border-color: rgba(219, 227, 238, 0.92);
+}
+
+.settings-preview-card-dark .settings-preview-window {
+  background: rgba(13, 20, 32, 0.96);
+  border-color: rgba(47, 68, 97, 0.92);
+}
+
+.settings-preview-card-dark .settings-preview-chip {
+  background: rgba(255, 255, 255, 0.09);
+}

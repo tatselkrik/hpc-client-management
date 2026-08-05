@@ -1,0 +1,118 @@
+/* App-wide card/panel primitives. */
+.info-card,
+.panel,
+.clients-sidebar,
+.client-main,
+.documents-sidebar-panel,
+.documents-preview-panel,
+.notes-editor,
+.note-card,
+.form-section,
+.profile-panel,
+.client-summary-card,
+.cssrs-title-card,
+.cssrs-question-card,
+.cssrs-card,
+.analytics-panel,
+.analytics-filter-panel,
+.analytics-drilldown-panel,
+.analytics-record-card,
+.care-team-panel,
+.care-team-card,
+.settings-module-card,
+.settings-theme-card,
+.settings-backup-count-card,
+.settings-client-categories-card,
+.settings-clinic-info-card,
+.settings-contact-card,
+.settings-address-card,
+.settings-confirm-modal,
+.app-modal,
+.phone-upload-modal,
+.phone-upload-meta-card,
+.phone-upload-instructions {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.info-card,
+.panel,
+.clients-sidebar,
+.client-main,
+.documents-sidebar-panel,
+.documents-preview-panel,
+.notes-editor,
+.note-card,
+.form-section,
+.profile-panel,
+.client-summary-card,
+.cssrs-title-card,
+.cssrs-question-card,
+.cssrs-card,
+.analytics-panel,
+.analytics-filter-panel,
+.analytics-drilldown-panel,
+.analytics-record-card,
+.care-team-panel,
+.care-team-card,
+.settings-module-card,
+.settings-theme-card,
+.settings-backup-count-card,
+.settings-client-categories-card,
+.settings-clinic-info-card,
+.settings-contact-card,
+.settings-address-card,
+.settings-confirm-modal,
+.app-modal,
+.phone-upload-modal,
+.phone-upload-meta-card,
+.phone-upload-instructions {
+  padding: var(--card-padding);
+}
+
+.info-card h3,
+.panel h3,
+.form-section h3,
+.analytics-panel h3,
+.care-team-panel h3,
+.settings-module-card h3,
+.profile-panel h3 {
+  color: var(--text);
+}
+
+.info-card p,
+.panel p,
+.form-section p,
+.analytics-panel p,
+.care-team-panel p,
+.settings-module-card p,
+.profile-panel p {
+  color: var(--muted);
+}
+
+.section-header,
+.dashboard-section-heading,
+.analytics-section-header,
+.care-team-section-header,
+.about-panel-header {
+  gap: var(--space-3);
+}
+
+.section-header h2,
+.dashboard-section-heading h2,
+.analytics-section-header h2,
+.care-team-section-header h2,
+.about-panel-header h2 {
+  line-height: var(--line-height-tight);
+}
+
+.client-list-item,
+.document-list-item,
+.filter-chip,
+.active-filter-row,
+.client-meta-chip,
+.client-summary-item {
+  border-color: var(--border);
+}

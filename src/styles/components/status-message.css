@@ -1,0 +1,38 @@
+.status-message {
+  display: block;
+  width: 100%;
+  margin: var(--space-2) 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+.status-message-neutral,
+.status-message-info,
+.status-message-loading {
+  border-color: var(--border);
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+
+.status-message-success {
+  border-color: rgba(61, 140, 91, 0.32);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.status-message-warning {
+  border-color: rgba(180, 83, 9, 0.28);
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.status-message-error {
+  border-color: rgba(193, 72, 72, 0.32);
+  background: var(--danger-soft);
+  color: var(--danger);
+}

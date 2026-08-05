@@ -1,0 +1,37 @@
+﻿/* Clinic appearance overrides. */
+:root[data-theme="clinic"] .nav-button.active,
+:root[data-theme="clinic"] .profile-card.active {
+  background: linear-gradient(135deg, #ed1c24 0%, #f7941d 100%);
+  box-shadow: 0 10px 22px rgba(237, 28, 36, 0.24);
+}
+
+:root[data-theme="clinic"] .theme-option.active,
+:root[data-theme="clinic"] .settings-preview-card.active {
+  border-color: rgba(237, 28, 36, 0.34);
+  box-shadow: 0 0 0 1px rgba(247, 148, 29, 0.18);
+}
+
+/* Clinic theme: keep 4Ps table headers readable */
+:root[data-theme="clinic"] .client-4ps-table thead th {
+  color: #ffffff;
+  background: #7c4a44;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.settings-preview-card-clinic {
+  background:
+    radial-gradient(circle at top left, rgba(237, 28, 36, 0.16), transparent 42%),
+    linear-gradient(135deg, #fff7ed 0%, #fff 100%);
+}
+
+.settings-preview-card-clinic .settings-preview-bar {
+  background: linear-gradient(90deg, #ed1c24 0%, #f7941d 100%);
+}
+
+.settings-preview-card-clinic .settings-preview-chip {
+  background: rgba(237, 28, 36, 0.18);
+}
+
+.settings-preview-card-clinic .settings-preview-chip.short {
+  background: rgba(247, 148, 29, 0.22);
+}

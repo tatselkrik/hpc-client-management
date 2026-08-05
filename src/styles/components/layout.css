@@ -1,0 +1,515 @@
+/* App-wide layout primitives.
+   Keep common div/container behavior here so sections share the same rhythm. */
+
+.page-content {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+.page-content > h2,
+.page-title {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(26px, 2.6vw, var(--page-title-size));
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-page,
+.analytics-page,
+.clients-page,
+.settings-page,
+.care-team-page,
+.profile-page,
+.about-page {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  box-sizing: border-box;
+  gap: var(--page-gap);
+}
+
+.header-copy {
+  min-width: 0;
+  margin: 0;
+}
+
+.header-copy > :first-child {
+  margin-top: 0;
+}
+
+.header-copy > :last-child {
+  margin-bottom: 0;
+}
+
+.section-header,
+.dashboard-header,
+.dashboard-section-heading,
+.analytics-header,
+.analytics-section-header,
+.analytics-filter-panel-header,
+.analytics-panel-header,
+.analytics-drilldown-panel-header,
+.care-team-header,
+.care-team-section-header,
+.client-4ps-header,
+.client-4ps-narrative-header,
+.notes-section-header,
+.notes-header-controls,
+.cssrs-card-header,
+.cssrs-question-header,
+.profile-mfa-header-badges,
+.settings-module-header,
+.settings-backup-preview-header,
+.about-panel-header,
+.app-modal-header,
+.phone-upload-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--header-gap);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.section-header h2,
+.section-header h3,
+.section-header h4,
+.dashboard-header h2,
+.dashboard-section-heading h3,
+.analytics-header h2,
+.analytics-section-header h3,
+.analytics-panel-header h3,
+.care-team-header h2,
+.care-team-section-header h3,
+.client-4ps-header h3,
+.notes-section-header h3,
+.cssrs-card-header h3,
+.settings-module-header h3,
+.about-panel-header h2,
+.app-modal-header h3,
+.phone-upload-modal-header h3 {
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.dashboard-section,
+.analytics-section,
+.form-section,
+.cssrs-tab-panel,
+.profile-section-card,
+.settings-module-card,
+.settings-theme-card,
+.settings-backup-count-card,
+.settings-client-categories-card,
+.settings-clinic-info-card,
+.settings-contact-card,
+.settings-address-card,
+.care-team-panel,
+.about-panel,
+.app-modal,
+.phone-upload-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+  min-width: 0;
+}
+
+.panel,
+.client-main,
+.clients-sidebar,
+.documents-sidebar-panel,
+.documents-preview-panel,
+.notes-editor,
+.note-card,
+.client-summary-card,
+.cssrs-title-card,
+.cssrs-question-card,
+.cssrs-card,
+.analytics-panel,
+.analytics-filter-panel,
+.analytics-drilldown-panel,
+.analytics-record-card,
+.care-team-card,
+.profile-panel {
+  min-width: 0;
+}
+
+.clients-layout,
+.care-team-layout,
+.documents-layout,
+.profile-grid,
+.settings-module-grid,
+.settings-contact-grid,
+.settings-backup-count-grid,
+.dashboard-snapshot-grid,
+.dashboard-overview-grid,
+.dashboard-attention-grid,
+.card-grid,
+.analytics-filter-grid,
+.analytics-summary-grid,
+.analytics-population-dashboard-grid,
+.analytics-population-comparison-grid,
+.analytics-demographics-ring-grid,
+.analytics-presenting-dashboard-grid,
+.analytics-cssrs-dashboard-grid,
+.analytics-fourps-dashboard-grid,
+.analytics-records-dashboard-grid,
+.analytics-record-activity-grid,
+.analytics-records-chart-grid,
+.client-summary-grid,
+.profile-info-grid,
+.profile-password-grid,
+.settings-announcement-grid,
+.theme-toggle-grid,
+.form-grid {
+  gap: var(--grid-gap);
+}
+
+.clients-layout,
+.care-team-layout,
+.documents-layout,
+.profile-grid,
+.settings-module-grid {
+  gap: var(--layout-gap);
+}
+
+.clients-topbar,
+.active-filter-row,
+.dashboard-snapshot-actions,
+.analytics-header-actions,
+.analytics-drilldown-header-actions,
+.analytics-export-button-row,
+.documents-topbar-actions,
+.file-preview-actions,
+.file-preview-actions-stacked,
+.note-actions,
+.notes-editor-actions,
+.overview-actions,
+.sticky-overview-actions,
+.cssrs-actions,
+.client-4ps-case-actions,
+.client-4ps-bottom-actions,
+.profile-actions-row,
+.profile-mfa-setup-actions,
+.settings-announcement-actions,
+.settings-backup-actions,
+.settings-category-actions,
+.settings-category-add-control-row,
+.settings-confirm-actions,
+.care-team-card-actions,
+.care-team-confirm-actions,
+.app-modal-actions,
+.phone-upload-modal-actions,
+.about-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--action-gap);
+  flex-wrap: wrap;
+}
+
+.analytics-header-actions,
+.analytics-export-button-row,
+.about-header-actions,
+.clients-actions,
+.documents-topbar-actions,
+.file-preview-actions,
+.profile-actions-row,
+.settings-announcement-actions,
+.settings-backup-actions,
+.settings-category-actions,
+.app-modal-actions,
+.phone-upload-modal-actions {
+  justify-content: flex-end;
+}
+
+/* Clients filters should use the section-specific grid so each filter fills an equal share. */
+.clients-filters-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+}
+
+/* Preview actions use the widest action as the shared column width. */
+.file-preview-details-grid {
+  grid-template-columns: minmax(0, 1fr) max-content;
+}
+
+.file-preview-actions-stacked {
+  width: max-content;
+  min-width: max-content;
+  align-items: stretch;
+}
+
+.file-preview-actions-stacked .small-button,
+.file-preview-actions-stacked .download-link-button {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Name edit uses its own grid so the input and button align as one row. */
+.profile-name-edit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: end;
+  width: 100%;
+}
+
+.profile-name-save-button {
+  align-self: end;
+}
+
+/* Care Team cards keep destructive removal visible without reserving blank space. */
+.care-team-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--space-3);
+  position: relative;
+}
+
+.care-team-card-header-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+}
+
+.care-team-member-identity {
+  min-width: 0;
+}
+
+.care-team-card-removable .care-team-card-actions {
+  padding-top: 0;
+}
+
+.care-team-card-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  justify-content: stretch;
+  justify-items: stretch;
+  gap: var(--space-3);
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  flex: 1 1 100%;
+}
+
+.care-team-role-control-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  justify-self: stretch;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.care-team-role-control-stack-paired {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.care-team-role-control-stack > .care-team-role-editor,
+.care-team-role-control-stack > .care-team-assignment-editor {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  justify-items: stretch;
+  align-items: start;
+  text-align: left;
+}
+
+.care-team-role-control-stack > .care-team-role-editor,
+.care-team-role-control-stack > .care-team-role-editor *,
+.care-team-role-control-stack > .care-team-assignment-editor,
+.care-team-role-control-stack > .care-team-assignment-editor * {
+  text-align: left;
+}
+
+.care-team-role-control-stack > .care-team-role-editor select,
+.care-team-role-control-stack > .care-team-assignment-editor select {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.care-team-card > .care-team-card-actions,
+.care-team-card > .care-team-card-actions:has(.care-team-role-control-stack),
+.care-team-card > .care-team-card-actions:has(.care-team-role-control-stack:only-child),
+.care-team-card > .care-team-card-actions:has(.care-team-role-display):not(:has(.care-team-remove-button)) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-self: stretch;
+  justify-self: stretch;
+  justify-content: stretch;
+  justify-items: stretch;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.care-team-card > .care-team-card-actions > .care-team-role-control-stack,
+.care-team-card > .care-team-card-actions > .care-team-role-control-stack > .care-team-role-editor,
+.care-team-card > .care-team-card-actions > .care-team-role-control-stack > .care-team-assignment-editor,
+.care-team-card > .care-team-card-actions > .care-team-role-display {
+  justify-self: stretch;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+.care-team-card > .care-team-card-actions > .care-team-role-control-stack-paired {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.care-team-card-actions > .care-team-role-display {
+  justify-self: stretch;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.care-team-remove-button {
+  position: static;
+  top: auto;
+  right: auto;
+  width: auto;
+  min-width: 118px;
+  align-self: center;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+/* Backup actions should stay paired and balanced. */
+.settings-backup-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  justify-content: stretch;
+  width: 100%;
+}
+
+.settings-backup-actions .small-button {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Profile picture actions should read as one paired control row. */
+.profile-picture-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  width: 100%;
+}
+
+.profile-picture-actions .small-button {
+  width: 100%;
+  min-width: 0;
+}
+
+.empty-state,
+.dashboard-empty-state,
+.empty-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--empty-state-padding);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--card-radius);
+  background: var(--surface-soft);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.empty-state h3,
+.empty-state h4,
+.dashboard-empty-state h3,
+.empty-panel h3,
+.empty-panel h4 {
+  margin: 0;
+  color: var(--text);
+}
+
+.empty-state p,
+.dashboard-empty-state p,
+.empty-panel p {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .page-content {
+    gap: var(--space-5);
+  }
+
+  .section-header,
+  .dashboard-header,
+  .dashboard-section-heading,
+  .analytics-header,
+  .analytics-section-header,
+  .analytics-panel-header,
+  .care-team-header,
+  .care-team-section-header,
+  .settings-module-header,
+  .about-panel-header {
+    gap: var(--space-3);
+  }
+
+  .analytics-header-actions,
+  .analytics-export-button-row,
+  .about-header-actions,
+  .clients-actions,
+  .documents-topbar-actions,
+  .file-preview-actions,
+  .profile-actions-row,
+  .settings-announcement-actions,
+  .settings-backup-actions,
+  .settings-category-actions {
+    justify-content: stretch;
+  }
+
+  .clients-filters-row,
+  .file-preview-details-grid,
+  .profile-name-edit-row,
+  .care-team-card-header-row,
+  .care-team-role-control-stack,
+  .care-team-role-control-stack-paired,
+  .settings-backup-actions,
+  .profile-picture-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .file-preview-actions-stacked {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .care-team-remove-button {
+    width: 100%;
+    justify-self: stretch;
+  }
+}

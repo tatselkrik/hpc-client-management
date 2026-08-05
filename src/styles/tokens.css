@@ -1,0 +1,147 @@
+/* Shared design tokens.
+   Keep layout/component decisions here and let theme folders override colors only. */
+:root {
+  color-scheme: light;
+
+  --app-font: "Century Gothic", CenturyGothic, "Tw Cen MT", "Avenir Next",
+    "Segoe UI", Arial, sans-serif;
+  --app-background: radial-gradient(
+    circle at top left,
+    #f7fbff 0%,
+    #eef3f9 48%,
+    #e7eef7 100%
+  );
+
+  /* Type scale */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-base: 15px;
+  --font-size-lg: 17px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.15;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.65;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Core color tokens */
+  --bg: #f7fbff;
+  --surface: #ffffff;
+  --surface-soft: #f6f8fb;
+  --surface-alt: #f1f4f8;
+  --surface-overlay: rgba(255, 255, 255, 0.92);
+  --surface-elevated: rgba(255, 255, 255, 0.98);
+
+  --border: #dbe3ee;
+  --border-strong: #cad5e4;
+  --text: #1f2733;
+  --muted: #66758a;
+  --text-on-primary: #ffffff;
+
+  --primary: #2f6fdb;
+  --primary-hover: #255fc0;
+  --primary-soft: #ebf3ff;
+  --danger: #c14848;
+  --danger-hover: #a83d3d;
+  --danger-soft: rgba(193, 72, 72, 0.12);
+  --warning: #b45309;
+  --warning-soft: rgba(245, 158, 11, 0.14);
+  --success: #3d8c5b;
+  --success-soft: rgba(76, 149, 108, 0.14);
+
+  /* Checkbox colors */
+  --checkbox-bg: var(--surface-elevated);
+  --checkbox-border: var(--border-strong);
+  --checkbox-checked-bg: var(--primary);
+  --checkbox-checked-border: var(--primary);
+  --checkbox-check: #ffffff;
+
+  --shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 12px 28px rgba(15, 23, 42, 0.06);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  --transition-fast: 0.18s ease;
+  --transition-layout: 0.22s ease;
+
+  /* Shared layout rhythm */
+  --page-gap: var(--space-6);
+  --section-gap: var(--space-5);
+  --content-gap: var(--space-4);
+  --layout-gap: var(--space-5);
+  --grid-gap: var(--space-4);
+  --panel-gap: var(--space-4);
+  --header-gap: var(--space-4);
+  --action-gap: var(--space-3);
+  --empty-state-padding: var(--space-5);
+  --page-title-size: var(--font-size-3xl);
+  --section-title-size: var(--font-size-xl);
+
+  /* Shared controls */
+  --control-height-sm: 38px;
+  --control-height-md: 44px;
+  --control-height-lg: 52px;
+  --control-padding-x: 14px;
+  --control-padding-y: 11px;
+  --control-gap: 8px;
+  --control-border-width: 1px;
+  --control-radius: var(--radius-md);
+  --control-bg: var(--surface-elevated);
+  --control-bg-hover: var(--surface-soft);
+
+  --button-height: var(--control-height-md);
+  --button-padding-x: 16px;
+  --button-font-size: var(--font-size-md);
+  --button-font-weight: var(--font-weight-bold);
+  --button-radius: var(--control-radius);
+  --button-primary-bg: var(--primary);
+  --button-primary-hover-bg: var(--primary-hover);
+  --button-primary-text: var(--text-on-primary);
+  --button-secondary-bg: var(--surface);
+  --button-secondary-hover-bg: var(--surface-soft);
+  --button-secondary-text: var(--text);
+  --button-danger-bg: var(--danger);
+  --button-danger-hover-bg: var(--danger-hover);
+  --button-danger-text: #ffffff;
+  --button-disabled-opacity: 0.58;
+
+  --input-height: var(--control-height-md);
+  --input-padding-x: 14px;
+  --input-padding-y: 11px;
+  --input-radius: var(--control-radius);
+  --input-bg: #ffffff;
+  --input-text: var(--text);
+  --input-placeholder: var(--muted);
+  --option-bg: #ffffff;
+  --option-text: #172033;
+  --focus-border: #a9c4f8;
+  --focus-ring: rgba(47, 111, 219, 0.12);
+
+  --card-bg: var(--surface-overlay);
+  --card-border: var(--border);
+  --card-shadow: var(--shadow);
+  --card-radius: var(--radius-lg);
+  --card-padding: 18px;
+  --card-gap: 16px;
+
+  --sidebar-bg: rgba(255, 255, 255, 0.88);
+  --sidebar-width: 272px;
+  --sidebar-collapsed-width: 88px;
+}
