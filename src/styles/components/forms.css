@@ -1,0 +1,176 @@
+/* App-wide form primitives. */
+.login-form input,
+.search-input,
+.textarea-input,
+.form-label input:not([type="checkbox"]):not([type="radio"]),
+.form-label select,
+.form-label textarea,
+.analytics-filter-field input,
+.analytics-filter-field select,
+.settings-audit-refine-control input,
+.settings-audit-refine-control select,
+.settings-category-edit-input,
+.compact-select,
+.care-team-role-editor select,
+.care-team-assignment-editor select,
+.fraction-input,
+.cssrs-demeanor-other-input {
+  width: 100%;
+  min-height: var(--input-height);
+  border: var(--control-border-width) solid var(--border);
+  border-radius: var(--input-radius);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  background: var(--input-bg);
+  color: var(--input-text);
+  outline: none;
+  line-height: var(--line-height-base);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    color var(--transition-fast);
+}
+
+textarea,
+.textarea-input,
+.form-label textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.login-form input::placeholder,
+.search-input::placeholder,
+.textarea-input::placeholder,
+.form-label input:not([type="checkbox"]):not([type="radio"])::placeholder,
+.form-label textarea::placeholder,
+.settings-audit-refine-control input::placeholder,
+.settings-category-edit-input::placeholder,
+.cssrs-demeanor-other-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.login-form input:focus,
+.search-input:focus,
+.textarea-input:focus,
+.form-label input:not([type="checkbox"]):not([type="radio"]):focus,
+.form-label select:focus,
+.form-label textarea:focus,
+.analytics-filter-field input:focus,
+.analytics-filter-field select:focus,
+.settings-audit-refine-control input:focus,
+.settings-audit-refine-control select:focus,
+.settings-category-edit-input:focus,
+.compact-select:focus,
+.care-team-role-editor select:focus,
+.care-team-assignment-editor select:focus,
+.fraction-input:focus,
+.cssrs-demeanor-other-input:focus {
+  border-color: var(--focus-border);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.form-label,
+.analytics-filter-field,
+.settings-audit-refine-control {
+  gap: var(--space-2);
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.form-label span,
+.analytics-filter-field span,
+.settings-audit-refine-control span {
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+select option,
+select optgroup {
+  background: var(--option-bg);
+  color: var(--option-text);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: var(--surface-soft);
+  color: var(--muted);
+  border-color: var(--border);
+  opacity: 0.86;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+
+/* Keep checkbox and radio inputs compact; they should not inherit full text-input sizing. */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+  min-height: 16px;
+  padding: 0;
+  margin: 0;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  border: 1.5px solid var(--checkbox-border);
+  background: var(--checkbox-bg);
+  background-color: var(--checkbox-bg);
+  color: var(--checkbox-check);
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 0.68em;
+  height: 0.68em;
+  transform: scale(0);
+  transform-origin: center;
+  background: var(--checkbox-check);
+  clip-path: polygon(14% 44%, 0 63%, 42% 100%, 100% 18%, 82% 0, 38% 63%);
+  transition: transform 0.12s ease-in-out;
+}
+
+input[type="checkbox"]:checked {
+  background: var(--checkbox-checked-bg);
+  background-color: var(--checkbox-checked-bg);
+  border-color: var(--checkbox-checked-border);
+  color: var(--checkbox-check);
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+.checkbox-option input[type="checkbox"]:checked {
+  background: var(--checkbox-checked-bg);
+  background-color: var(--checkbox-checked-bg);
+  border-color: var(--checkbox-checked-border);
+  color: var(--checkbox-check);
+}
+
+.checkbox-option input[type="checkbox"]:checked::before {
+  background: var(--checkbox-check);
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}

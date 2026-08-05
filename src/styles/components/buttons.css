@@ -1,0 +1,304 @@
+/* App-wide button primitives.
+   Import this after App.css so section-specific buttons still inherit one system. */
+.login-form button,
+.small-button,
+.primary-button,
+.secondary-button,
+.danger-button,
+.profile-secondary-button,
+.login-secondary-button,
+.phone-upload-copy-button,
+.phone-upload-secondary-button,
+.settings-announcement-secondary-button,
+.settings-backup-secondary-button,
+.settings-audit-refresh-button,
+.settings-category-add-button,
+.settings-confirm-secondary,
+.settings-confirm-danger,
+.care-team-confirm-secondary,
+.care-team-confirm-danger,
+.download-link-button,
+.analytics-export-button {
+  height: var(--button-height);
+  min-height: var(--button-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
+  border: var(--control-border-width) solid transparent;
+  border-radius: var(--button-radius);
+  padding: var(--control-padding-y) var(--button-padding-x);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.login-form button,
+.small-button,
+.primary-button,
+.settings-backup-secondary-button,
+.settings-category-add-button {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border-color: var(--button-primary-border, var(--button-primary-bg));
+  box-shadow: var(--shadow-soft);
+}
+
+.login-form button:hover,
+.small-button:hover,
+.primary-button:hover,
+.settings-backup-secondary-button:hover,
+.settings-category-add-button:hover {
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border, var(--button-primary-hover-bg));
+}
+
+.secondary-button,
+.profile-secondary-button,
+.login-secondary-button,
+.phone-upload-copy-button,
+.phone-upload-secondary-button,
+.settings-announcement-secondary-button,
+.settings-audit-refresh-button,
+.settings-confirm-secondary,
+.care-team-confirm-secondary,
+.download-link-button {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.secondary-button:hover,
+.profile-secondary-button:hover,
+.login-secondary-button:hover,
+.phone-upload-copy-button:hover,
+.phone-upload-secondary-button:hover,
+.settings-announcement-secondary-button:hover,
+.settings-audit-refresh-button:hover,
+.settings-confirm-secondary:hover,
+.care-team-confirm-secondary:hover,
+.download-link-button:hover {
+  background: var(--button-secondary-hover-bg);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.danger-button,
+.settings-confirm-danger,
+.care-team-confirm-danger {
+  background: var(--button-danger-bg);
+  color: var(--button-danger-text);
+  border-color: var(--button-danger-bg);
+}
+
+.danger-button:hover,
+.settings-confirm-danger:hover,
+.care-team-confirm-danger:hover {
+  background: var(--button-danger-hover-bg);
+  border-color: var(--button-danger-hover-bg);
+}
+
+.text-button,
+.login-form .login-link-button {
+  min-height: auto;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--primary);
+  box-shadow: none;
+  font-weight: var(--font-weight-bold);
+}
+
+.text-button:hover,
+.login-form .login-link-button:hover {
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  text-decoration: none;
+}
+
+.icon-button,
+.collapse-button {
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--button-radius);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.icon-button {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--control-bg);
+  color: var(--muted);
+  box-shadow: var(--shadow-soft);
+}
+
+.icon-button:hover {
+  background: var(--control-bg-hover);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.login-form button:disabled,
+.small-button:disabled,
+.primary-button:disabled,
+.secondary-button:disabled,
+.danger-button:disabled,
+.profile-secondary-button:disabled,
+.login-secondary-button:disabled,
+.phone-upload-copy-button:disabled,
+.phone-upload-secondary-button:disabled,
+.settings-announcement-secondary-button:disabled,
+.settings-backup-secondary-button:disabled,
+.settings-audit-refresh-button:disabled,
+.settings-category-add-button:disabled,
+.settings-confirm-secondary:disabled,
+.settings-confirm-danger:disabled,
+.care-team-confirm-secondary:disabled,
+.care-team-confirm-danger:disabled,
+.download-link-button:disabled,
+.analytics-export-button:disabled,
+.icon-button:disabled {
+  opacity: var(--button-disabled-opacity);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.login-secondary-button {
+  width: 100%;
+}
+
+.download-link-button {
+  min-height: var(--control-height-sm);
+}
+
+.nav-button,
+.profile-card,
+.client-list-item,
+.document-list-item {
+  border-radius: var(--radius-md);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+
+/* Navigation and tab buttons should stay flat: no heavy button border treatment. */
+.nav-button,
+.tab,
+.preview-tab-row .tab {
+  border: 0;
+  box-shadow: none;
+  outline-offset: 3px;
+}
+
+.nav-button {
+  height: auto;
+  min-height: 52px;
+}
+
+.tab,
+.preview-tab-row .tab {
+  min-height: 0;
+  height: auto;
+}
+
+/* Keep Analytics exports on the same app-wide button system despite older section overrides. */
+.analytics-page .analytics-export-button,
+.analytics-page .secondary-button.analytics-export-button,
+.analytics-page .analytics-export-button:not(.secondary-button) {
+  height: var(--button-height);
+  min-height: var(--button-height);
+  padding: var(--control-padding-y) var(--button-padding-x);
+  border: var(--control-border-width) solid transparent;
+  border-radius: var(--button-radius);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  box-shadow: var(--shadow-soft);
+}
+
+.analytics-page .analytics-export-button:not(.secondary-button) {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border-color: var(--button-primary-border, var(--button-primary-bg));
+}
+
+.analytics-page .analytics-export-button:not(.secondary-button):hover {
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border, var(--button-primary-hover-bg));
+}
+
+.analytics-page .secondary-button.analytics-export-button {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border-color: var(--border);
+}
+
+.analytics-page .secondary-button.analytics-export-button:hover {
+  background: var(--button-secondary-hover-bg);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+/* Section-level buttons that previously drifted taller should use the same height. */
+.settings-category-add-button,
+.settings-backup-secondary-button,
+.settings-audit-refresh-button,
+.about-page .small-button {
+  height: var(--button-height);
+  min-height: var(--button-height);
+}
+
+/* Phase 1 follow-up: force one button height across remaining oversized controls. */
+body .settings-category-add-control-row .settings-category-add-button,
+body .settings-backup-actions .small-button,
+body .settings-backup-actions .settings-backup-secondary-button,
+body .analytics-page .analytics-export-button,
+body .analytics-page .analytics-export-button.small-button,
+body .analytics-page .secondary-button.analytics-export-button,
+body .about-page .small-button {
+  box-sizing: border-box;
+  height: var(--button-height) !important;
+  min-height: var(--button-height) !important;
+  max-height: var(--button-height);
+  padding-block: 0 !important;
+  padding-inline: var(--button-padding-x) !important;
+  line-height: 1.2;
+  align-items: center;
+  justify-content: center;
+}
+
+body .settings-category-add-control-row .settings-category-add-button {
+  align-self: end;
+  transform: none !important;
+}
+
+body .analytics-page .analytics-export-button {
+  display: inline-flex;
+  gap: var(--control-gap);
+}
+
+body .analytics-page .analytics-export-button-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+

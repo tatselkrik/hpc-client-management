@@ -1,0 +1,26 @@
+/* Shared table defaults. */
+table {
+  color: var(--text);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead {
+  color: var(--text);
+}
+
+th {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+td {
+  line-height: var(--line-height-base);
+}
+
+.analytics-drilldown-table,
+.client-4ps-table,
+.cssrs-grid-table,
+.cssrs-intervention-table {
+  border-radius: var(--radius-md);
+}

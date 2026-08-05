@@ -1,0 +1,52 @@
+:root[data-theme="light"] {
+  color-scheme: light;
+  --app-background: radial-gradient(
+    circle at top left,
+    #f7fbff 0%,
+    #eef3f9 48%,
+    #e7eef7 100%
+  );
+  --bg: #f7fbff;
+  --surface: #ffffff;
+  --surface-soft: #f6f8fb;
+  --surface-alt: #f1f4f8;
+  --surface-overlay: rgba(255, 255, 255, 0.92);
+  --surface-elevated: rgba(255, 255, 255, 0.98);
+  --border: #dbe3ee;
+  --border-strong: #cad5e4;
+  --text: #1f2733;
+  --muted: #66758a;
+  --text-on-primary: #ffffff;
+  --primary: #2f6fdb;
+  --primary-hover: #255fc0;
+  --primary-soft: #ebf3ff;
+  --warning: #b45309;
+  --warning-soft: rgba(245, 158, 11, 0.14);
+  --success: #3d8c5b;
+  --success-soft: rgba(76, 149, 108, 0.14);
+  --shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 12px 28px rgba(15, 23, 42, 0.06);
+  --control-bg: rgba(255, 255, 255, 0.98);
+  --control-bg-hover: #f6f8fb;
+  --input-bg: #ffffff;
+  --input-text: #1f2733;
+  --input-placeholder: #66758a;
+  --option-bg: #ffffff;
+  --option-text: #172033;
+  --focus-border: #a9c4f8;
+  --focus-ring: rgba(47, 111, 219, 0.12);
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --card-border: #dbe3ee;
+  --card-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+  --danger-hover: #a83d3d;
+  --button-primary-bg: var(--primary);
+  --button-primary-hover-bg: var(--primary-hover);
+  --button-primary-text: var(--text-on-primary);
+  --button-secondary-bg: var(--surface);
+  --button-secondary-hover-bg: var(--surface-soft);
+  --button-secondary-text: var(--text);
+  --button-danger-bg: var(--danger);
+  --button-danger-hover-bg: var(--danger-hover);
+  --button-danger-text: #ffffff;
+  --sidebar-bg: rgba(255, 255, 255, 0.88);
+}

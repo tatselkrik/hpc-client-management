@@ -1,0 +1,44 @@
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+!env.example
+
+# JavaScript dependencies and generated web output
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Tauri / Rust build output and generated schemas
+src-tauri/target/
+src-tauri/gen/
+
+# Local Supabase CLI state
+.temp/
+supabase/.temp/
+supabase/.branches/
+.supabase/
+
+# Test and coverage output
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# Local archives, exports, and backup packages
+*.zip
+*.backup.json
+backups/
+
+# Logs and caches
+*.log
+.eslintcache
+.cache/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

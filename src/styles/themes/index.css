@@ -1,0 +1,9 @@
+﻿@import "./light/theme.css";
+@import "./dark/theme.css";
+@import "./clinic/theme.css";
+@import "./clinic-dark/theme.css";
+
+@import "./light/overrides.css";
+@import "./dark/overrides.css";
+@import "./clinic/overrides.css";
+@import "./clinic-dark/overrides.css";

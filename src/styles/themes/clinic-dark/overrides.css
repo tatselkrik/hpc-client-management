@@ -1,0 +1,512 @@
+﻿/* Clinic Dark appearance overrides. */
+:root[data-theme="clinic-dark"] .login-card,
+:root[data-theme="clinic-dark"] .icon-button,
+:root[data-theme="clinic-dark"] .sidebar,
+:root[data-theme="clinic-dark"] .profile-card,
+:root[data-theme="clinic-dark"] .clients-searchbar,
+:root[data-theme="clinic-dark"] .documents-searchbar,
+:root[data-theme="clinic-dark"] .sort-dropdown-menu,
+:root[data-theme="clinic-dark"] .info-card,
+:root[data-theme="clinic-dark"] .panel,
+:root[data-theme="clinic-dark"] .clients-sidebar,
+:root[data-theme="clinic-dark"] .documents-sidebar-panel,
+:root[data-theme="clinic-dark"] .documents-preview-panel,
+:root[data-theme="clinic-dark"] .notes-editor,
+:root[data-theme="clinic-dark"] .note-card,
+:root[data-theme="clinic-dark"] .form-section,
+:root[data-theme="clinic-dark"] .profile-panel,
+:root[data-theme="clinic-dark"] .client-meta-chip,
+:root[data-theme="clinic-dark"] .settings-module-card,
+:root[data-theme="clinic-dark"] .settings-preview-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="clinic-dark"] .sidebar {
+  background: var(--sidebar-bg);
+}
+
+:root[data-theme="clinic-dark"] .login-form input,
+:root[data-theme="clinic-dark"] .search-input,
+:root[data-theme="clinic-dark"] .textarea-input,
+:root[data-theme="clinic-dark"] .form-label input,
+:root[data-theme="clinic-dark"] .form-label select,
+:root[data-theme="clinic-dark"] .form-label textarea,
+:root[data-theme="clinic-dark"] .analytics-filter-field input,
+:root[data-theme="clinic-dark"] .analytics-filter-field select,
+:root[data-theme="clinic-dark"] .care-team-role-editor select {
+  background: rgba(18, 11, 13, 0.86);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] select option,
+:root[data-theme="clinic-dark"] select optgroup {
+  background: #1c1115;
+  color: var(--text);
+}
+
+:root[data-theme="clinic-dark"] .nav-button.active,
+:root[data-theme="clinic-dark"] .profile-card.active {
+  background: linear-gradient(135deg, #ed1c24 0%, #f7941d 100%);
+  box-shadow: 0 10px 22px rgba(237, 28, 36, 0.28);
+}
+
+:root[data-theme="clinic-dark"] .client-list-item.active,
+:root[data-theme="clinic-dark"] .document-list-item.active {
+  background: rgba(251, 146, 60, 0.16);
+  border-color: rgba(251, 146, 60, 0.28);
+  color: #fff1ee;
+}
+
+:root[data-theme="clinic-dark"] .settings-contact-card,
+:root[data-theme="clinic-dark"] .settings-address-card,
+:root[data-theme="clinic-dark"] .settings-category-item,
+:root[data-theme="clinic-dark"] .settings-toggle-row,
+:root[data-theme="clinic-dark"] .active-filter-row,
+:root[data-theme="clinic-dark"] .client-summary-card,
+:root[data-theme="clinic-dark"] .filter-chip,
+:root[data-theme="clinic-dark"] .download-link-button,
+:root[data-theme="clinic-dark"] .analytics-summary-card,
+:root[data-theme="clinic-dark"] .analytics-donut-center,
+:root[data-theme="clinic-dark"] .analytics-column-track,
+:root[data-theme="clinic-dark"] .analytics-bar-track,
+:root[data-theme="clinic-dark"] .care-team-card,
+:root[data-theme="clinic-dark"] .profile-info-item,
+:root[data-theme="clinic-dark"] .profile-password-guidance,
+:root[data-theme="clinic-dark"] .profile-mfa-factor-card,
+:root[data-theme="clinic-dark"] .profile-mfa-qr-card,
+:root[data-theme="clinic-dark"] .profile-mfa-secret-block,
+:root[data-theme="clinic-dark"] .profile-secondary-button,
+:root[data-theme="clinic-dark"] .analytics-quality-card,
+:root[data-theme="clinic-dark"] .analytics-drilldown-table,
+:root[data-theme="clinic-dark"] .analytics-definition-card {
+  background: var(--surface-elevated);
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] .dashboard-announcement-banner {
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="clinic-dark"] .dashboard-announcement-info {
+  background: rgba(251, 146, 60, 0.14);
+}
+
+:root[data-theme="clinic-dark"] .dashboard-announcement-important {
+  background: rgba(247, 148, 29, 0.2);
+}
+
+:root[data-theme="clinic-dark"] .dashboard-announcement-urgent {
+  background: rgba(237, 28, 36, 0.22);
+}
+
+:root[data-theme="clinic-dark"] .dashboard-announcement-badge {
+  background: rgba(18, 11, 13, 0.72);
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] .settings-module-badge.live {
+  color: #fed7aa;
+  border-color: rgba(251, 146, 60, 0.28);
+  background: rgba(251, 146, 60, 0.14);
+}
+
+:root[data-theme="clinic-dark"] .app-main,
+:root[data-theme="clinic-dark"] .section-header,
+:root[data-theme="clinic-dark"] .settings-module-card,
+:root[data-theme="clinic-dark"] .panel {
+  color: var(--text);
+}
+
+:root[data-theme="clinic-dark"] .section-subtitle,
+:root[data-theme="clinic-dark"] .settings-module-copy,
+:root[data-theme="clinic-dark"] .settings-module-list,
+:root[data-theme="clinic-dark"] .client-summary-subtitle,
+:root[data-theme="clinic-dark"] .care-team-representative-label,
+:root[data-theme="clinic-dark"] .profile-muted,
+:root[data-theme="clinic-dark"] .empty-state,
+:root[data-theme="clinic-dark"] .form-label,
+:root[data-theme="clinic-dark"] .analytics-filter-field label,
+:root[data-theme="clinic-dark"] .client-4ps-ai-helper {
+  color: var(--muted);
+}
+
+:root[data-theme="clinic-dark"] .login-form input,
+:root[data-theme="clinic-dark"] .search-input,
+:root[data-theme="clinic-dark"] .textarea-input,
+:root[data-theme="clinic-dark"] .form-label input,
+:root[data-theme="clinic-dark"] .form-label select,
+:root[data-theme="clinic-dark"] .form-label textarea,
+:root[data-theme="clinic-dark"] .analytics-filter-field input,
+:root[data-theme="clinic-dark"] .analytics-filter-field select,
+:root[data-theme="clinic-dark"] .care-team-role-editor select,
+:root[data-theme="clinic-dark"] .settings-category-edit-input {
+  background: #160d10;
+  color: var(--text);
+  border-color: var(--border);
+  caret-color: var(--text);
+}
+
+:root[data-theme="clinic-dark"] .login-form input::placeholder,
+:root[data-theme="clinic-dark"] .search-input::placeholder,
+:root[data-theme="clinic-dark"] .textarea-input::placeholder,
+:root[data-theme="clinic-dark"] .form-label input::placeholder,
+:root[data-theme="clinic-dark"] .form-label textarea::placeholder,
+:root[data-theme="clinic-dark"] .analytics-filter-field input::placeholder {
+  color: #d8a59b;
+  opacity: 1;
+}
+
+:root[data-theme="clinic-dark"] .login-form input:focus,
+:root[data-theme="clinic-dark"] .search-input:focus,
+:root[data-theme="clinic-dark"] .textarea-input:focus,
+:root[data-theme="clinic-dark"] .form-label input:focus,
+:root[data-theme="clinic-dark"] .form-label select:focus,
+:root[data-theme="clinic-dark"] .form-label textarea:focus,
+:root[data-theme="clinic-dark"] .analytics-filter-field input:focus,
+:root[data-theme="clinic-dark"] .analytics-filter-field select:focus {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.18);
+}
+
+:root[data-theme="clinic-dark"] select,
+:root[data-theme="clinic-dark"] select option,
+:root[data-theme="clinic-dark"] select optgroup {
+  background: #1f1216;
+  color: var(--text);
+}
+
+:root[data-theme="clinic-dark"] .sort-dropdown-menu,
+:root[data-theme="clinic-dark"] .filter-dropdown-menu,
+:root[data-theme="clinic-dark"] .documents-sort-menu,
+:root[data-theme="clinic-dark"] .dropdown-menu {
+  background: var(--surface-elevated);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="clinic-dark"] .filter-chip,
+:root[data-theme="clinic-dark"] .client-summary-item,
+:root[data-theme="clinic-dark"] .settings-category-item,
+:root[data-theme="clinic-dark"] .theme-option,
+:root[data-theme="clinic-dark"] .client-4ps-table,
+:root[data-theme="clinic-dark"] .client-4ps-mobile-card,
+:root[data-theme="clinic-dark"] .client-4ps-narrative-panel {
+  background: var(--surface-elevated);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] .client-4ps-table thead th {
+  background: #3a2025;
+  color: #fff8f5;
+}
+
+:root[data-theme="clinic-dark"] .client-4ps-table th,
+:root[data-theme="clinic-dark"] .client-4ps-table td {
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] .client-4ps-ai-reminder {
+  background: rgba(251, 146, 60, 0.16);
+  border-color: rgba(251, 146, 60, 0.32);
+  color: #ffd7ba;
+}
+
+:root[data-theme="clinic-dark"] .settings-module-badge,
+:root[data-theme="clinic-dark"] .client-summary-label,
+:root[data-theme="clinic-dark"] .settings-category-name span {
+  color: var(--muted);
+}
+
+:root[data-theme="clinic-dark"] .small-button,
+:root[data-theme="clinic-dark"] .primary-button,
+:root[data-theme="clinic-dark"] .login-form button {
+  color: #fffaf7;
+}
+
+:root[data-theme="clinic-dark"] .settings-announcement-secondary-button,
+:root[data-theme="clinic-dark"] .profile-secondary-button,
+:root[data-theme="clinic-dark"] .text-button {
+  color: #ffd1c7;
+}
+
+:root[data-theme="clinic-dark"] .settings-confirm-danger {
+  color: #fff7f7;
+}
+
+/* Clinic Dark final readability sweep for C-SSRS, Analytics, and Settings alignment */
+:root[data-theme="clinic-dark"] .cssrs-tab-panel {
+  --cssrs-card-bg: rgba(45, 25, 30, 0.98);
+  --cssrs-soft-bg: rgba(58, 32, 37, 0.96);
+  --cssrs-table-head-bg: #ebe7e8;
+  --cssrs-neutral-bg: #fffaf7;
+  --cssrs-note-bg: rgba(251, 146, 60, 0.16);
+  --cssrs-note-border: rgba(251, 146, 60, 0.32);
+  --cssrs-note-text: #fff8f5;
+  --cssrs-badge-bg: linear-gradient(180deg, #f7fbff 0%, #edf4ff 100%);
+  --cssrs-badge-border: #c7d7f4;
+  --cssrs-badge-value: #18458f;
+  --cssrs-subtle-text: #ffd8cf;
+  --cssrs-option-border: #8f5650;
+  --cssrs-option-checked-bg: rgba(251, 146, 60, 0.18);
+  --cssrs-risk-divider: rgba(156, 90, 75, 0.68);
+}
+
+:root[data-theme="clinic-dark"] .cssrs-severity-badge span {
+  color: #51232a;
+  opacity: 1;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-severity-badge strong {
+  color: #18458f;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-past-month-label,
+:root[data-theme="clinic-dark"] .cssrs-grid-check-head,
+:root[data-theme="clinic-dark"] .cssrs-intervention-subhead,
+:root[data-theme="clinic-dark"] .cssrs-intervention-subhead-cell {
+  background: #ebe7e8;
+  color: #34181d;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-grid-check-head .cssrs-check-cell,
+:root[data-theme="clinic-dark"] .cssrs-check-cell,
+:root[data-theme="clinic-dark"] .cssrs-check-cell.is-neutral,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill.is-neutral,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill.is-active {
+  color: #2a1115;
+  border-color: rgba(112, 66, 70, 0.72);
+}
+
+:root[data-theme="clinic-dark"] .cssrs-grid-check-head .cssrs-check-cell,
+:root[data-theme="clinic-dark"] .cssrs-check-cell.is-neutral,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill.is-neutral {
+  background: #fffaf7;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-check-cell.is-selected,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill.is-active {
+  box-shadow: inset 0 0 0 3px rgba(42, 17, 21, 0.22);
+}
+
+:root[data-theme="clinic-dark"] .cssrs-check-cell.tone-high,
+:root[data-theme="clinic-dark"] .cssrs-check-cell.tone-highest,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill.tone-high,
+:root[data-theme="clinic-dark"] .cssrs-mini-pill.tone-highest {
+  color: #fffaf7;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-check-group span,
+:root[data-theme="clinic-dark"] .cssrs-risk-label,
+:root[data-theme="clinic-dark"] .cssrs-card-header h4,
+:root[data-theme="clinic-dark"] .cssrs-underlined-heading,
+:root[data-theme="clinic-dark"] .cssrs-protective-number,
+:root[data-theme="clinic-dark"] .cssrs-protective-label {
+  color: #fff8f5;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-risk-description,
+:root[data-theme="clinic-dark"] .cssrs-question-title,
+:root[data-theme="clinic-dark"] .cssrs-question-prompt,
+:root[data-theme="clinic-dark"] .cssrs-question-heading,
+:root[data-theme="clinic-dark"] .cssrs-question-heading-merged {
+  color: #fff8f5;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-protective-textarea,
+:root[data-theme="clinic-dark"] .cssrs-demeanor-other-input {
+  background: #fffaf7;
+  color: #2a1115;
+  border-color: rgba(156, 90, 75, 0.75);
+  caret-color: #2a1115;
+}
+
+:root[data-theme="clinic-dark"] .cssrs-protective-textarea::placeholder,
+:root[data-theme="clinic-dark"] .cssrs-demeanor-other-input::placeholder {
+  color: #7b5550;
+  opacity: 1;
+}
+
+:root[data-theme="clinic-dark"] .analytics-segmented-controls {
+  background: #f4eeee;
+  border-color: rgba(156, 90, 75, 0.7);
+  box-shadow: 0 14px 28px rgba(18, 11, 13, 0.24);
+}
+
+:root[data-theme="clinic-dark"] .analytics-segmented-control {
+  color: #4a2026;
+}
+
+:root[data-theme="clinic-dark"] .analytics-segmented-control:hover {
+  background: rgba(251, 146, 60, 0.18);
+  color: #2a1115;
+}
+
+:root[data-theme="clinic-dark"] .analytics-segmented-control.active {
+  background: var(--primary);
+  color: #fffaf7;
+}
+
+:root[data-theme="clinic-dark"] .analytics-summary-card,
+:root[data-theme="clinic-dark"] .analytics-record-card,
+:root[data-theme="clinic-dark"] .analytics-quality-card,
+:root[data-theme="clinic-dark"] .analytics-definition-card {
+  background: var(--surface-elevated);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="clinic-dark"] .analytics-summary-label,
+:root[data-theme="clinic-dark"] .analytics-record-card-title,
+:root[data-theme="clinic-dark"] .analytics-definition-card strong {
+  color: #fff8f5;
+}
+
+:root[data-theme="clinic-dark"] .analytics-summary-value,
+:root[data-theme="clinic-dark"] .analytics-record-card-value {
+  color: #fffaf7;
+}
+
+:root[data-theme="clinic-dark"] .analytics-summary-meta,
+:root[data-theme="clinic-dark"] .analytics-section-copy,
+:root[data-theme="clinic-dark"] .analytics-panel-supporting-copy,
+:root[data-theme="clinic-dark"] .analytics-record-card-delta.neutral,
+:root[data-theme="clinic-dark"] .analytics-definition-card span {
+  color: #ffd1c7;
+}
+
+:root[data-theme="clinic-dark"] .analytics-record-card-icon-progress {
+  background: rgba(251, 146, 60, 0.18);
+  color: #ffb07b;
+}
+
+:root[data-theme="clinic-dark"] .analytics-record-card-icon-documents {
+  background: rgba(76, 149, 108, 0.18);
+  color: #93d6ad;
+}
+
+:root[data-theme="clinic-dark"] .analytics-record-card-icon-assessments {
+  background: rgba(167, 139, 250, 0.18);
+  color: #d8c7ff;
+}
+
+:root[data-theme="clinic-dark"] .analytics-bar-track,
+:root[data-theme="clinic-dark"] .analytics-column-track {
+  background: rgba(255, 248, 245, 0.12);
+}
+
+:root[data-theme="clinic-dark"] .settings-category-add-row {
+  display: block;
+}
+
+:root[data-theme="clinic-dark"] .analytics-export-section .analytics-footer-actions {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] .analytics-progress-ring {
+  --ring-track: rgba(255, 226, 210, 0.22);
+  background:
+    radial-gradient(circle at center, var(--surface-overlay) 0 58%, transparent 59%),
+    conic-gradient(var(--ring-color) var(--ring-value), var(--ring-track) 0);
+}
+
+:root[data-theme="clinic-dark"] .analytics-area-fill {
+  fill: rgba(255, 122, 79, 0.22);
+}
+
+:root[data-theme="clinic-dark"] .analytics-line-grid {
+  stroke: rgba(255, 226, 210, 0.18);
+}
+
+:root[data-theme="clinic-dark"] .analytics-line-axis {
+  stroke: rgba(255, 226, 210, 0.32);
+}
+
+:root[data-theme="clinic-dark"] .analytics-line-value,
+:root[data-theme="clinic-dark"] .analytics-progress-ring span,
+:root[data-theme="clinic-dark"] .analytics-stacked-column strong {
+  color: var(--text);
+  fill: var(--text);
+}
+
+:root[data-theme="clinic-dark"] .analytics-warning-card {
+  background:
+    linear-gradient(135deg, rgba(229, 35, 43, 0.24) 0%, var(--surface) 78%);
+}
+
+:root[data-theme="clinic-dark"] .analytics-warning-card .analytics-record-card-value {
+  color: #ff9c9c;
+}
+
+:root[data-theme="clinic-dark"] .analytics-icon-value-item {
+  background: var(--surface-overlay);
+}
+
+:root[data-theme="clinic-dark"] .analytics-line-stroke {
+  stroke: #77a8ff !important;
+}
+
+:root[data-theme="clinic-dark"] .analytics-line-point {
+  stroke: #77a8ff !important;
+  fill: var(--surface) !important;
+}
+
+:root[data-theme="clinic-dark"] .analytics-filter-panel,
+:root[data-theme="clinic-dark"] .analytics-panel,
+:root[data-theme="clinic-dark"] .analytics-summary-card,
+:root[data-theme="clinic-dark"] .analytics-record-card {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+:root[data-theme="clinic-dark"] .analytics-section-header .settings-clinic-kicker,
+:root[data-theme="clinic-dark"] .analytics-panel-header .settings-clinic-kicker,
+:root[data-theme="clinic-dark"] .analytics-summary-label,
+:root[data-theme="clinic-dark"] .analytics-record-card-title,
+:root[data-theme="clinic-dark"] .analytics-summary-value,
+:root[data-theme="clinic-dark"] .analytics-record-card-value,
+:root[data-theme="clinic-dark"] .analytics-recharts-donut-center strong {
+  color: var(--text);
+}
+
+:root[data-theme="clinic-dark"] .analytics-page .secondary-button.analytics-export-button {
+  background: var(--surface-overlay);
+  border-color: var(--border);
+}
+
+
+:root[data-theme="clinic-dark"] .settings-preview-card:not(.settings-preview-card-dark):not(.settings-preview-card-clinic-dark) .settings-preview-window {
+  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.86);
+}
+
+/* Clinic Dark appearance preview. */
+.settings-preview-card-clinic-dark {
+  background:
+    radial-gradient(circle at top left, rgba(237, 28, 36, 0.24), transparent 42%),
+    linear-gradient(135deg, #2a1014 0%, #111827 100%);
+}
+
+.settings-preview-card-clinic-dark .settings-preview-window {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.settings-preview-card-clinic-dark .settings-preview-bar {
+  background: linear-gradient(90deg, #ef4444 0%, #fb923c 100%);
+}
+
+.settings-preview-card-clinic-dark .settings-preview-chip {
+  background: rgba(239, 68, 68, 0.28);
+}
+
+.settings-preview-card-clinic-dark .settings-preview-chip.short {
+  background: rgba(251, 146, 60, 0.28);
+}
