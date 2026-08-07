@@ -1,114 +1,125 @@
 # HPC Client Management
 
-HPC Client Management is a desktop application for authorized clinic teams to manage client intake records, clinical workflows, documents, assessments, care-team access, analytics, and operational settings.
+HPC Client Management is a Windows desktop application for managing clinic client records, clinical documentation, care-team access, analytics, and day-to-day administrative workflows.
 
-The project is a hands-on, AI-assisted build. I translated the clinic workflow into the data model and application behavior, installed and configured the toolchain, worked through the desktop and backend architecture, documented the operational process, and produced the release-candidate build and testing manual.
+The application is currently in limited clinic testing with one psychologist.
 
-The application is currently undergoing limited testing with one psychologist before broader clinic use.
+![HPC Client Management dashboard with identifying information redacted](docs/screenshots/dashboard.webp)
 
-## Highlights
+## Core capabilities
 
-- Desktop application built with Tauri, React, and TypeScript
-- Supabase authentication, profiles, role-aware access, database migrations, storage policies, and Edge Functions
-- Client intake and record management
-- C-SSRS workflow support
-- 4Ps case conceptualization and clinician-reviewed AI narrative drafting
-- Progress notes, client documents, and assessment workflows
-- Analytics, drilldowns, CSV export, and PowerPoint export
-- Care-team administration, MFA support, idle-session sign-out, audit logs, announcements, themes, and backup export/review
-- Release-candidate user guide, role matrix, manual test plan, migration runbook, and deployment checklist
+- Centralized client intake and record management
+- 4Ps case conceptualization across biological, psychological, and social factors
+- Clinician-reviewed narrative drafting for completed 4Ps records
+- C-SSRS assessment workflow and follow-up indicators
+- Progress notes, documents, assessments, and mobile upload handoff
+- Dashboard priorities and clinic-wide analytics
+- CSV and PowerPoint exports
+- Care-team accounts, roles, and representative assignments
+- Multi-factor authentication, idle-session locking, and audit history
+- Clinic announcements, themes, client categories, and backup review tools
+
+## Application tour
+
+The screenshots below were captured from the working desktop build. Clinic branding and identifying information have been redacted.
+
+| Case conceptualization | Analytics |
+| --- | --- |
+| ![4Ps case conceptualization screen](docs/screenshots/case-conceptualization.webp) | ![Analytics filters and summary metrics](docs/screenshots/analytics.webp) |
+
+| Care-team administration | Clinic administration |
+| --- | --- |
+| ![Care-team roles and account creation](docs/screenshots/care-team.webp) | ![Client categories and backup review tools](docs/screenshots/administration.webp) |
 
 ## Technology
 
-- React 19 and TypeScript
-- Vite 7
-- Tauri 2 and Rust
-- Supabase Auth, Postgres, Storage, Row Level Security, and Edge Functions
-- Recharts
-- PptxGenJS
+| Layer | Technology |
+| --- | --- |
+| Desktop | Tauri 2 and Rust |
+| Interface | React 19, TypeScript, and Vite 7 |
+| Backend | Supabase Auth, Postgres, Storage, Row Level Security, and Edge Functions |
+| Reporting | Recharts and PptxGenJS |
 
 ## Repository structure
 
 ```text
-src/                 React application and feature modules
-src-tauri/           Tauri desktop shell, configuration, and capabilities
-supabase/migrations/ Canonical database baseline migrations
-supabase/functions/  Server-side Edge Functions
-docs/                Migration, verification, and deployment notes
-public/              Application branding assets
+src/                  React application and feature modules
+src-tauri/            Tauri desktop shell and configuration
+supabase/migrations/  Database baseline migrations
+supabase/functions/   Server-side Edge Functions
+docs/                 Deployment notes, verification queries, and screenshots
+public/               Application assets
 ```
 
-Generated dependencies, web builds, Rust build output, installers, local environment values, and migration archives are intentionally excluded from Git.
+Local environment values, dependencies, generated builds, installers, Rust build output, uploaded files, and backup exports are excluded from source control.
 
-## Local setup
+## Getting started
 
-### Prerequisites
+### Requirements
 
 - Node.js and npm
-- Rust toolchain and the Tauri prerequisites for Windows
-- A Supabase project for backend functionality
-- Supabase CLI when deploying migrations or Edge Functions
+- Rust and the Windows prerequisites for Tauri
+- A Supabase project
+- Supabase CLI for migration and Edge Function deployment
 
-### Configure and run the frontend
+### Configure the application
 
-1. Install dependencies:
+1. Install the JavaScript dependencies:
 
    ```bash
    npm ci
    ```
 
-2. Copy `env.example` to `.env.local` and provide the target project's frontend-safe values. Never place service-role keys, database passwords, or AI provider secrets in frontend environment files.
+2. Copy `env.example` to `.env.local` and add the frontend configuration for the target Supabase project:
 
-3. Start development:
-
-   ```bash
-   npm run dev
+   ```text
+   VITE_SUPABASE_URL=
+   VITE_SUPABASE_PUBLISHABLE_KEY=
    ```
 
-### Run the desktop application
+3. Add any optional session, upload, invitation, or update settings described in `env.example`.
+
+### Run locally
+
+Start the web interface:
+
+```bash
+npm run dev
+```
+
+Start the desktop application:
 
 ```bash
 npm run tauri dev
 ```
 
-### Quality checks
+### Validate and build
 
 ```bash
 npm run lint -- --max-warnings=0
 npm run build
-```
-
-### Build the desktop installer
-
-```bash
 npm run tauri build
 ```
 
-## Backend setup
+## Supabase setup
 
-The migration baseline is intended for a new Supabase project. Review and apply the files in `supabase/migrations/` in timestamp order, deploy the Edge Functions, configure server-side secrets in Supabase, and then run the verification queries in `docs/`.
+The migration baseline in `supabase/migrations/` is designed for a fresh Supabase project. Apply the migrations in timestamp order, deploy the Edge Functions, configure their server-side secrets, and run the verification queries.
 
-Do not apply the baseline blindly to an existing live project.
+See the [Supabase migration runbook](docs/supabase-migration-runbook.md) for the complete sequence.
 
 ## Documentation
 
-- `docs/supabase-migration-runbook.md` - database migration order and deployment workflow
-- `docs/deployment-secrets-checklist.md` - frontend/server secret separation and release checks
-- `docs/supabase-post-migration-verification.sql` - structural verification queries
-- `HPC_Client_Management_v1.1.0_rc1_User_Guide_and_RC_Testing_Manual.docx` - non-technical user guide and manual role-testing plan
+- [Release history](CHANGELOG.md)
+- [Supabase migration runbook](docs/supabase-migration-runbook.md)
+- [Deployment and secrets checklist](docs/deployment-secrets-checklist.md)
+- [Post-migration verification queries](docs/supabase-post-migration-verification.sql)
+- [Live authentication trigger verification](docs/verify-live-auth-triggers.sql)
+- [User guide and release-candidate testing manual](HPC_Client_Management_v1.1.0_rc1_User_Guide_and_RC_Testing_Manual.docx)
 
-## Current limitations
+## Data handling
 
-- Backend authorization and audit-log hardening remains before production use.
-- Automated role-matrix and end-to-end tests have not yet been added; the current RC manual provides manual test coverage.
-- Backup restore is review-only and does not apply a production database restore.
-- Installer code signing and the final update/distribution workflow are pending.
-- Application and installer version metadata must be consolidated before the next release.
-
-## Privacy and responsible use
-
-This project models sensitive clinical workflows. The repository must not contain real client records, uploaded clinical files, production secrets, service-role credentials, database passwords, or private backup exports.
+Runtime credentials and clinical data are not stored in this repository. Frontend-safe configuration belongs in an untracked `.env.local`; server credentials belong in Supabase project secrets. Backup exports and uploaded clinical files should remain in approved storage locations.
 
 ## License
 
-No open-source license has been granted. All rights are reserved unless a license is added later.
+All rights reserved.
