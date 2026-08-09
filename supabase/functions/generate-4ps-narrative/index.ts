@@ -1,12 +1,13 @@
 ﻿import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
+import { hasRequiredMfa } from "../_shared/security.ts";
 
 
 const allowedRoles = new Set([
   "Admin",
-  "CEO",
   "Psychologist / Counselor",
+  "Staff",
 ]);
 
 const fourPsRows = [
@@ -38,7 +39,7 @@ function normalizeText(value: unknown) {
 function normalizeRole(value: unknown) {
   const normalized = normalizeText(value).toLowerCase();
 
-  if (normalized === "ceo" || normalized === "chief executive officer") return "CEO";
+  if (normalized === "ceo" || normalized === "chief executive officer") return "Admin";
   if (normalized.includes("admin")) return "Admin";
   if (
     normalized === "psychologist / counselor" ||
@@ -175,6 +176,10 @@ serve(async (req) => {
       return respond({ error: "Unauthorized." }, 401);
     }
 
+    if (!hasRequiredMfa(token)) {
+      return respond({ error: "Complete MFA verification before generating a narrative." }, 403);
+    }
+
     const { data: callerProfile, error: callerProfileError } = await supabase
       .from("profiles")
       .select("id, email, full_name, role, hpc_representative_name, is_active")
@@ -216,7 +221,7 @@ serve(async (req) => {
       return respond({ error: "Client was not found." }, 404);
     }
 
-    if (callerRole === "CEO" || callerRole === "Psychologist / Counselor") {
+    if (callerRole === "Psychologist / Counselor") {
       const assignedRepresentative = normalizeRepresentativeName(
         callerProfile.hpc_representative_name,
       );

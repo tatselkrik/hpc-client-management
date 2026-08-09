@@ -15,8 +15,8 @@ The application is currently in limited clinic testing with one psychologist.
 - Progress notes, documents, assessments, and mobile upload handoff
 - Dashboard priorities and clinic-wide analytics
 - CSV and PowerPoint exports
-- Care-team accounts, roles, and representative assignments
-- Multi-factor authentication, idle-session locking, and audit history
+- Email-invited care-team accounts, role-based access, and representative assignments
+- Required multi-factor authentication, idle-session locking, and audit history
 - Clinic announcements, themes, client categories, and backup review tools
 
 ## Application tour
@@ -77,7 +77,7 @@ Local environment values, dependencies, generated builds, installers, Rust build
    VITE_SUPABASE_PUBLISHABLE_KEY=
    ```
 
-3. Add any optional session, upload, invitation, or update settings described in `env.example`.
+3. Add any optional session, upload, or update settings described in `env.example`.
 
 ### Run locally
 
@@ -97,6 +97,7 @@ npm run tauri dev
 
 ```bash
 npm run lint -- --max-warnings=0
+npm test
 npm run build
 npm run tauri build
 ```

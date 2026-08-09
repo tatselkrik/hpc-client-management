@@ -27,6 +27,7 @@ type UseAppRootPropsOptions = {
   clientWorkspace: ClientWorkspaceController;
   careTeam: CareTeamManagementController;
   canManageCareTeam: boolean;
+  canManageAdminAccounts: boolean;
   profileProps: ProfileSectionProps;
   settingsController: SettingsController;
   aboutProps: AboutSectionProps;
@@ -46,6 +47,7 @@ export function useAppRootProps({
   clientWorkspace,
   careTeam,
   canManageCareTeam,
+  canManageAdminAccounts,
   profileProps,
   settingsController,
   aboutProps,
@@ -73,6 +75,7 @@ export function useAppRootProps({
       careTeamStatus: careTeam.careTeamStatus,
       profile,
       canManageCareTeam,
+      canManageAdminAccounts,
       careTeamSavingId: careTeam.careTeamSavingId,
       careTeamSavingAction: careTeam.careTeamSavingAction,
       handleUpdateCareTeamRole: careTeam.handleUpdateCareTeamRole,

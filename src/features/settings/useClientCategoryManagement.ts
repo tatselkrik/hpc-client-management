@@ -74,7 +74,7 @@ export function useClientCategoryManagement({
 
   const handleAddClientCategory = useCallback(async () => {
     if (!canManageClientCategories) {
-      setClientCategoryStatus(feedbackMessages.permissionDenied("Only an Admin or CEO account can manage client categories."));
+      setClientCategoryStatus(feedbackMessages.permissionDenied("Only an Admin or Staff account can manage client categories."));
       return;
     }
 
@@ -147,7 +147,7 @@ export function useClientCategoryManagement({
   const handleUpdateClientCategory = useCallback(
     async (category: ClientCategory) => {
       if (!canManageClientCategories) {
-        setClientCategoryStatus(feedbackMessages.permissionDenied("Only an Admin or CEO account can manage client categories."));
+        setClientCategoryStatus(feedbackMessages.permissionDenied("Only an Admin or Staff account can manage client categories."));
         return;
       }
 
@@ -203,7 +203,7 @@ export function useClientCategoryManagement({
   const handleDeleteClientCategory = useCallback(
     async (category: ClientCategory) => {
       if (!canManageClientCategories) {
-        setClientCategoryStatus(feedbackMessages.permissionDenied("Only an Admin or CEO account can manage client categories."));
+        setClientCategoryStatus(feedbackMessages.permissionDenied("Only an Admin or Staff account can manage client categories."));
         return;
       }
 

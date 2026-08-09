@@ -5,6 +5,7 @@ import { feedbackMessages } from "../../lib/feedbackMessages";
 import {
   clearPasswordRecoveryHash,
   emptyDashboardAnnouncement,
+  getHasAccountInvitationHash,
   getHasPasswordRecoveryHash,
   type DashboardAnnouncement,
 } from "../../appShared";
@@ -18,6 +19,7 @@ type UseAuthGateBootstrapOptions = {
   setDashboardAnnouncement: Dispatch<SetStateAction<DashboardAnnouncement>>;
   setIsAuthGateChecking: Dispatch<SetStateAction<boolean>>;
   setPasswordRecoveryMessage: Dispatch<SetStateAction<string>>;
+  setIsInvitationPasswordSetup: Dispatch<SetStateAction<boolean>>;
   setRecoveryPassword: Dispatch<SetStateAction<string>>;
   setRecoveryPasswordConfirm: Dispatch<SetStateAction<string>>;
   setShowMfaChallengeScreen: Dispatch<SetStateAction<boolean>>;
@@ -32,6 +34,7 @@ export function useAuthGateBootstrap({
   setDashboardAnnouncement,
   setIsAuthGateChecking,
   setPasswordRecoveryMessage,
+  setIsInvitationPasswordSetup,
   setRecoveryPassword,
   setRecoveryPasswordConfirm,
   setShowMfaChallengeScreen,
@@ -54,9 +57,16 @@ export function useAuthGateBootstrap({
       if (data.session?.user?.email) {
         setUserEmail(data.session.user.email);
 
-        if (getHasPasswordRecoveryHash()) {
+        const isInvitation = getHasAccountInvitationHash();
+
+        if (getHasPasswordRecoveryHash() || isInvitation) {
+          setIsInvitationPasswordSetup(isInvitation);
           setShowPasswordRecoveryScreen(true);
-          setPasswordRecoveryMessage("Choose a new password to finish resetting your sign-in.");
+          setPasswordRecoveryMessage(
+            isInvitation
+              ? "Choose your password to accept the invitation."
+              : "Choose a new password to finish resetting your sign-in."
+          );
           setIsAuthGateChecking(false);
           return;
         }
@@ -91,6 +101,7 @@ export function useAuthGateBootstrap({
     refreshAuthenticatedAppData,
     setDashboardAnnouncement,
     setIsAuthGateChecking,
+    setIsInvitationPasswordSetup,
     setPasswordRecoveryMessage,
     setShowMfaChallengeScreen,
     setShowPasswordRecoveryScreen,
@@ -103,6 +114,7 @@ export function useAuthGateBootstrap({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
+        setIsInvitationPasswordSetup(false);
         setUserEmail(session?.user?.email ?? null);
         setShowPasswordRecoveryScreen(true);
         setRecoveryPassword("");
@@ -113,10 +125,19 @@ export function useAuthGateBootstrap({
         return;
       }
 
-      if (event === "SIGNED_IN" && getHasPasswordRecoveryHash()) {
+      if (
+        event === "SIGNED_IN" &&
+        (getHasPasswordRecoveryHash() || getHasAccountInvitationHash())
+      ) {
+        const isInvitation = getHasAccountInvitationHash();
         setUserEmail(session?.user?.email ?? null);
+        setIsInvitationPasswordSetup(isInvitation);
         setShowPasswordRecoveryScreen(true);
-        setPasswordRecoveryMessage("Choose a new password to finish resetting your sign-in.");
+        setPasswordRecoveryMessage(
+          isInvitation
+            ? "Choose your password to accept the invitation."
+            : "Choose a new password to finish resetting your sign-in."
+        );
         setIsAuthGateChecking(false);
         return;
       }
@@ -126,6 +147,7 @@ export function useAuthGateBootstrap({
         setRecoveryPassword("");
         setRecoveryPasswordConfirm("");
         setPasswordRecoveryMessage("");
+        setIsInvitationPasswordSetup(false);
         setShowMfaChallengeScreen(false);
         setIsAuthGateChecking(false);
         clearPasswordRecoveryHash();
@@ -137,6 +159,7 @@ export function useAuthGateBootstrap({
     };
   }, [
     setIsAuthGateChecking,
+    setIsInvitationPasswordSetup,
     setPasswordRecoveryMessage,
     setRecoveryPassword,
     setRecoveryPasswordConfirm,

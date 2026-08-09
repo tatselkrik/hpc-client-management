@@ -2,6 +2,36 @@
 
 This file records notable changes to HPC Client Management.
 
+## Unreleased
+
+### Access control
+
+- Reduced account roles to Admin, Psychologist / Counselor, and Staff.
+- Added a migration that converts CEO accounts to Admin and deactivates former Intern accounts while retaining their history.
+- Limited Psychologist / Counselor accounts to their assigned clients, dashboard data, and analytics.
+- Allowed Staff to work across dashboard, clients, analytics, Care Team, categories, and backup review without access to System Log.
+- Prevented Staff from creating, promoting, editing, deactivating, or otherwise affecting Admin accounts.
+
+### Account security
+
+- Replaced administrator-shared temporary passwords with invitation emails and required password setup.
+- Added a Windows app link that returns accepted invitations to the installed application.
+- Required verified MFA before clinical, operational, storage, export, or AI narrative access.
+- Required a fresh MFA session for Care Team invitations, role changes, and deactivations.
+- Changed Care Team removal to reversible account deactivation.
+
+### Backend hardening
+
+- Removed user-controlled role assignment during Auth profile creation.
+- Protected role, activation, and representative-assignment fields from direct profile updates.
+- Restricted audit insertion to the validated audit function and marked client-reported events.
+- Prevented upload validation from deleting storage paths before caller ownership is established.
+- Added automated role-matrix and security-contract regression tests.
+
+### Known dependency advisory
+
+- `npm audit` reports two high-severity denial-of-service advisories in `image-size`, a transitive PptxGenJS dependency. The current analytics presentation exporter creates text and charts only and does not parse external image files. The available automatic remediation is a breaking PptxGenJS downgrade, so the dependency is retained pending an upstream-compatible fix.
+
 ## 0.1.0 - 2026-08-07
 
 Initial private source release of the working desktop application used for limited clinic testing.

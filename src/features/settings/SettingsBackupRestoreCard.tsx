@@ -124,7 +124,7 @@ export function SettingsBackupRestoreCard({
         </div>
       ) : (
         <div className="empty-state">
-          Only Admin can export backups or review backup packages.
+          Only Admin or Staff can export backups or review backup packages.
         </div>
       )}
 

@@ -42,6 +42,8 @@ type UseAuthFlowControllerOptions = {
   setPasswordRecoveryMessage: Dispatch<SetStateAction<string>>;
   isPasswordRecoverySubmitting: boolean;
   setIsPasswordRecoverySubmitting: Dispatch<SetStateAction<boolean>>;
+  isInvitationPasswordSetup: boolean;
+  setIsInvitationPasswordSetup: Dispatch<SetStateAction<boolean>>;
 
   userEmail: string | null;
   profile: Profile | null;
@@ -114,6 +116,8 @@ export function useAuthFlowController({
   setPasswordRecoveryMessage,
   isPasswordRecoverySubmitting,
   setIsPasswordRecoverySubmitting,
+  isInvitationPasswordSetup,
+  setIsInvitationPasswordSetup,
   userEmail,
   profile,
   loadProfile,
@@ -194,6 +198,8 @@ export function useAuthFlowController({
     setMfaAssurance,
     setPasswordRecoveryMessage,
     setIsPasswordRecoverySubmitting,
+    isInvitationPasswordSetup,
+    setIsInvitationPasswordSetup,
     setShowPasswordRecoveryScreen,
     setRecoveryPassword,
     setRecoveryPasswordConfirm,
@@ -228,6 +234,7 @@ export function useAuthFlowController({
     setDashboardAnnouncement,
     setIsAuthGateChecking,
     setPasswordRecoveryMessage,
+    setIsInvitationPasswordSetup,
     setRecoveryPassword,
     setRecoveryPasswordConfirm,
     setShowMfaChallengeScreen,
@@ -257,6 +264,7 @@ export function useAuthFlowController({
     setIsRecoveryCapsLockOn,
     handleCompletePasswordRecovery,
     handleLogout,
+    isInvitationPasswordSetup,
   };
 
   const mfaChallengeProps: AppRootRendererProps["mfaChallengeProps"] = {

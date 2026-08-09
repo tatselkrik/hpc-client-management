@@ -64,6 +64,8 @@ type UseAuthSessionActionsOptions = {
   setMfaAssurance: Dispatch<SetStateAction<AuthenticatorAssuranceState>>;
   setPasswordRecoveryMessage: (message: string) => void;
   setIsPasswordRecoverySubmitting: (submitting: boolean) => void;
+  isInvitationPasswordSetup: boolean;
+  setIsInvitationPasswordSetup: (isInvitation: boolean) => void;
   setShowPasswordRecoveryScreen: (show: boolean) => void;
   setRecoveryPassword: (password: string) => void;
   setRecoveryPasswordConfirm: (password: string) => void;
@@ -115,6 +117,8 @@ export function useAuthSessionActions({
   setMfaAssurance,
   setPasswordRecoveryMessage,
   setIsPasswordRecoverySubmitting,
+  isInvitationPasswordSetup,
+  setIsInvitationPasswordSetup,
   setShowPasswordRecoveryScreen,
   setRecoveryPassword,
   setRecoveryPasswordConfirm,
@@ -172,11 +176,18 @@ export function useAuthSessionActions({
       return false;
     }
 
+    await loadMfaState();
+
+    const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+    if (assurance.error || assurance.data.currentLevel !== "aal2") {
+      return true;
+    }
+
     await loadClients();
     await loadDashboardAnnouncement();
     await loadCareTeamProfiles();
     await loadClientCategories();
-    await loadMfaState();
     return true;
   }, [
     loadCareTeamProfiles,
@@ -298,12 +309,14 @@ export function useAuthSessionActions({
 
     await writeAuditLog(
       "Auth",
-      "Password Reset Completed",
+      isInvitationPasswordSetup ? "Invitation Password Set" : "Password Reset Completed",
       "session",
       data.user?.id ?? null,
-      "Password recovery",
+      isInvitationPasswordSetup ? "Account invitation" : "Password recovery",
       {
-        summary: "Completed password reset from recovery link.",
+        summary: isInvitationPasswordSetup
+          ? "Set a password while accepting an account invitation."
+          : "Completed password reset from recovery link.",
       }
     );
 
@@ -340,15 +353,18 @@ export function useAuthSessionActions({
     setPasswordRecoveryMessage(feedbackMessages.updated("password"));
     setStatus(feedbackMessages.updated("password"));
     setShowPasswordRecoveryScreen(false);
+    setIsInvitationPasswordSetup(false);
     clearPasswordRecoveryHash();
     setIsPasswordRecoverySubmitting(false);
     setIsAuthGateChecking(false);
   }, [
     evaluateMfaChallengeRequirement,
+    isInvitationPasswordSetup,
     recoveryPassword,
     recoveryPasswordConfirm,
     refreshAuthenticatedAppData,
     setIsAuthGateChecking,
+    setIsInvitationPasswordSetup,
     setIsPasswordRecoverySubmitting,
     setPasswordRecoveryMessage,
     setRecoveryPassword,
@@ -407,6 +423,7 @@ export function useAuthSessionActions({
     setPassword("");
     setIsLoginCapsLockOn(false);
     setShowPasswordRecoveryScreen(false);
+    setIsInvitationPasswordSetup(false);
     setRecoveryPassword("");
     setRecoveryPasswordConfirm("");
     setIsRecoveryCapsLockOn(false);
@@ -437,6 +454,7 @@ export function useAuthSessionActions({
     setDocumentPreviewUrl,
     setIsAuthGateChecking,
     setIsLoginCapsLockOn,
+    setIsInvitationPasswordSetup,
     setIsRecoveryCapsLockOn,
     setLoading,
     setPassword,

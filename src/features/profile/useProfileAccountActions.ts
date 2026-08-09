@@ -631,6 +631,8 @@ export function useProfileAccountActions({
     setMfaVerificationCodeInput("");
     setMfaMessage("Authenticator app enabled. MFA will now be required after sign-in.");
     await loadMfaState();
+    await refreshAuthenticatedAppData();
+    await evaluateMfaChallengeRequirement();
     await writeAuditLog(
       "Profile",
       "MFA Enabled",

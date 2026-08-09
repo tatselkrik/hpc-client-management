@@ -68,6 +68,7 @@ export type ProfileSectionProps = {
   handleStartMfaEnrollment: () => void;
   handleRemoveMfaFactor: (factorId: string) => void | Promise<void>;
   mfaMessage: string;
+  mfaEnrollmentRequired: boolean;
 };
 
 export function ProfileSection({
@@ -117,6 +118,7 @@ export function ProfileSection({
   handleStartMfaEnrollment,
   handleRemoveMfaFactor,
   mfaMessage,
+  mfaEnrollmentRequired,
 }: ProfileSectionProps) {
   const mfaStatusLabel = getMfaSetupStateLabel(
     mfaAssurance.currentLevel,
@@ -129,8 +131,16 @@ export function ProfileSection({
     mfaFactors.some((factor) => factor.status === "verified");
 
   return (
-<div className="page-content profile-page">
+    <div className="page-content profile-page">
       <h2>Profile</h2>
+
+      {mfaEnrollmentRequired && (
+        <div className="panel status-message">
+          MFA setup is required before this account can access clinic records. Go to
+          Security below, add an authenticator app, scan the QR code, and verify the
+          6-digit code.
+        </div>
+      )}
 
       <div className="profile-grid">
         <div className="panel profile-panel profile-section-card">

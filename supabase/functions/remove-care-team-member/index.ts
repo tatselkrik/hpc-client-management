@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
+import { requireFreshMfaSession } from "../_shared/security.ts";
 
 
 
@@ -8,39 +9,20 @@ function normalizeRole(value: unknown) {
   const role = typeof value === "string" ? value.trim() : "";
   const normalized = role.toLowerCase();
 
-  if (normalized === "ceo" || normalized === "chief executive officer") return "CEO";
+  if (normalized === "ceo" || normalized === "chief executive officer") return "Admin";
   if (normalized.includes("admin")) return "Admin";
-
-  return role;
-}
-
-async function deleteAuthUserAndProfile(
-  supabase: ReturnType<typeof createClient>,
-  targetProfileId: string,
-) {
-  const firstDelete = await supabase.auth.admin.deleteUser(targetProfileId, false);
-
-  if (!firstDelete.error) {
-    await supabase.from("profiles").delete().eq("id", targetProfileId);
-    return null;
+  if (normalized === "staff") return "Staff";
+  if (
+    normalized === "psychologist / counselor" ||
+    normalized === "psychologist / counsellor" ||
+    normalized === "psychologist" ||
+    normalized === "counselor" ||
+    normalized === "counsellor"
+  ) {
+    return "Psychologist / Counselor";
   }
 
-  const profileDelete = await supabase
-    .from("profiles")
-    .delete()
-    .eq("id", targetProfileId);
-
-  if (profileDelete.error) {
-    return profileDelete.error;
-  }
-
-  const retryDelete = await supabase.auth.admin.deleteUser(targetProfileId, false);
-
-  if (retryDelete.error && !/not found/i.test(retryDelete.error.message)) {
-    return retryDelete.error;
-  }
-
-  return null;
+  return "";
 }
 
 serve(async (req) => {
@@ -89,6 +71,11 @@ serve(async (req) => {
     return respond({ error: "Unauthorized." }, 401);
   }
 
+  const freshSessionError = requireFreshMfaSession(token);
+  if (freshSessionError) {
+    return respond({ error: freshSessionError }, 403);
+  }
+
   const { target_profile_id } = await req.json().catch(() => ({}));
   const targetProfileId =
     typeof target_profile_id === "string" ? target_profile_id.trim() : "";
@@ -98,7 +85,7 @@ serve(async (req) => {
   }
 
   if (targetProfileId === user.id) {
-    return respond({ error: "You cannot remove your own account." }, 400);
+    return respond({ error: "You cannot deactivate your own account." }, 400);
   }
 
   const { data: callerProfile, error: callerProfileError } = await supabase
@@ -117,8 +104,8 @@ serve(async (req) => {
 
   const callerRole = normalizeRole(callerProfile?.role);
 
-  if (callerRole !== "Admin" && callerRole !== "CEO") {
-    return respond({ error: "Only Admin or CEO accounts can remove care team members." }, 403);
+  if (callerRole !== "Admin" && callerRole !== "Staff") {
+    return respond({ error: "Only Admin or Staff accounts can deactivate care team members." }, 403);
   }
 
   const { data: targetProfile, error: targetProfileError } = await supabase
@@ -137,20 +124,21 @@ serve(async (req) => {
 
   const targetRole = normalizeRole(targetProfile.role);
 
-  if (callerRole === "CEO" && targetRole === "Admin") {
-    return respond({ error: "CEO accounts cannot remove Admin members." }, 403);
+  if (callerRole === "Staff" && targetRole === "Admin") {
+    return respond({ error: "Staff accounts cannot deactivate or affect Admin accounts." }, 403);
   }
 
-  const deleteError = await deleteAuthUserAndProfile(supabase, targetProfileId);
-
-  if (deleteError) {
-    return respond({ error: deleteError.message }, 500);
+  if (targetProfile.is_active === false) {
+    return respond({ error: "This care team account is already inactive." }, 409);
   }
 
-  if (targetProfile.avatar_path) {
-    await supabase.storage
-      .from("profile-pictures")
-      .remove([targetProfile.avatar_path]);
+  const { error: deactivateError } = await supabase
+    .from("profiles")
+    .update({ is_active: false })
+    .eq("id", targetProfileId);
+
+  if (deactivateError) {
+    return respond({ error: deactivateError.message }, 500);
   }
 
   await supabase.from("audit_logs").insert({
@@ -158,7 +146,7 @@ serve(async (req) => {
     actor_email: user.email ?? callerProfile?.email ?? null,
     actor_name: callerProfile?.full_name ?? null,
     module: "Care Team",
-    action: "Removed Member Account",
+    action: "Deactivated Member Account",
     target_type: "profile",
     target_id: targetProfileId,
     target_label: targetProfile.full_name ?? targetProfile.email ?? targetProfileId,
@@ -167,15 +155,16 @@ serve(async (req) => {
       previous_role: targetRole,
       previous_hpc_representative_name: targetProfile.hpc_representative_name ?? null,
       target_was_active: targetProfile.is_active ?? true,
-      permanent: true,
+      permanent: false,
+      account_data_retained: true,
       source: "edge_function",
     },
   });
 
   return respond({
-    removed_profile_id: targetProfileId,
-    removed_name: targetProfile.full_name ?? null,
-    removed_email: targetProfile.email ?? null,
+    deactivated_profile_id: targetProfileId,
+    deactivated_name: targetProfile.full_name ?? null,
+    deactivated_email: targetProfile.email ?? null,
     audit_log_written: true,
   });
 });

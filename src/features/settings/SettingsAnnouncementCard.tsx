@@ -85,7 +85,7 @@ export function SettingsAnnouncementCard({
 
       <p className="settings-module-copy">
         Set one shared dashboard banner for reminders, closures, and urgent workflow
-        notices. Publishing and disabling announcements is available to Admin, CEO, and Staff accounts.
+        notices. Publishing and disabling announcements is available to all active care team roles.
       </p>
 
       {canManageDashboardAnnouncements ? (
@@ -219,7 +219,7 @@ export function SettingsAnnouncementCard({
         </div>
       ) : (
         <div className="empty-state">
-          Only Admin, CEO, or Staff accounts can publish or disable dashboard announcements.
+          Only active Admin, Psychologist / Counselor, or Staff accounts can publish or disable dashboard announcements.
         </div>
       )}
 

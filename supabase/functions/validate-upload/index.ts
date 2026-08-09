@@ -1,6 +1,18 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
+import { hasRequiredMfa } from "../_shared/security.ts";
+
+function createServiceRoleClient(supabaseUrl: string, serviceRoleKey: string) {
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+type ServiceRoleClient = ReturnType<typeof createServiceRoleClient>;
 
 const CLIENT_FILE_MAX_BYTES = 25 * 1024 * 1024;
 const PROFILE_PICTURE_MAX_BYTES = 2 * 1024 * 1024;
@@ -116,7 +128,7 @@ function normalizeRole(value: unknown) {
   const role = normalizeText(value);
   const normalized = role.toLowerCase();
 
-  if (normalized === "ceo" || normalized === "chief executive officer") return "CEO";
+  if (normalized === "ceo" || normalized === "chief executive officer") return "Admin";
   if (normalized.includes("admin")) return "Admin";
   if (
     normalized === "psychologist / counselor" ||
@@ -128,9 +140,8 @@ function normalizeRole(value: unknown) {
     return "Psychologist / Counselor";
   }
   if (normalized === "staff") return "Staff";
-  if (normalized === "intern") return "Intern";
-
-  return role;
+  if (normalized === "staff") return "Staff";
+  return "";
 }
 
 function normalizeRepresentativeName(value: unknown) {
@@ -161,7 +172,7 @@ function splitStoragePath(storagePath: string) {
 }
 
 async function getStorageObjectMetadata(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ServiceRoleClient,
   bucket: string,
   storagePath: string,
 ) {
@@ -195,7 +206,7 @@ async function getStorageObjectMetadata(
 }
 
 async function removeRejectedUpload(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ServiceRoleClient,
   bucket: string,
   storagePath: string,
 ) {
@@ -273,7 +284,7 @@ async function validateDesktopCaller({
   clientId,
   storagePath,
 }: {
-  supabase: ReturnType<typeof createClient>;
+  supabase: ServiceRoleClient;
   token: string;
   context: UploadContext;
   clientId: string;
@@ -286,6 +297,15 @@ async function validateDesktopCaller({
 
   if (userError || !user) {
     return { error: "Unauthorized.", status: 401, user: null, profile: null };
+  }
+
+  if (!hasRequiredMfa(token)) {
+    return {
+      error: "Complete MFA verification before uploading files.",
+      status: 403,
+      user: null,
+      profile: null,
+    };
   }
 
   const { data: profile, error: profileError } = await supabase
@@ -339,16 +359,7 @@ async function validateDesktopCaller({
 
   const role = normalizeRole(profile.role);
 
-  if (role === "Intern") {
-    return {
-      error: "Your role can view files but cannot upload them.",
-      status: 403,
-      user: null,
-      profile: null,
-    };
-  }
-
-  if (role !== "Admin" && role !== "CEO" && role !== "Psychologist / Counselor" && role !== "Staff") {
+  if (role !== "Admin" && role !== "Psychologist / Counselor" && role !== "Staff") {
     return {
       error: "Your role cannot upload client files.",
       status: 403,
@@ -357,7 +368,7 @@ async function validateDesktopCaller({
     };
   }
 
-  if (role === "CEO" || role === "Psychologist / Counselor") {
+  if (role === "Psychologist / Counselor") {
     const { data: client, error: clientError } = await supabase
       .from("clients")
       .select("id, hpc_representative")
@@ -396,7 +407,7 @@ async function validateMobileSession({
   context,
   storagePath,
 }: {
-  supabase: ReturnType<typeof createClient>;
+  supabase: ServiceRoleClient;
   payload: UploadValidationPayload;
   context: UploadContext;
   storagePath: string;
@@ -457,7 +468,7 @@ async function completeMobileUpload({
   mimeType,
   fileSizeBytes,
 }: {
-  supabase: ReturnType<typeof createClient>;
+  supabase: ServiceRoleClient;
   session: Record<string, string | null>;
   context: UploadContext;
   storagePath: string;
@@ -536,12 +547,7 @@ serve(async (req) => {
     return respond({ error: "Missing Supabase service configuration." }, 500);
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+  const supabase = createServiceRoleClient(supabaseUrl, serviceRoleKey);
 
   const payload = (await req.json().catch(() => ({}))) as UploadValidationPayload;
   const context = payload.context;
@@ -558,11 +564,11 @@ serve(async (req) => {
   }
 
   if (bucket !== rule.bucket) {
-    await removeRejectedUpload(supabase, bucket, storagePath);
     return respond({ error: "Upload bucket does not match the requested file type." }, 400);
   }
 
   let session: Record<string, string | null> | null = null;
+  let callerMayDeleteUpload = false;
 
   try {
     if (isMobileContext) {
@@ -574,17 +580,16 @@ serve(async (req) => {
       });
 
       if (mobileCheck.error) {
-        await removeRejectedUpload(supabase, bucket, storagePath);
         return respond({ error: mobileCheck.error }, mobileCheck.status);
       }
 
       session = mobileCheck.session as Record<string, string | null>;
+      callerMayDeleteUpload = true;
     } else {
       const authorization = req.headers.get("Authorization") ?? "";
       const token = authorization.replace(/^Bearer\s+/i, "").trim();
 
       if (!token) {
-        await removeRejectedUpload(supabase, bucket, storagePath);
         return respond({ error: "Missing authorization token." }, 401);
       }
 
@@ -597,9 +602,10 @@ serve(async (req) => {
       });
 
       if (callerCheck.error) {
-        await removeRejectedUpload(supabase, bucket, storagePath);
         return respond({ error: callerCheck.error }, callerCheck.status);
       }
+
+      callerMayDeleteUpload = true;
     }
 
     const storageMetadata = await getStorageObjectMetadata(
@@ -649,7 +655,9 @@ serve(async (req) => {
       storage_path: storagePath,
     });
   } catch (error) {
-    await removeRejectedUpload(supabase, bucket, storagePath);
+    if (callerMayDeleteUpload) {
+      await removeRejectedUpload(supabase, bucket, storagePath);
+    }
     const message = error instanceof Error ? error.message : String(error);
 
     return respond({ error: message }, 500);

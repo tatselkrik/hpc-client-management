@@ -162,7 +162,7 @@ export function SettingsClientCategoriesCard({
         </div>
       ) : (
         <div className="empty-state">
-          Only admin accounts can manage client categories.
+          Only Admin or Staff accounts can manage client categories.
         </div>
       )}
 

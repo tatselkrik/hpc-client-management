@@ -1,18 +1,17 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
+import { requireFreshMfaSession } from "../_shared/security.ts";
 
 
 const roleOptions = new Set([
   "Admin",
-  "CEO",
   "Psychologist / Counselor",
   "Staff",
-  "Intern",
 ]);
 
 function roleRequiresRepresentative(role: string) {
-  return role === "Psychologist / Counselor" || role === "CEO";
+  return role === "Psychologist / Counselor";
 }
 
 
@@ -23,7 +22,7 @@ function normalizeRole(value: unknown) {
 
   const normalized = role.toLowerCase();
 
-  if (normalized === "ceo" || normalized === "chief executive officer") return "CEO";
+  if (normalized === "ceo" || normalized === "chief executive officer") return "Admin";
   if (normalized.includes("admin")) return "Admin";
   if (
     normalized === "psychologist / counselor" ||
@@ -34,9 +33,8 @@ function normalizeRole(value: unknown) {
   ) {
     return "Psychologist / Counselor";
   }
-  if (normalized.includes("intern")) return "Intern";
-
-  return "Staff";
+  if (normalized === "staff") return "Staff";
+  return "";
 }
 
 function normalizeHpcRepresentativeName(value: unknown) {
@@ -95,6 +93,11 @@ serve(async (req) => {
     return respond({ error: "Unauthorized." }, 401);
   }
 
+  const freshSessionError = requireFreshMfaSession(token);
+  if (freshSessionError) {
+    return respond({ error: freshSessionError }, 403);
+  }
+
   const payload = await req.json().catch(() => ({}));
   const { target_profile_id, role } = payload;
   const targetProfileId =
@@ -111,9 +114,13 @@ serve(async (req) => {
     return respond({ error: "target_profile_id is required." }, 400);
   }
 
+  if (!roleOptions.has(nextRole)) {
+    return respond({ error: "Select a supported care team role." }, 400);
+  }
+
   if (roleRequiresRepresentative(nextRole) && !nextHpcRepresentativeName) {
     return respond(
-      { error: "HPC Representative is required for CEO and Psychologist / Counselor accounts." },
+      { error: "HPC Representative is required for Psychologist / Counselor accounts." },
       400,
     );
   }
@@ -138,8 +145,8 @@ serve(async (req) => {
 
   const callerRole = normalizeRole(callerProfile?.role);
 
-  if (callerRole !== "Admin" && callerRole !== "CEO") {
-    return respond({ error: "Only Admin or CEO accounts can update care team roles." }, 403);
+  if (callerRole !== "Admin" && callerRole !== "Staff") {
+    return respond({ error: "Only Admin or Staff accounts can update care team roles." }, 403);
   }
 
   const { data: targetProfileBefore, error: targetProfileBeforeError } = await supabase
@@ -157,6 +164,14 @@ serve(async (req) => {
   }
 
   const previousRole = normalizeRole(targetProfileBefore.role);
+
+  if (callerRole === "Staff" && (previousRole === "Admin" || nextRole === "Admin")) {
+    return respond({ error: "Staff accounts cannot create, edit, or affect Admin accounts." }, 403);
+  }
+
+  if (targetProfileBefore.is_active === false) {
+    return respond({ error: "This care team account is inactive." }, 409);
+  }
   const previousRepresentativeName = normalizeHpcRepresentativeName(
     targetProfileBefore.hpc_representative_name,
   );

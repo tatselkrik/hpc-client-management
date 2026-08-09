@@ -46,7 +46,8 @@ export type SettingsSectionProps = {
   handleUpdateClientCategory: (category: ClientCategory) => void | Promise<void>;
   handleDeleteClientCategory: (category: ClientCategory) => void | Promise<void>;
 
-  canManageCareTeam: boolean;
+  canManageClientCategoriesAndBackups: boolean;
+  canViewAuditLogs: boolean;
   isExportingBackup: boolean;
   backupToolsStatus: string;
   restorePreview: BackupRestorePreview | null;
@@ -85,7 +86,8 @@ export function SettingsSection({
   handleCancelEditClientCategory,
   handleUpdateClientCategory,
   handleDeleteClientCategory,
-  canManageCareTeam,
+  canManageClientCategoriesAndBackups,
+  canViewAuditLogs,
   isExportingBackup,
   backupToolsStatus,
   restorePreview,
@@ -128,10 +130,10 @@ export function SettingsSection({
               />
             )}
 
-            {canManageCareTeam && (
+            {canManageClientCategoriesAndBackups && (
               <div className="settings-module-row settings-module-row-middle">
                 <SettingsClientCategoriesCard
-                  canManageCareTeam={canManageCareTeam}
+                  canManageCareTeam={canManageClientCategoriesAndBackups}
                   clientCategories={clientCategories}
                   clientCategoryDraft={clientCategoryDraft}
                   setClientCategoryDraft={setClientCategoryDraft}
@@ -147,7 +149,7 @@ export function SettingsSection({
                 />
 
                 <SettingsBackupRestoreCard
-                  canManageCareTeam={canManageCareTeam}
+                  canManageCareTeam={canManageClientCategoriesAndBackups}
                   isExportingBackup={isExportingBackup}
                   backupToolsStatus={backupToolsStatus}
                   restorePreview={restorePreview}
@@ -159,9 +161,9 @@ export function SettingsSection({
               </div>
             )}
 
-            {canManageCareTeam && (
+            {canViewAuditLogs && (
               <SettingsAuditLogCard
-                canManageCareTeam={canManageCareTeam}
+                canManageCareTeam={canViewAuditLogs}
                 auditLogFilter={auditLogFilter}
                 setAuditLogFilter={setAuditLogFilter}
                 isAuditLogLoading={isAuditLogLoading}
