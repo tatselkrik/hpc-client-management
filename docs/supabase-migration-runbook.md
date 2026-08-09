@@ -91,7 +91,7 @@ After applying migrations and deploying functions, test:
 - Deactivated user access denial and retained account history
 - Client CRUD and representative scoping
 - C-SSRS access for Admin, assigned Psychologist / Counselor, and Staff
-- 4Ps narrative generation for authorized Admin, assigned Psychologist / Counselor, and Staff accounts
+- 4Ps narrative generation for Admin and the assigned Psychologist / Counselor only
 - Mandatory MFA before clinical or operational access
 - Document/Assessment upload, download, rename, delete permissions
 - Profile picture upload/remove
