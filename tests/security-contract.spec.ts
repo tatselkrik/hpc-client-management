@@ -108,3 +108,14 @@ test("the Admin representative is always Clinic Administrator", async () => {
   expect(migration).toContain("new.hpc_representative_name := 'Clinic Administrator'");
   expect(migration).toContain("hpc_profiles_enforce_representative_assignment");
 });
+
+test("an MFA-verified inactive account can identify its own deactivated status only", async () => {
+  const migration = await readProjectFile(
+    "supabase/migrations/20260809000400_inactive_profile_status_message.sql"
+  );
+
+  expect(migration).toContain('id = auth.uid()');
+  expect(migration).toContain('is_active = true');
+  expect(migration).toContain('or public.hpc_has_required_aal()');
+  expect(migration).not.toContain('is_active = false');
+});
