@@ -91,3 +91,15 @@ select
   has_table_privilege('authenticated', 'public.audit_logs', 'INSERT') as can_insert,
   has_table_privilege('authenticated', 'public.audit_logs', 'UPDATE') as can_update,
   has_table_privilege('authenticated', 'public.audit_logs', 'DELETE') as can_delete;
+
+-- 11) Protected Edge Functions need explicit access when automatic table exposure is off.
+select
+  has_table_privilege('service_role', 'public.profiles', 'SELECT') as profiles_select,
+  has_table_privilege('service_role', 'public.profiles', 'INSERT') as profiles_insert,
+  has_table_privilege('service_role', 'public.profiles', 'UPDATE') as profiles_update,
+  has_table_privilege('service_role', 'public.audit_logs', 'INSERT') as audit_insert,
+  has_table_privilege('service_role', 'public.clients', 'SELECT') as clients_select,
+  has_table_privilege('service_role', 'public.mobile_upload_sessions', 'SELECT') as sessions_select,
+  has_table_privilege('service_role', 'public.mobile_upload_sessions', 'UPDATE') as sessions_update,
+  has_table_privilege('service_role', 'public.client_documents', 'INSERT') as documents_insert,
+  has_table_privilege('service_role', 'public.client_assessments', 'INSERT') as assessments_insert;

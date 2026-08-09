@@ -72,3 +72,15 @@ test("staging uses a separate Windows identity and invitation scheme", async () 
   expect(stagingConfig).toContain('"identifier": "com.clinic.hpcclientmanagement.staging"');
   expect(stagingConfig).toContain('"hpc-client-management-staging"');
 });
+
+test("Edge Functions receive explicit least-privilege service grants", async () => {
+  const grants = await readProjectFile(
+    "supabase/migrations/20260809000100_edge_function_service_grants.sql"
+  );
+
+  expect(grants).toContain("grant select, insert, update");
+  expect(grants).toContain("on table public.profiles");
+  expect(grants).toContain("grant insert");
+  expect(grants).toContain("on table public.audit_logs");
+  expect(grants).not.toContain("grant all");
+});
