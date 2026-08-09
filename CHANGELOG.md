@@ -45,6 +45,12 @@ This file records notable changes to HPC Client Management.
 - Hid Upload from Phone and disabled its server validation path until separate hosting,
   privacy review, and end-to-end security testing are complete. Desktop file uploads remain available.
 
+### Known release limitation
+
+- Free-tier Gemini data handling remains unapproved for identifying clinical information.
+  Users must not enter client names or other identifying details in 4Ps fields used for AI
+  narrative generation. The provider arrangement requires privacy review before that restriction changes.
+
 ## 0.1.0 - 2026-08-07
 
 Initial private source release of the working desktop application used for limited clinic testing.
@@ -54,7 +60,7 @@ Initial private source release of the working desktop application used for limit
 - Added client intake, profile, status, category, representative, and record management.
 - Added 4Ps case conceptualization with clinician-reviewed narrative drafting.
 - Added C-SSRS assessment support and dashboard follow-up indicators.
-- Added progress notes, documents, assessments, and phone upload handoff.
+- Added progress notes and desktop document and assessment uploads.
 
 ### Operations and reporting
 

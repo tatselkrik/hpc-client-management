@@ -12,7 +12,7 @@ The application is currently in limited clinic testing with one psychologist.
 - 4Ps case conceptualization across biological, psychological, and social factors
 - Clinician-reviewed narrative drafting for completed 4Ps records
 - C-SSRS assessment workflow and follow-up indicators
-- Progress notes, documents, assessments, and mobile upload handoff
+- Progress notes, documents, and assessment uploads
 - Dashboard priorities and clinic-wide analytics
 - CSV and PowerPoint exports
 - Email-invited care-team accounts, role-based access, and representative assignments
