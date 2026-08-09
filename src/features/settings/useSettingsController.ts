@@ -6,6 +6,7 @@ import type {
 import type { SettingsSectionProps } from "./SettingsSection";
 import { useAuditLogs } from "./useAuditLogs";
 import { useBackupTools } from "./useBackupTools";
+import { useClinicInfo } from "./useClinicInfo";
 import { useSettingsAnnouncement } from "./useSettingsAnnouncement";
 import { useThemeMode } from "./useThemeMode";
 
@@ -54,6 +55,12 @@ export function useSettingsController({
   writeAuditLog,
 }: UseSettingsControllerOptions) {
   const { themeMode, setThemeMode } = useThemeMode();
+  const clinicInfoController = useClinicInfo({
+    activeSection,
+    canManageClinicInfo: canManageClientCategoriesAndBackups,
+    profile,
+    writeAuditLog,
+  });
   const {
     auditLogEntries,
     auditLogFilter,
@@ -87,11 +94,19 @@ export function useSettingsController({
   const {
     backupToolsStatus,
     isExportingBackup,
+    isRestoringBackup,
+    canRestoreClinicBackup,
     restorePreview,
+    isRestoreConfirmationOpen,
+    restoreConfirmationText,
+    setRestoreConfirmationText,
     backupRestoreInputRef,
     handleExportClinicBackup,
     handleChooseRestorePackage,
     handleRestorePackageSelected,
+    handleOpenRestoreConfirmation,
+    handleCloseRestoreConfirmation,
+    handleConfirmRestore,
   } = useBackupTools({
     canManageCareTeam: canManageClientCategoriesAndBackups,
     profile,
@@ -99,6 +114,8 @@ export function useSettingsController({
   });
 
   const settingsPropsBase: SettingsControllerPropsBase = {
+    ...clinicInfoController,
+    canManageClinicInfo: canManageClientCategoriesAndBackups,
     canManageDashboardAnnouncements,
     dashboardAnnouncement,
     setDashboardAnnouncement,
@@ -111,12 +128,20 @@ export function useSettingsController({
     canManageClientCategoriesAndBackups,
     canViewAuditLogs,
     isExportingBackup,
+    isRestoringBackup,
+    canRestoreClinicBackup,
     backupToolsStatus,
     restorePreview,
+    isRestoreConfirmationOpen,
+    restoreConfirmationText,
+    setRestoreConfirmationText,
     backupRestoreInputRef,
     handleExportClinicBackup,
     handleChooseRestorePackage,
     handleRestorePackageSelected,
+    handleOpenRestoreConfirmation,
+    handleCloseRestoreConfirmation,
+    handleConfirmRestore,
     auditLogFilter,
     setAuditLogFilter,
     isAuditLogLoading,
@@ -126,6 +151,7 @@ export function useSettingsController({
   };
 
   return {
+    ...clinicInfoController,
     themeMode,
     setThemeMode,
     auditLogEntries,
@@ -146,11 +172,19 @@ export function useSettingsController({
     handleDismissDashboardAnnouncement,
     backupToolsStatus,
     isExportingBackup,
+    isRestoringBackup,
+    canRestoreClinicBackup,
     restorePreview,
+    isRestoreConfirmationOpen,
+    restoreConfirmationText,
+    setRestoreConfirmationText,
     backupRestoreInputRef,
     handleExportClinicBackup,
     handleChooseRestorePackage,
     handleRestorePackageSelected,
+    handleOpenRestoreConfirmation,
+    handleCloseRestoreConfirmation,
+    handleConfirmRestore,
     settingsPropsBase: settingsPropsBase as Omit<SettingsSectionProps, keyof ClientCategorySettingsControls>,
   };
 }

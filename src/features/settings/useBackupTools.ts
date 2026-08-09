@@ -3,6 +3,7 @@ import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { supabase } from "../../lib/supabase";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
+import { getSupabaseFunctionErrorMessage } from "../../lib/supabaseFunctionErrors";
 
 import type {
   BackupRestorePreview,
@@ -23,6 +24,18 @@ type UseBackupToolsOptions = {
 const MAX_RESTORE_REVIEW_BYTES = 25 * 1024 * 1024;
 
 const BACKUP_EXPORT_PAGE_SIZE = 1000;
+const BACKUP_FORMAT_VERSION = 2;
+
+type ClinicBackupPackage = {
+  format_version: number;
+  export_id: string;
+  product_name: string;
+  exported_at: string;
+  exported_by: string;
+  source: string;
+  source_project_ref: string;
+  tables: Record<string, Record<string, unknown>[]>;
+};
 
 type BackupTableKey = (typeof BACKUP_TABLE_CONFIG)[number]["key"];
 
@@ -61,7 +74,12 @@ export function useBackupTools({
   const backupRestoreInputRef = useRef<HTMLInputElement | null>(null);
   const [backupToolsStatus, setBackupToolsStatus] = useState("");
   const [isExportingBackup, setIsExportingBackup] = useState(false);
+  const [isRestoringBackup, setIsRestoringBackup] = useState(false);
   const [restorePreview, setRestorePreview] = useState<BackupRestorePreview | null>(null);
+  const [restorePackage, setRestorePackage] = useState<ClinicBackupPackage | null>(null);
+  const [isRestoreConfirmationOpen, setIsRestoreConfirmationOpen] = useState(false);
+  const [restoreConfirmationText, setRestoreConfirmationText] = useState("");
+  const canRestoreClinicBackup = profile?.role?.trim().toLowerCase() === "admin";
 
   const handleExportClinicBackup = async () => {
     if (!canManageCareTeam) {
@@ -91,11 +109,15 @@ export function useBackupTools({
       }
 
       const exportedAt = new Date().toISOString();
-      const payload = {
+      const sourceProjectRef = new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0];
+      const payload: ClinicBackupPackage = {
+        format_version: BACKUP_FORMAT_VERSION,
+        export_id: crypto.randomUUID(),
         product_name: APP_PRODUCT_NAME,
         exported_at: exportedAt,
         exported_by: profile?.full_name?.trim() || userEmail || "Unknown user",
         source: "settings-backup-tools",
+        source_project_ref: sourceProjectRef,
         tables: Object.fromEntries(tableResults.map((table) => [table.key, table.rows])),
       };
 
@@ -137,12 +159,15 @@ export function useBackupTools({
         file_name: fileName,
         exported_at: exportedAt,
         product_name: APP_PRODUCT_NAME,
+        format_version: BACKUP_FORMAT_VERSION,
+        source_project_ref: sourceProjectRef,
         table_counts: tableResults.map((table) => ({
           key: table.key,
           label: table.label,
           count: table.rows.length,
         })),
       });
+      setRestorePackage(payload);
       setBackupToolsStatus(`Backup saved to ${savedLocationLabel}.`);
     } catch (error) {
       const message = getErrorDetail(error);
@@ -176,14 +201,24 @@ export function useBackupTools({
 
       const rawText = await selectedFile.text();
       const parsed = JSON.parse(rawText) as {
+        format_version?: unknown;
+        export_id?: unknown;
         exported_at?: unknown;
+        exported_by?: unknown;
         product_name?: unknown;
+        source?: unknown;
+        source_project_ref?: unknown;
         tables?: Record<string, unknown>;
       };
 
       if (!parsed || typeof parsed !== "object" || !parsed.tables || typeof parsed.tables !== "object") {
         throw new Error("The selected file is not a valid HPC clinic backup package.");
       }
+
+      const formatVersion =
+        typeof parsed.format_version === "number" ? parsed.format_version : 1;
+      const sourceProjectRef =
+        typeof parsed.source_project_ref === "string" ? parsed.source_project_ref : "";
 
       const previewCounts = BACKUP_TABLE_CONFIG.map((table) => {
         const tableValue = parsed.tables?.[table.key];
@@ -202,25 +237,96 @@ export function useBackupTools({
           typeof parsed.product_name === "string" && parsed.product_name.trim()
             ? parsed.product_name
             : APP_PRODUCT_NAME,
+        format_version: formatVersion,
+        source_project_ref: sourceProjectRef,
         table_counts: previewCounts,
       });
-      setBackupToolsStatus("Restore package reviewed. No database changes were made.");
+      if (formatVersion === BACKUP_FORMAT_VERSION && sourceProjectRef) {
+        setRestorePackage(parsed as ClinicBackupPackage);
+        setBackupToolsStatus("Backup package reviewed and ready for an Admin restore.");
+      } else {
+        setRestorePackage(null);
+        setBackupToolsStatus(
+          "Backup package reviewed. This legacy package can be inspected, but it cannot be restored automatically.",
+        );
+      }
     } catch (error) {
       const message = getErrorDetail(error);
       setRestorePreview(null);
+      setRestorePackage(null);
       setBackupToolsStatus(feedbackMessages.error("We could not review this restore package.", message));
     } finally {
       event.target.value = "";
     }
   };
 
+  const handleOpenRestoreConfirmation = () => {
+    if (!canRestoreClinicBackup) {
+      setBackupToolsStatus(feedbackMessages.permissionDenied("Only an Admin can restore a clinic backup."));
+      return;
+    }
+    if (!restorePackage) {
+      setBackupToolsStatus(feedbackMessages.error("A restorable backup package has not been selected."));
+      return;
+    }
+
+    setRestoreConfirmationText("");
+    setIsRestoreConfirmationOpen(true);
+  };
+
+  const handleCloseRestoreConfirmation = () => {
+    if (isRestoringBackup) return;
+    setRestoreConfirmationText("");
+    setIsRestoreConfirmationOpen(false);
+  };
+
+  const handleConfirmRestore = async () => {
+    if (!canRestoreClinicBackup || !restorePackage) return;
+    if (restoreConfirmationText.trim().toUpperCase() !== "RESTORE") {
+      setBackupToolsStatus(feedbackMessages.error("Type RESTORE to confirm the merge restore."));
+      return;
+    }
+
+    setIsRestoringBackup(true);
+    setBackupToolsStatus(feedbackMessages.loading("Restoring clinic records"));
+
+    try {
+      const { data, error } = await supabase.functions.invoke("restore-clinic-backup", {
+        body: restorePackage,
+      });
+
+      if (error) throw new Error(await getSupabaseFunctionErrorMessage(error));
+      if (!data?.ok) throw new Error(data?.error || "The restore service did not confirm completion.");
+
+      setBackupToolsStatus(
+        "Backup restored in merge mode. Matching records were updated, missing records were added, and no current records were deleted.",
+      );
+      setIsRestoreConfirmationOpen(false);
+      setRestoreConfirmationText("");
+    } catch (error) {
+      setBackupToolsStatus(
+        feedbackMessages.error("We could not restore this backup.", getErrorDetail(error)),
+      );
+    } finally {
+      setIsRestoringBackup(false);
+    }
+  };
+
   return {
     backupToolsStatus,
     isExportingBackup,
+    isRestoringBackup,
+    canRestoreClinicBackup,
     restorePreview,
+    isRestoreConfirmationOpen,
+    restoreConfirmationText,
+    setRestoreConfirmationText,
     backupRestoreInputRef,
     handleExportClinicBackup,
     handleChooseRestorePackage,
     handleRestorePackageSelected,
+    handleOpenRestoreConfirmation,
+    handleCloseRestoreConfirmation,
+    handleConfirmRestore,
   };
 }

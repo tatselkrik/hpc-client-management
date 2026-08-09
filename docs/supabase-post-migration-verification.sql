@@ -103,3 +103,24 @@ select
   has_table_privilege('service_role', 'public.mobile_upload_sessions', 'UPDATE') as sessions_update,
   has_table_privilege('service_role', 'public.client_documents', 'INSERT') as documents_insert,
   has_table_privilege('service_role', 'public.client_assessments', 'INSERT') as assessments_insert;
+
+-- 12) Experience-improvement services and singleton clinic settings.
+select id, mobile_number, landline_number, email, address, updated_at
+from public.clinic_settings
+where id = 1;
+
+select channel, version, is_active, published_at
+from public.app_releases
+order by channel, published_at desc;
+
+select
+  has_function_privilege(
+    'authenticated',
+    'public.hpc_restore_backup_service(jsonb, uuid)',
+    'EXECUTE'
+  ) as authenticated_can_restore,
+  has_function_privilege(
+    'service_role',
+    'public.hpc_restore_backup_service(jsonb, uuid)',
+    'EXECUTE'
+  ) as service_role_can_restore;

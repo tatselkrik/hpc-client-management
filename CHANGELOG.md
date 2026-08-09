@@ -1,4 +1,4 @@
-# Release history
+﻿# Release history
 
 This file records notable changes to HPC Client Management.
 
@@ -31,9 +31,28 @@ This file records notable changes to HPC Client Management.
 - Added explicit least-privilege service grants for protected Edge Functions when automatic table exposure is disabled.
 - Added automated role-matrix and security-contract regression tests.
 
+### Experience and reporting
+
+- Added editable clinic phone, email, and location settings for Admin and Staff.
+- Renamed Backup and Review to Backup and Restore and added an Admin-only, fresh-MFA,
+  merge restore that never deletes records absent from a backup package.
+- Added a secure staging release channel so Check for Updates reports the latest configured version.
+- Added a shared branded template set for invitations, account actions, and security notification emails.
+- Added a visual quick-read strip to Analytics for active caseload, pending C-SSRS follow-up,
+  and progress-note coverage.
+- Redesigned the PowerPoint analytics export with stronger hierarchy, improved contrast,
+  larger charts, explicit empty states, authentic Clinic branding, a separate
+  life-context slide, and a data-driven key-takeaways conclusion.
+
+### Backup restore scope
+
+- Restore packages are limited to the Supabase project that created them.
+- Restore merges application records only. Supabase Auth identities and Storage file contents
+  remain outside the app-generated JSON package; document and assessment metadata is included.
+
 ### Known dependency advisory
 
-- `npm audit` reports two high-severity denial-of-service advisories in `image-size`, a transitive PptxGenJS dependency. The current analytics presentation exporter creates text and charts only and does not parse external image files. The available automatic remediation is a breaking PptxGenJS downgrade, so the dependency is retained pending an upstream-compatible fix.
+- `npm audit` reports two high-severity denial-of-service advisories in `image-size`, a transitive PptxGenJS dependency. The current analytics presentation exporter uses only trusted, bundled Clinic PNG files and does not process user-selected or remote images. The available automatic remediation is a breaking PptxGenJS downgrade, so the dependency is retained pending an upstream-compatible fix.
 
 ### AI service maintenance
 
