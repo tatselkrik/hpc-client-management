@@ -27,4 +27,3 @@ grant select, insert
 grant select, insert
   on table public.client_assessments
   to service_role;
-
