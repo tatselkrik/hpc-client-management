@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+﻿import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { expect, test } from "@playwright/test";
@@ -63,4 +63,12 @@ test("upload validation never deletes a path before caller ownership is establis
   expect(source).not.toContain(
     'if (bucket !== rule.bucket) {\n    await removeRejectedUpload'
   );
+});
+
+test("staging uses a separate Windows identity and invitation scheme", async () => {
+  const stagingConfig = await readProjectFile("src-tauri/tauri.staging.conf.json");
+
+  expect(stagingConfig).toContain('"productName": "HPC Client Management Staging"');
+  expect(stagingConfig).toContain('"identifier": "com.clinic.hpcclientmanagement.staging"');
+  expect(stagingConfig).toContain('"hpc-client-management-staging"');
 });

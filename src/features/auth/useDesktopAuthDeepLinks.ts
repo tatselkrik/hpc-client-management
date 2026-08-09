@@ -4,7 +4,11 @@ import { useEffect } from "react";
 
 import { supabase } from "../../lib/supabase";
 
-const AUTH_DEEP_LINK_PROTOCOL = "hpc-client-management:";
+const AUTH_DEEP_LINK_SCHEME =
+  (import.meta.env.VITE_AUTH_DEEP_LINK_SCHEME || "hpc-client-management")
+    .trim()
+    .replace(/:$/, "");
+const AUTH_DEEP_LINK_PROTOCOL = `${AUTH_DEEP_LINK_SCHEME}:`;
 const AUTH_DEEP_LINK_HOST = "auth";
 const INVITATION_PATH = "/invite";
 
