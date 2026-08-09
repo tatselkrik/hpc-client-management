@@ -17,6 +17,7 @@ Run the files in this exact order:
 5. `supabase/migrations/20260504000500_storage_buckets.sql`
 6. `supabase/migrations/20260504000600_seed_defaults.sql`
 7. `supabase/migrations/20260807000100_security_hardening.sql`
+8. `supabase/migrations/20260809000100_edge_function_service_grants.sql`
 
 ## Important notes
 

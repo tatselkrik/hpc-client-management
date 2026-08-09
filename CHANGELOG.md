@@ -27,6 +27,7 @@ This file records notable changes to HPC Client Management.
 - Protected role, activation, and representative-assignment fields from direct profile updates.
 - Restricted audit insertion to the validated audit function and marked client-reported events.
 - Prevented upload validation from deleting storage paths before caller ownership is established.
+- Added explicit least-privilege service grants for protected Edge Functions when automatic table exposure is disabled.
 - Added automated role-matrix and security-contract regression tests.
 
 ### Known dependency advisory
