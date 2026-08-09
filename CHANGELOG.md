@@ -11,6 +11,7 @@ This file records notable changes to HPC Client Management.
 - Limited Psychologist / Counselor accounts to their assigned clients, dashboard data, and analytics.
 - Allowed Staff to work across dashboard, clients, analytics, Care Team, categories, and backup review without access to System Log.
 - Prevented Staff from creating, promoting, editing, deactivating, or otherwise affecting Admin accounts.
+- Kept Staff clinical tabs read-only and restricted AI 4Ps narrative generation to Admin and the assigned Psychologist / Counselor.
 
 ### Account security
 
@@ -33,6 +34,10 @@ This file records notable changes to HPC Client Management.
 ### Known dependency advisory
 
 - `npm audit` reports two high-severity denial-of-service advisories in `image-size`, a transitive PptxGenJS dependency. The current analytics presentation exporter creates text and charts only and does not parse external image files. The available automatic remediation is a breaking PptxGenJS downgrade, so the dependency is retained pending an upstream-compatible fix.
+
+### AI service maintenance
+
+- Updated narrative generation from the retired Gemini 2.5 Flash endpoint to the stable Gemini 3.6 Flash model contract.
 
 ## 0.1.0 - 2026-08-07
 

@@ -7,7 +7,6 @@ import { hasRequiredMfa } from "../_shared/security.ts";
 const allowedRoles = new Set([
   "Admin",
   "Psychologist / Counselor",
-  "Staff",
 ]);
 
 const fourPsRows = [
@@ -143,7 +142,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
-    const geminiModel = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
+    const geminiModel = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
     if (!supabaseUrl || !serviceRoleKey) {
       return respond({ error: "Missing Supabase service configuration." }, 500);
@@ -277,8 +276,6 @@ serve(async (req) => {
             },
           ],
           generationConfig: {
-            temperature: 0.35,
-            topP: 0.9,
             maxOutputTokens: 1600,
           },
         }),

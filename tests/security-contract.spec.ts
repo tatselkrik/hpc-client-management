@@ -119,3 +119,31 @@ test("an MFA-verified inactive account can identify its own deactivated status o
   expect(migration).toContain('or public.hpc_has_required_aal()');
   expect(migration).not.toContain('is_active = false');
 });
+
+test("AI narrative generation is limited to clinical roles on the server", async () => {
+  const source = await readProjectFile(
+    "supabase/functions/generate-4ps-narrative/index.ts"
+  );
+
+  const allowedRolesDeclaration = source.slice(
+    source.indexOf("const allowedRoles"),
+    source.indexOf("const fourPsRows")
+  );
+
+  expect(allowedRolesDeclaration).toContain('"Admin"');
+  expect(allowedRolesDeclaration).toContain('"Psychologist / Counselor"');
+  expect(allowedRolesDeclaration).not.toContain('"Staff"');
+  expect(source).toContain('callerRole === "Psychologist / Counselor"');
+});
+
+test("AI narrative generation uses the supported stable Gemini model contract", async () => {
+  const source = await readProjectFile(
+    "supabase/functions/generate-4ps-narrative/index.ts"
+  );
+
+  expect(source).toContain('Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash"');
+  expect(source).not.toContain('"gemini-2.5-flash"');
+  expect(source).not.toContain("temperature:");
+  expect(source).not.toContain("topP:");
+  expect(source).not.toContain("topK:");
+});
