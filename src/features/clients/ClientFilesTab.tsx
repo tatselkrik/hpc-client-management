@@ -7,7 +7,7 @@ import type {
 import { SearchIcon } from "../../components/icons";
 import { StatusMessage } from "../../components/StatusMessage";
 import type { ClientStoredFileRecord, UploadDateFilter } from "../../appShared";
-import { CLIENT_FILE_ACCEPT, formatBytes } from "../../appShared";
+import { CLIENT_FILE_ACCEPT, formatBytes, MOBILE_UPLOAD_ENABLED } from "../../appShared";
 
 type ClientFilesTabProps<FileRecord extends ClientStoredFileRecord> = {
   title: string;
@@ -111,14 +111,16 @@ export function ClientFilesTab<FileRecord extends ClientStoredFileRecord>({
               {loading ? "Please wait..." : "+ Upload"}
             </button>
 
-            <button
-              className="small-button"
-              type="button"
-              onClick={() => void handleOpenPhoneUpload()}
-              disabled={!selectedClientId || loading || isCreatingPhoneUploadSession}
-            >
-              + Upload from Phone
-            </button>
+            {MOBILE_UPLOAD_ENABLED ? (
+              <button
+                className="small-button"
+                type="button"
+                onClick={() => void handleOpenPhoneUpload()}
+                disabled={!selectedClientId || loading || isCreatingPhoneUploadSession}
+              >
+                + Upload from Phone
+              </button>
+            ) : null}
           </>
         ) : null}
       </div>

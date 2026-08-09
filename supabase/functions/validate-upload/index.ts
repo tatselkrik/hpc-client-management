@@ -558,9 +558,15 @@ serve(async (req) => {
   const mimeType = normalizeText(payload.mime_type).toLowerCase();
   const fileSizeBytes = Number(payload.file_size_bytes);
   const isMobileContext = context === "mobile_document" || context === "mobile_assessment";
+  const mobileUploadEnabled =
+    (Deno.env.get("MOBILE_UPLOAD_ENABLED") ?? "").trim().toLowerCase() === "true";
 
   if (!context || !rule) {
     return respond({ error: "Unsupported upload validation context." }, 400);
+  }
+
+  if (isMobileContext && !mobileUploadEnabled) {
+    return respond({ error: "Upload from Phone is disabled in this release." }, 503);
   }
 
   if (bucket !== rule.bucket) {

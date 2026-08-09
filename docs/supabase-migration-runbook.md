@@ -98,6 +98,13 @@ After applying migrations and deploying functions, test:
 - Analytics export
 - Backup export
 
-## Current known gap
+## Current known release gaps
 
-The migration package is based on SQL exports rather than `supabase db pull`. It is strong enough for a fresh baseline, but it should still be tested on a disposable Supabase project before production transfer.
+- Upload from Phone is deferred. Both its frontend and server feature flags must remain
+  disabled until the separate phone page, hosting, privacy review, and end-to-end upload
+  security tests are complete. Desktop document and assessment uploads remain supported.
+- Free-tier Gemini data handling remains unresolved for real clinical information. Users
+  must not submit client names or other identifying information through 4Ps narrative
+  generation until the clinic approves the provider's data-handling arrangement.
+- The migration package was verified on the disposable staging project. Production transfer
+  still requires a reviewed database backup, migration diff, and deployment sign-off.

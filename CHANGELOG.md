@@ -40,6 +40,11 @@ This file records notable changes to HPC Client Management.
 - Updated narrative generation from the retired Gemini 2.5 Flash endpoint to the stable Gemini 3.6 Flash model contract.
 - Added completion checks, a larger response allowance, grammar guidance, and server-owned prompt versioning so incomplete AI drafts are not presented as successful reports.
 
+### Deferred functionality
+
+- Hid Upload from Phone and disabled its server validation path until separate hosting,
+  privacy review, and end-to-end security testing are complete. Desktop file uploads remain available.
+
 ## 0.1.0 - 2026-08-07
 
 Initial private source release of the working desktop application used for limited clinic testing.

@@ -924,6 +924,9 @@ export const APP_BUILD_INFO = {
 export const MOBILE_UPLOAD_SESSION_POLL_MS = 2500;
 export const MOBILE_UPLOAD_SESSION_EXPIRY_MS = 5 * 60 * 1000;
 
+export const MOBILE_UPLOAD_ENABLED =
+  (import.meta.env.VITE_ENABLE_MOBILE_UPLOAD ?? "").trim().toLowerCase() === "true";
+
 export const defaultMobileUploadBaseUrl =
   typeof window !== "undefined" && window.location.protocol.startsWith("http")
     ? window.location.origin
