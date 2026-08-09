@@ -13,6 +13,7 @@ import {
   formatPhoneUploadTargetLabel,
   hashPhoneUploadToken,
   MOBILE_UPLOAD_BASE_URL,
+  MOBILE_UPLOAD_ENABLED,
   MOBILE_UPLOAD_SESSION_EXPIRY_MS,
   MOBILE_UPLOAD_SESSION_POLL_MS,
 } from "../../appShared";
@@ -118,6 +119,19 @@ export function usePhoneUploadSession({
   const handleOpenPhoneUpload = useCallback(
     async (target: PhoneUploadTarget) => {
       if (!selectedClientId) {
+        return;
+      }
+
+      if (!MOBILE_UPLOAD_ENABLED) {
+        const message = "Upload from Phone is deferred and disabled in this release.";
+        setPhoneUploadStatusMessage(message);
+
+        if (target === "document") {
+          setDocumentsMessage(message);
+        } else {
+          setAssessmentsMessage(message);
+        }
+
         return;
       }
 

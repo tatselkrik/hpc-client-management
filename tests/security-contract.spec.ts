@@ -152,3 +152,17 @@ test("AI narrative generation uses the supported stable Gemini model contract", 
   expect(source).toContain("Gemini returned an incomplete narrative draft.");
   expect(source).toContain('const narrativePromptVersion = "4ps-narrative-v3"');
 });
+
+test("phone upload remains disabled on both frontend and server while deferred", async () => {
+  const shared = await readProjectFile("src/appShared.ts");
+  const filesTab = await readProjectFile("src/features/clients/ClientFilesTab.tsx");
+  const validationService = await readProjectFile(
+    "supabase/functions/validate-upload/index.ts"
+  );
+
+  expect(shared).toContain("VITE_ENABLE_MOBILE_UPLOAD");
+  expect(filesTab).toContain("MOBILE_UPLOAD_ENABLED ?");
+  expect(validationService).toContain('Deno.env.get("MOBILE_UPLOAD_ENABLED")');
+  expect(validationService).toContain("isMobileContext && !mobileUploadEnabled");
+  expect(validationService).toContain("Upload from Phone is disabled in this release.");
+});

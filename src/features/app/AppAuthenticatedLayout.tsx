@@ -6,6 +6,7 @@ import type {
   Profile,
   Section,
 } from "../../appShared";
+import { MOBILE_UPLOAD_ENABLED } from "../../appShared";
 import {
   FileDeleteModal,
   FileRenameModal,
@@ -137,20 +138,22 @@ export function AppAuthenticatedLayout({
         />
       }
       phoneUploadModal={
-        <PhoneUploadModal
-          isOpen={isPhoneUploadModalOpen}
-          target={phoneUploadTarget}
-          selectedClientName={selectedClientName}
-          session={phoneUploadSession}
-          isCreatingSession={isCreatingPhoneUploadSession}
-          statusMessage={phoneUploadStatusMessage}
-          qrCodeUrl={phoneUploadQrCodeUrl}
-          copied={phoneUploadCopied}
-          now={phoneUploadNow}
-          onClose={handleClosePhoneUpload}
-          onCopyLink={handleCopyPhoneUploadLink}
-          onRefresh={handleRefreshPhoneUpload}
-        />
+        MOBILE_UPLOAD_ENABLED ? (
+          <PhoneUploadModal
+            isOpen={isPhoneUploadModalOpen}
+            target={phoneUploadTarget}
+            selectedClientName={selectedClientName}
+            session={phoneUploadSession}
+            isCreatingSession={isCreatingPhoneUploadSession}
+            statusMessage={phoneUploadStatusMessage}
+            qrCodeUrl={phoneUploadQrCodeUrl}
+            copied={phoneUploadCopied}
+            now={phoneUploadNow}
+            onClose={handleClosePhoneUpload}
+            onCopyLink={handleCopyPhoneUploadLink}
+            onRefresh={handleRefreshPhoneUpload}
+          />
+        ) : null
       }
       setActiveSection={handleSectionChange}
       setIsSidebarCollapsed={setIsSidebarCollapsed}
