@@ -22,13 +22,14 @@ import {
   normalizeHpcRepresentativeName,
 } from "../../appShared";
 
-type CareTeamSavingAction = "role" | "remove" | "";
+type CareTeamSavingAction = "role" | "deactivate" | "";
 
 type UseCareTeamManagementOptions = {
   activeSection: Section;
   userEmail: string | null;
   profile: Profile | null;
   canManageCareTeam: boolean;
+  canManageAdminAccounts: boolean;
   clientRows: ClientListItem[];
   auditLogFilter: AuditLogFilterRange;
   loadAuditLogs: (range?: AuditLogFilterRange) => Promise<void>;
@@ -39,8 +40,6 @@ const emptyCareTeamInviteForm: CareTeamInviteForm = {
   email: "",
   role: "Staff",
   hpc_representative_name: "",
-  temporary_password: "",
-  confirm_temporary_password: "",
 };
 
 export function useCareTeamManagement({
@@ -48,6 +47,7 @@ export function useCareTeamManagement({
   userEmail,
   profile,
   canManageCareTeam,
+  canManageAdminAccounts,
   clientRows,
   auditLogFilter,
   loadAuditLogs,
@@ -85,14 +85,18 @@ export function useCareTeamManagement({
   const careTeamMembers = useMemo<CareTeamMemberView[]>(() => {
     const rolePriority = new Map<string, number>([
       ["Admin", 0],
-      ["CEO", 1],
-      ["Psychologist / Counselor", 2],
-      ["Staff", 3],
-      ["Intern", 4],
+      ["Psychologist / Counselor", 1],
+      ["Staff", 2],
     ]);
 
     return careTeamProfiles
-      .filter((member) => (member.role ?? "").trim() !== "")
+      .filter(
+        (member) =>
+          member.is_active !== false &&
+          ["Admin", "Psychologist / Counselor", "Staff"].includes(
+            getProfileDisplayRole(member.role)
+          )
+      )
       .map((member) => {
         const normalizedEmail = normalizeCareTeamMemberEmail(member.email);
 
@@ -189,7 +193,7 @@ export function useCareTeamManagement({
 
   const handleAddCareTeamMember = useCallback(async () => {
     if (!canManageCareTeam) {
-      setCareTeamStatus(feedbackMessages.permissionDenied("Only an Admin or CEO account can invite care team members."));
+      setCareTeamStatus(feedbackMessages.permissionDenied("Only an Admin or Staff account can invite care team members."));
       return;
     }
 
@@ -201,8 +205,11 @@ export function useCareTeamManagement({
       roleRequiresRepresentative
         ? normalizeHpcRepresentativeName(careTeamInviteForm.hpc_representative_name)
         : "";
-    const temporaryPassword = careTeamInviteForm.temporary_password;
-    const confirmTemporaryPassword = careTeamInviteForm.confirm_temporary_password;
+
+    if (selectedRole === "Admin" && !canManageAdminAccounts) {
+      setCareTeamStatus("Staff accounts cannot create or promote Admin accounts.");
+      return;
+    }
 
     if (trimmedName === "") {
       setCareTeamStatus(feedbackMessages.required("member name"));
@@ -222,18 +229,8 @@ export function useCareTeamManagement({
       return;
     }
 
-    if (temporaryPassword.trim().length < 8) {
-      setCareTeamStatus("Temporary password must be at least 8 characters.");
-      return;
-    }
-
-    if (temporaryPassword !== confirmTemporaryPassword) {
-      setCareTeamStatus("Temporary password and confirmation do not match.");
-      return;
-    }
-
     setIsInvitingCareTeam(true);
-    setCareTeamStatus(feedbackMessages.loading(`Creating member account for ${trimmedEmail}`));
+    setCareTeamStatus(feedbackMessages.loading(`Sending an invitation to ${trimmedEmail}`));
 
     try {
       const { data, error } = await supabase.functions.invoke(
@@ -245,7 +242,6 @@ export function useCareTeamManagement({
             role: selectedRole,
             hpc_representative_name:
               roleRequiresRepresentative ? trimmedRepresentativeName : null,
-            temporary_password: temporaryPassword,
           },
         }
       );
@@ -267,13 +263,14 @@ export function useCareTeamManagement({
       setCareTeamInviteForm(emptyCareTeamInviteForm);
 
       setCareTeamStatus(
-        `Account created for ${trimmedEmail}. Privately share the temporary password and ask them to change it in Profile.`
+        `Invitation sent to ${trimmedEmail}. They must set their own password and enroll in MFA before using the workspace.`
       );
     } finally {
       setIsInvitingCareTeam(false);
     }
   }, [
     auditLogFilter,
+    canManageAdminAccounts,
     canManageCareTeam,
     careTeamInviteForm,
     loadAuditLogs,
@@ -287,7 +284,7 @@ export function useCareTeamManagement({
       nextRepresentativeName?: string | null
     ) => {
       if (!canManageCareTeam) {
-        setCareTeamStatus(feedbackMessages.permissionDenied("Only an Admin or CEO account can update care team roles."));
+        setCareTeamStatus(feedbackMessages.permissionDenied("Only an Admin or Staff account can update care team roles."));
         return;
       }
 
@@ -297,6 +294,14 @@ export function useCareTeamManagement({
       }
 
       const nextDisplayRole = getProfileDisplayRole(nextRole);
+
+      if (
+        !canManageAdminAccounts &&
+        (getProfileDisplayRole(member.role) === "Admin" || nextDisplayRole === "Admin")
+      ) {
+        setCareTeamStatus("Staff accounts cannot create, edit, or affect Admin accounts.");
+        return;
+      }
       const currentRepresentativeName = normalizeHpcRepresentativeName(
         member.hpc_representative_name ?? ""
       );
@@ -372,6 +377,7 @@ export function useCareTeamManagement({
     },
     [
       auditLogFilter,
+      canManageAdminAccounts,
       canManageCareTeam,
       loadAuditLogs,
       loadCareTeamProfiles,
@@ -382,26 +388,23 @@ export function useCareTeamManagement({
   const handleRemoveCareTeamMember = useCallback(
     async (member: CareTeamMemberView) => {
       if (!canManageCareTeam) {
-        setCareTeamStatus(feedbackMessages.permissionDenied("Only an Admin or CEO account can remove care team members."));
+        setCareTeamStatus(feedbackMessages.permissionDenied("Only an Admin or Staff account can deactivate care team members."));
         return;
       }
 
       if (member.id === profile?.id) {
-        setCareTeamStatus("You cannot remove your own account.");
+        setCareTeamStatus("You cannot deactivate your own account.");
         return;
       }
 
-      if (
-        getProfileDisplayRole(profile?.role) === "CEO" &&
-        getProfileDisplayRole(member.role) === "Admin"
-      ) {
-        setCareTeamStatus("CEO accounts cannot remove Admin members.");
+      if (!canManageAdminAccounts && getProfileDisplayRole(member.role) === "Admin") {
+        setCareTeamStatus("Staff accounts cannot deactivate or affect Admin accounts.");
         return;
       }
 
       setCareTeamSavingId(member.id);
-      setCareTeamSavingAction("remove");
-      setCareTeamStatus(feedbackMessages.loading(`Removing ${member.full_name} from the Care Team`));
+      setCareTeamSavingAction("deactivate");
+      setCareTeamStatus(feedbackMessages.loading(`Deactivating ${member.full_name}`));
 
       try {
         const { data, error } = await supabase.functions.invoke(
@@ -415,18 +418,18 @@ export function useCareTeamManagement({
 
         if (error) {
           const message = await getSupabaseFunctionErrorMessage(error);
-          setCareTeamStatus(feedbackMessages.deleteFailed("Care Team member", message));
+          setCareTeamStatus(feedbackMessages.updateFailed("Care Team member", message));
           return;
         }
 
         if (data?.error) {
-          setCareTeamStatus(feedbackMessages.deleteFailed("Care Team member", String(data.error)));
+          setCareTeamStatus(feedbackMessages.updateFailed("Care Team member", String(data.error)));
           return;
         }
 
-        const removedName =
-          typeof data?.removed_name === "string" && data.removed_name.trim() !== ""
-            ? data.removed_name
+        const deactivatedName =
+          typeof data?.deactivated_name === "string" && data.deactivated_name.trim() !== ""
+            ? data.deactivated_name
             : member.full_name;
 
         setCareTeamProfiles((current) =>
@@ -436,7 +439,7 @@ export function useCareTeamManagement({
         await loadCareTeamProfiles();
         await loadAuditLogs(auditLogFilter);
 
-        setCareTeamStatus(`${removedName} removed from the Care Team.`);
+        setCareTeamStatus(`${deactivatedName}'s account has been deactivated.`);
       } finally {
         setCareTeamSavingId("");
         setCareTeamSavingAction("");
@@ -444,11 +447,11 @@ export function useCareTeamManagement({
     },
     [
       auditLogFilter,
+      canManageAdminAccounts,
       canManageCareTeam,
       loadAuditLogs,
       loadCareTeamProfiles,
       profile?.id,
-      profile?.role,
     ]
   );
 

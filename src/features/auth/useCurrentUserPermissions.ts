@@ -10,6 +10,7 @@ import {
   canManageClientDocuments,
   canUseAllRepresentativeAnalytics,
   canUseIndividualRepresentativeAnalytics,
+  getCareTeamRoleCapabilities,
   getProfileDisplayRole,
   normalizeHpcRepresentativeName,
   shouldDefaultAnalyticsToAssignedRepresentative,
@@ -22,13 +23,17 @@ type ClientRepresentativeRecord = {
 
 export function useCurrentUserPermissions(profile: Profile | null) {
   const profileDisplayRole = getProfileDisplayRole(profile?.role);
-  const canManageCareTeam = profileDisplayRole === "Admin" || profileDisplayRole === "CEO";
-  const canManageDashboardAnnouncements = canManageCareTeam || profileDisplayRole === "Staff";
+  const {
+    canManageCareTeam,
+    canManageAdminAccounts,
+    canManageClientCategoriesAndBackups,
+    canViewAuditLogs,
+    canManageDashboardAnnouncements,
+    isClientAccessLimitedToAssignedRepresentative,
+  } = getCareTeamRoleCapabilities(profileDisplayRole);
   const assignedHpcRepresentativeName = normalizeHpcRepresentativeName(
     profile?.hpc_representative_name ?? ""
   );
-  const isClientAccessLimitedToAssignedRepresentative =
-    profileDisplayRole === "CEO" || profileDisplayRole === "Psychologist / Counselor";
   const isPrimaryAnalyticsLimitedToAssignedRepresentative =
     profileDisplayRole === "Psychologist / Counselor";
   const canUseAllRepresentativeAnalyticsForProfile =
@@ -83,6 +88,9 @@ export function useCurrentUserPermissions(profile: Profile | null) {
   return {
     profileDisplayRole,
     canManageCareTeam,
+    canManageAdminAccounts,
+    canManageClientCategoriesAndBackups,
+    canViewAuditLogs,
     canManageDashboardAnnouncements,
     assignedHpcRepresentativeName,
     canUseAllRepresentativeAnalyticsForProfile,

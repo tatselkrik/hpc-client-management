@@ -1,18 +1,17 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
+import { requireFreshMfaSession } from "../_shared/security.ts";
 
 
 const roleOptions = new Set([
   "Admin",
-  "CEO",
   "Psychologist / Counselor",
   "Staff",
-  "Intern",
 ]);
 
 function roleRequiresRepresentative(role: string) {
-  return role === "Psychologist / Counselor" || role === "CEO";
+  return role === "Psychologist / Counselor";
 }
 
 type InvitePayload = {
@@ -22,8 +21,6 @@ type InvitePayload = {
   role?: string;
   hpc_representative_name?: string;
   hpcRepresentativeName?: string;
-  temporary_password?: string;
-  temporaryPassword?: string;
 };
 
 
@@ -38,7 +35,7 @@ function normalizeRole(value: unknown) {
 
   const normalized = role.toLowerCase();
 
-  if (normalized === "ceo" || normalized === "chief executive officer") return "CEO";
+  if (normalized === "ceo" || normalized === "chief executive officer") return "Admin";
   if (normalized.includes("admin")) return "Admin";
   if (
     normalized === "psychologist / counselor" ||
@@ -49,9 +46,8 @@ function normalizeRole(value: unknown) {
   ) {
     return "Psychologist / Counselor";
   }
-  if (normalized.includes("intern")) return "Intern";
-
-  return "Staff";
+  if (normalized === "staff") return "Staff";
+  return "";
 }
 
 function normalizeRepresentativeName(value: unknown) {
@@ -84,8 +80,9 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const inviteRedirectUrl = Deno.env.get("CARE_TEAM_INVITE_REDIRECT_URL")?.trim();
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (!supabaseUrl || !serviceRoleKey || !inviteRedirectUrl) {
       return respond({ error: "Missing Supabase service configuration." }, 500);
     }
 
@@ -112,6 +109,11 @@ serve(async (req) => {
       return respond({ error: "Unauthorized." }, 401);
     }
 
+    const freshSessionError = requireFreshMfaSession(token);
+    if (freshSessionError) {
+      return respond({ error: freshSessionError }, 403);
+    }
+
     const { data: callerProfile, error: callerProfileError } = await supabase
       .from("profiles")
       .select("id, email, full_name, role, hpc_representative_name, is_active")
@@ -128,19 +130,14 @@ serve(async (req) => {
 
     const callerRole = normalizeRole(callerProfile.role);
 
-    if (callerRole !== "Admin" && callerRole !== "CEO") {
-      return respond({ error: "Only Admin or CEO accounts can create care team members." }, 403);
+    if (callerRole !== "Admin" && callerRole !== "Staff") {
+      return respond({ error: "Only Admin or Staff accounts can invite care team members." }, 403);
     }
 
     const payload = (await req.json().catch(() => ({}))) as InvitePayload;
     const email = payload.email?.trim().toLowerCase() ?? "";
     const fullName = (payload.full_name ?? payload.fullName ?? "").trim();
     const role = normalizeRole(payload.role);
-    const temporaryPassword = (
-      payload.temporary_password ??
-      payload.temporaryPassword ??
-      ""
-    ).trim();
     const hpcRepresentativeName =
       roleRequiresRepresentative(role)
         ? normalizeRepresentativeName(
@@ -156,16 +153,17 @@ serve(async (req) => {
       return respond({ error: "Full name is required." }, 400);
     }
 
-    if (roleRequiresRepresentative(role) && !hpcRepresentativeName) {
-      return respond(
-        { error: "HPC Representative is required for CEO and Psychologist / Counselor accounts." },
-        400,
-      );
+    if (!roleOptions.has(role)) {
+      return respond({ error: "Select a supported care team role." }, 400);
     }
 
-    if (temporaryPassword.length < 8) {
+    if (callerRole === "Staff" && role === "Admin") {
+      return respond({ error: "Staff accounts cannot create Admin accounts." }, 403);
+    }
+
+    if (roleRequiresRepresentative(role) && !hpcRepresentativeName) {
       return respond(
-        { error: "Temporary password must be at least 8 characters." },
+        { error: "HPC Representative is required for Psychologist / Counselor accounts." },
         400,
       );
     }
@@ -188,13 +186,11 @@ serve(async (req) => {
     }
 
     const { data: createdUser, error: createUserError } =
-      await supabase.auth.admin.createUser({
-        email,
-        password: temporaryPassword,
-        email_confirm: true,
-        user_metadata: {
+      await supabase.auth.admin.inviteUserByEmail(email, {
+        data: {
           full_name: fullName,
         },
+        redirectTo: inviteRedirectUrl,
       });
 
     if (createUserError || !createdUser.user) {
@@ -221,9 +217,17 @@ serve(async (req) => {
       .single();
 
     if (profileError) {
-      await supabase.auth.admin.deleteUser(createdUser.user.id);
+      // The Auth trigger creates new profiles as inactive. If activation fails,
+      // retain that inactive account for review instead of permanently deleting it.
+      await supabase
+        .from("profiles")
+        .update({ is_active: false })
+        .eq("id", createdUser.user.id);
 
-      return respond({ error: profileError.message }, 400);
+      return respond(
+        { error: `${profileError.message} The invited account was retained as inactive.` },
+        400,
+      );
     }
 
     await supabase.from("audit_logs").insert({
@@ -231,7 +235,7 @@ serve(async (req) => {
       actor_email: caller.email ?? callerProfile.email ?? null,
       actor_name: callerProfile.full_name ?? null,
       module: "Care Team",
-      action: "Created Member Account",
+      action: "Invited Member Account",
       target_type: "profile",
       target_id: createdUser.user.id,
       target_label: fullName,
@@ -239,7 +243,8 @@ serve(async (req) => {
         email,
         role,
         hpc_representative_name: hpcRepresentativeName,
-        delivery: "administrator_shared_temporary_password",
+        delivery: "email_invitation_required_password_setup",
+        mfa_required: true,
       },
     });
 

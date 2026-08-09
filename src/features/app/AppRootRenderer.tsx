@@ -25,6 +25,7 @@ type PasswordRecoveryRendererProps = {
   setIsRecoveryCapsLockOn: Dispatch<SetStateAction<boolean>>;
   handleCompletePasswordRecovery: AsyncAction;
   handleLogout: AsyncAction;
+  isInvitationPasswordSetup: boolean;
 };
 
 type MfaChallengeRendererProps = {

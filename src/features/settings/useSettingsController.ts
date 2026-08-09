@@ -27,7 +27,8 @@ export type ClientCategorySettingsControls = Pick<
 
 type UseSettingsControllerOptions = {
   activeSection: Section;
-  canManageCareTeam: boolean;
+  canManageClientCategoriesAndBackups: boolean;
+  canViewAuditLogs: boolean;
   canManageDashboardAnnouncements: boolean;
   profile: Profile | null;
   userEmail: string | null;
@@ -43,7 +44,8 @@ type SettingsControllerPropsBase = Omit<
 
 export function useSettingsController({
   activeSection,
-  canManageCareTeam,
+  canManageClientCategoriesAndBackups,
+  canViewAuditLogs,
   canManageDashboardAnnouncements,
   profile,
   userEmail,
@@ -62,7 +64,7 @@ export function useSettingsController({
     resetAuditLogs,
   } = useAuditLogs({
     activeSection,
-    canManageCareTeam,
+    canManageCareTeam: canViewAuditLogs,
     userEmail,
   });
 
@@ -91,7 +93,7 @@ export function useSettingsController({
     handleChooseRestorePackage,
     handleRestorePackageSelected,
   } = useBackupTools({
-    canManageCareTeam,
+    canManageCareTeam: canManageClientCategoriesAndBackups,
     profile,
     userEmail,
   });
@@ -106,7 +108,8 @@ export function useSettingsController({
     handleClearDashboardAnnouncement,
     themeMode,
     setThemeMode,
-    canManageCareTeam,
+    canManageClientCategoriesAndBackups,
+    canViewAuditLogs,
     isExportingBackup,
     backupToolsStatus,
     restorePreview,

@@ -23,6 +23,7 @@ export function useProfileMfaState() {
   const [mfaEnrollment, setMfaEnrollment] = useState<MfaEnrollment | null>(null);
   const [mfaVerificationCodeInput, setMfaVerificationCodeInput] = useState("");
   const [isMfaWorking, setIsMfaWorking] = useState(false);
+  const [mfaEnrollmentRequired, setMfaEnrollmentRequired] = useState(false);
   const [showMfaChallengeScreen, setShowMfaChallengeScreen] = useState(false);
   const [mfaChallengeCodeInput, setMfaChallengeCodeInput] = useState("");
   const [mfaChallengeMessage, setMfaChallengeMessage] = useState("");
@@ -63,6 +64,9 @@ export function useProfileMfaState() {
       });
 
     setMfaFactors(nextFactors);
+    setMfaEnrollmentRequired(
+      !nextFactors.some((factor) => factor.status === "verified")
+    );
     setMfaAssurance({
       currentLevel: assuranceResult.data.currentLevel ?? null,
       nextLevel: assuranceResult.data.nextLevel ?? null,
@@ -84,6 +88,7 @@ export function useProfileMfaState() {
     setMfaChallengeMessage("");
     setIsMfaChallengeSubmitting(false);
     setIsMfaWorking(false);
+    setMfaEnrollmentRequired(false);
   }, []);
 
   const hasVerifiedMfaForProfileChanges = useCallback(
@@ -180,6 +185,7 @@ export function useProfileMfaState() {
     setMfaVerificationCodeInput,
     isMfaWorking,
     setIsMfaWorking,
+    mfaEnrollmentRequired,
     showMfaChallengeScreen,
     setShowMfaChallengeScreen,
     mfaChallengeCodeInput,

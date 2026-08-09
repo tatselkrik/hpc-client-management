@@ -16,6 +16,7 @@ Run the files in this exact order:
 4. `supabase/migrations/20260504000400_rls_policies.sql`
 5. `supabase/migrations/20260504000500_storage_buckets.sql`
 6. `supabase/migrations/20260504000600_seed_defaults.sql`
+7. `supabase/migrations/20260807000100_security_hardening.sql`
 
 ## Important notes
 
@@ -72,22 +73,25 @@ SUPABASE_URL
 SUPABASE_SERVICE_ROLE_KEY
 GEMINI_API_KEY
 GEMINI_MODEL
+CARE_TEAM_INVITE_REDIRECT_URL
 HPC_ALLOWED_CORS_ORIGINS
 ALLOWED_CORS_ORIGINS
 ```
 
-`GEMINI_MODEL`, `HPC_ALLOWED_CORS_ORIGINS`, and `ALLOWED_CORS_ORIGINS` are optional depending on deployment choices.
+`GEMINI_MODEL`, `HPC_ALLOWED_CORS_ORIGINS`, and `ALLOWED_CORS_ORIGINS` are optional depending on deployment choices. `CARE_TEAM_INVITE_REDIRECT_URL` is required for email invitations and should be set to `hpc-client-management://auth/invite` for the installed Windows app.
 
 ## Post-migration manual checks
 
 After applying migrations and deploying functions, test:
 
 - Profile creation / Care Team invite flow
-- Admin, CEO, Psychologist / Counselor, Staff, and Intern role matrix
-- Removed or inactive user access denial
+- Admin, Psychologist / Counselor, and Staff role matrix
+- Staff denial when creating, promoting, editing, or deactivating an Admin
+- Deactivated user access denial and retained account history
 - Client CRUD and representative scoping
-- C-SSRS Staff/Intern partial-edit behavior
-- 4Ps generation denial for Staff/Intern
+- C-SSRS access for Admin, assigned Psychologist / Counselor, and Staff
+- 4Ps narrative generation for authorized Admin, assigned Psychologist / Counselor, and Staff accounts
+- Mandatory MFA before clinical or operational access
 - Document/Assessment upload, download, rename, delete permissions
 - Profile picture upload/remove
 - Analytics export

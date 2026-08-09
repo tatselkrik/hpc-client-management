@@ -17,8 +17,9 @@ export type CareTeamSectionProps = {
   careTeamStatus: string;
   profile: Profile | null;
   canManageCareTeam: boolean;
+  canManageAdminAccounts: boolean;
   careTeamSavingId: string;
-  careTeamSavingAction: "role" | "remove" | "";
+  careTeamSavingAction: "role" | "deactivate" | "";
   handleUpdateCareTeamRole: (
     member: CareTeamMemberView,
     nextRole: string,
@@ -46,6 +47,7 @@ export function CareTeamSection({
   careTeamStatus,
   profile,
   canManageCareTeam,
+  canManageAdminAccounts,
   careTeamSavingId,
   careTeamSavingAction,
   handleUpdateCareTeamRole,
@@ -66,6 +68,9 @@ export function CareTeamSection({
     (option) => option.trim() !== "" && option !== "Other"
   );
   const signedInRole = getProfileDisplayRole(profile?.role);
+  const availableRoleOptions = canManageAdminAccounts
+    ? CARE_TEAM_ROLE_OPTIONS
+    : CARE_TEAM_ROLE_OPTIONS.filter((role) => role !== "Admin");
 
   const clearRoleAssignmentDraft = (memberId: string) => {
     setRoleAssignmentDrafts((current) => {
@@ -80,7 +85,7 @@ export function CareTeamSection({
   const isRemovalModalBusy =
     memberPendingRemoval !== null &&
     careTeamSavingId === memberPendingRemoval.id &&
-    careTeamSavingAction === "remove";
+    careTeamSavingAction === "deactivate";
 
   const [usesCustomRepresentativeName, setUsesCustomRepresentativeName] =
     useState(false);
@@ -135,11 +140,14 @@ export function CareTeamSection({
             {careTeamMembers.map((member) => {
               const isSignedInMember = member.id === profile?.id;
               const isAdminMember = getProfileDisplayRole(member.role) === "Admin";
-              const canEditMemberRole = canManageCareTeam && !isSignedInMember;
+              const canEditMemberRole =
+                canManageCareTeam &&
+                !isSignedInMember &&
+                (canManageAdminAccounts || !isAdminMember);
               const canRemoveMember =
                 canManageCareTeam &&
                 !isSignedInMember &&
-                !(signedInRole === "CEO" && isAdminMember);
+                (canManageAdminAccounts || !isAdminMember);
               const roleAssignmentDraft = roleAssignmentDrafts[member.id];
               const selectedRole = roleAssignmentDraft?.role ?? member.role;
               const selectedRepresentativeName =
@@ -203,12 +211,12 @@ export function CareTeamSection({
                         className="small-button danger-button care-team-remove-button"
                         onClick={() => setMemberPendingRemoval(member)}
                         disabled={careTeamSavingId === member.id}
-                        aria-label={`Remove ${member.full_name}`}
-                        title={`Remove ${member.full_name}`}
+                        aria-label={`Deactivate ${member.full_name}`}
+                        title={`Deactivate ${member.full_name}`}
                       >
-                        {careTeamSavingId === member.id && careTeamSavingAction === "remove"
-                          ? "Removing..."
-                          : "Remove"}
+                        {careTeamSavingId === member.id && careTeamSavingAction === "deactivate"
+                          ? "Deactivating..."
+                          : "Deactivate"}
                       </button>
                     )}
                   </div>
@@ -250,7 +258,7 @@ export function CareTeamSection({
                               }}
                               disabled={careTeamSavingId === member.id}
                             >
-                              {CARE_TEAM_ROLE_OPTIONS.map((roleOption) => (
+                              {availableRoleOptions.map((roleOption) => (
                                 <option key={roleOption} value={roleOption}>
                                   {roleOption}
                                 </option>
@@ -261,7 +269,11 @@ export function CareTeamSection({
                           <div className="care-team-role-display">
                             <strong>{member.role}</strong>
                             <p className="care-team-role-lock-note">
-                              You cannot change your own role.
+                              {isSignedInMember
+                                ? "You cannot change your own role."
+                                : signedInRole === "Staff" && isAdminMember
+                                  ? "Staff accounts cannot change or affect an Admin."
+                                  : "This role is protected."}
                             </p>
                           </div>
                         )}
@@ -354,7 +366,7 @@ export function CareTeamSection({
           <section className="panel care-team-panel care-team-panel-side">
             <SectionHeader
               className="section-header care-team-section-header"
-              title="Create member account"
+              title="Invite care team member"
             />
 
             <div className="care-team-admin-stack">
@@ -416,7 +428,7 @@ export function CareTeamSection({
                         }));
                       }}
                     >
-                      {CARE_TEAM_ROLE_OPTIONS.map((roleOption) => (
+                      {availableRoleOptions.map((roleOption) => (
                         <option key={roleOption} value={roleOption}>
                           {roleOption}
                         </option>
@@ -482,40 +494,10 @@ export function CareTeamSection({
                     </>
                   )}
 
-                  <label className="form-label">
-                    Temporary password
-                    <input
-                      className="search-input"
-                      type="password"
-                      value={careTeamInviteForm.temporary_password}
-                      onChange={(event) =>
-                        setCareTeamInviteForm((current) => ({
-                          ...current,
-                          temporary_password: event.target.value,
-                        }))
-                      }
-                      placeholder="Enter temporary password"
-                    />
-                    <small className="field-hint">
-                      Share this privately with the staff member. They should change it in Profile after signing in.
-                    </small>
-                  </label>
-
-                  <label className="form-label">
-                    Confirm temporary password
-                    <input
-                      className="search-input"
-                      type="password"
-                      value={careTeamInviteForm.confirm_temporary_password}
-                      onChange={(event) =>
-                        setCareTeamInviteForm((current) => ({
-                          ...current,
-                          confirm_temporary_password: event.target.value,
-                        }))
-                      }
-                      placeholder="Re-enter temporary password"
-                    />
-                  </label>
+                  <p className="field-hint">
+                    The member will receive a secure email invitation and must set their own
+                    password. No password is shared by an administrator.
+                  </p>
                 </div>
 
                 <div className="overview-actions">
@@ -524,7 +506,7 @@ export function CareTeamSection({
                     className="small-button"
                     disabled={isInvitingCareTeam}
                   >
-                    {isInvitingCareTeam ? "Creating Account..." : "+ Create Member Account"}
+                    {isInvitingCareTeam ? "Sending Invitation..." : "+ Send Invitation"}
                   </button>
                 </div>
               </form>
@@ -543,12 +525,12 @@ export function CareTeamSection({
             aria-describedby="care-team-remove-description"
           >
             <div className="care-team-confirm-copy">
-              <span className="care-team-confirm-kicker">Permanent removal</span>
-              <h3 id="care-team-remove-title">Remove this Care Team member?</h3>
+              <span className="care-team-confirm-kicker">Reversible access change</span>
+              <h3 id="care-team-remove-title">Deactivate this Care Team member?</h3>
               <p id="care-team-remove-description">
-                Are you sure you want to permanently remove{" "}
-                <strong>{memberPendingRemoval.full_name}</strong>? This will delete their
-                account access and cannot be undone from the app.
+                Are you sure you want to deactivate{" "}
+                <strong>{memberPendingRemoval.full_name}</strong>? They will lose access, but
+                their account and audit history will be retained.
               </p>
               <div className="care-team-confirm-details">
                 <span>{memberPendingRemoval.email ?? "No email on file"}</span>
@@ -563,7 +545,7 @@ export function CareTeamSection({
                 onClick={closeRemovalModal}
                 disabled={isRemovalModalBusy}
               >
-                No, keep member
+                No, keep active
               </button>
               <button
                 type="button"
@@ -571,7 +553,7 @@ export function CareTeamSection({
                 onClick={() => void confirmRemoveCareTeamMember()}
                 disabled={isRemovalModalBusy}
               >
-                {isRemovalModalBusy ? "Removing..." : "Yes, remove account"}
+                {isRemovalModalBusy ? "Deactivating..." : "Yes, deactivate account"}
               </button>
             </div>
           </div>

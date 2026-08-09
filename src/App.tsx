@@ -9,6 +9,7 @@ import { AppRootRenderer } from "./features/app/AppRootRenderer";
 import { useAppRootProps } from "./features/app/useAppRootProps";
 import { useAboutUpdates } from "./features/about/useAboutUpdates";
 import { useAuthFlowController, type AuthSessionActionsBridge } from "./features/auth/useAuthFlowController";
+import { useDesktopAuthDeepLinks } from "./features/auth/useDesktopAuthDeepLinks";
 import { useCurrentUserPermissions } from "./features/auth/useCurrentUserPermissions";
 import { useAuditWriter } from "./features/audit/useAuditWriter";
 import { useClientWorkspaceController } from "./features/clients/useClientWorkspaceController";
@@ -28,6 +29,8 @@ import {
 } from "./appShared";
 
 function App() {
+  useDesktopAuthDeepLinks();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginCapsLockOn, setIsLoginCapsLockOn] = useState(false);
@@ -40,6 +43,7 @@ function App() {
   const [isRecoveryCapsLockOn, setIsRecoveryCapsLockOn] = useState(false);
   const [passwordRecoveryMessage, setPasswordRecoveryMessage] = useState("");
   const [isPasswordRecoverySubmitting, setIsPasswordRecoverySubmitting] = useState(false);
+  const [isInvitationPasswordSetup, setIsInvitationPasswordSetup] = useState(false);
 
   const [activeSection, setActiveSection] = useState<Section>("dashboard");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -123,6 +127,9 @@ function App() {
   const permissions = useCurrentUserPermissions(profile);
   const {
     canManageCareTeam,
+    canManageAdminAccounts,
+    canManageClientCategoriesAndBackups,
+    canViewAuditLogs,
     canManageDashboardAnnouncements,
     assignedHpcRepresentativeName,
     canUseAllRepresentativeAnalyticsForProfile,
@@ -142,7 +149,8 @@ function App() {
 
   const settingsController = useSettingsController({
     activeSection,
-    canManageCareTeam,
+    canManageClientCategoriesAndBackups,
+    canViewAuditLogs,
     canManageDashboardAnnouncements,
     profile,
     userEmail,
@@ -165,10 +173,8 @@ function App() {
   const actualWriteAuditLog = useAuditWriter({
     activeSection,
     auditLogFilter,
-    canManageCareTeam,
+    canManageCareTeam: canViewAuditLogs,
     loadAuditLogs,
-    profile,
-    userEmail,
   });
 
   useEffect(() => {
@@ -184,7 +190,7 @@ function App() {
   const clientWorkspace = useClientWorkspaceController({
     activeSection,
     userEmail,
-    canManageCareTeam,
+    canManageCareTeam: canManageClientCategoriesAndBackups,
     canCreateClientRecords: canCreateClientRecordsForProfile,
     canEditClientClinicalRecords: canEditClientClinicalRecordsForProfile,
     shouldLockClientRepresentativeToAssigned: shouldLockClientRepresentativeToAssignedForProfile,
@@ -214,6 +220,7 @@ function App() {
     userEmail,
     profile,
     canManageCareTeam,
+    canManageAdminAccounts,
     clientRows: clientWorkspace.clientRows,
     auditLogFilter,
     loadAuditLogs,
@@ -264,6 +271,8 @@ function App() {
     setPasswordRecoveryMessage,
     isPasswordRecoverySubmitting,
     setIsPasswordRecoverySubmitting,
+    isInvitationPasswordSetup,
+    setIsInvitationPasswordSetup,
     userEmail,
     profile,
     loadProfile,
@@ -317,6 +326,7 @@ function App() {
     clientWorkspace,
     careTeam: careTeamController,
     canManageCareTeam,
+    canManageAdminAccounts,
     profileProps,
     settingsController,
     aboutProps: {

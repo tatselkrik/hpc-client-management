@@ -66,3 +66,28 @@ order by id;
 select name
 from public.client_categories
 order by name;
+
+-- 7) Approved role migration. This result must contain only the three approved roles.
+select role, is_active, count(*) as account_count
+from public.profiles
+group by role, is_active
+order by role, is_active desc;
+
+-- 8) No legacy CEO or Intern account should remain active.
+select id, email, role, is_active
+from public.profiles
+where lower(trim(role)) in ('ceo', 'intern')
+   or role not in ('Admin', 'Psychologist / Counselor', 'Staff');
+
+-- 9) New profiles must default to inactive until created through the invitation service.
+select column_default, is_nullable
+from information_schema.columns
+where table_schema = 'public'
+  and table_name = 'profiles'
+  and column_name = 'is_active';
+
+-- 10) Authenticated clients must not have direct audit-write privileges.
+select
+  has_table_privilege('authenticated', 'public.audit_logs', 'INSERT') as can_insert,
+  has_table_privilege('authenticated', 'public.audit_logs', 'UPDATE') as can_update,
+  has_table_privilege('authenticated', 'public.audit_logs', 'DELETE') as can_delete;

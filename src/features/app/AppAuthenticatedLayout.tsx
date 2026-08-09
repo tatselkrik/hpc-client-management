@@ -87,9 +87,20 @@ export function AppAuthenticatedLayout({
   handleRefreshPhoneUpload,
   handleLogout,
 }: AppAuthenticatedLayoutProps) {
+  const isMfaEnrollmentRequired = profileProps.mfaEnrollmentRequired;
+  const displayedSection: Section = isMfaEnrollmentRequired ? "profile" : activeSection;
+  const handleSectionChange: Dispatch<SetStateAction<Section>> = (nextSection) => {
+    if (isMfaEnrollmentRequired) {
+      setActiveSection("profile");
+      return;
+    }
+
+    setActiveSection(nextSection);
+  };
+
   return (
     <AppShell
-      activeSection={activeSection}
+      activeSection={displayedSection}
       isSidebarCollapsed={isSidebarCollapsed}
       loading={loading}
       profile={profile}
@@ -97,7 +108,7 @@ export function AppAuthenticatedLayout({
       userEmail={userEmail}
       mainContent={
         <AppMainSectionRenderer
-          activeSection={activeSection}
+          activeSection={displayedSection}
           dashboardProps={dashboardProps}
           clientsProps={clientsProps}
           analyticsProps={analyticsProps}
@@ -141,7 +152,7 @@ export function AppAuthenticatedLayout({
           onRefresh={handleRefreshPhoneUpload}
         />
       }
-      setActiveSection={setActiveSection}
+      setActiveSection={handleSectionChange}
       setIsSidebarCollapsed={setIsSidebarCollapsed}
       handleLogout={handleLogout}
     />

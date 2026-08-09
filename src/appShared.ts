@@ -15,8 +15,6 @@ export type CareTeamInviteForm = {
   email: string;
   role: string;
   hpc_representative_name: string;
-  temporary_password: string;
-  confirm_temporary_password: string;
 };
 
 
@@ -580,13 +578,7 @@ export const CLINIC_CLINIC_INFO = {
   address: "Sample Psychological Center V, City Center Ave., Brgy. 33, Bacolod City",
 };
 
-export const CARE_TEAM_ROLE_OPTIONS = [
-  "Admin",
-  "CEO",
-  "Psychologist / Counselor",
-  "Staff",
-  "Intern",
-];
+export { CARE_TEAM_ROLE_OPTIONS } from "./security/rolePolicy";
 
 
 export const DEFAULT_MFA_FRIENDLY_NAME = "HPC Clinic Authenticator";
@@ -717,7 +709,14 @@ export const buildPasswordRecoveryRedirectUrl = () => {
 };
 
 export const clearPasswordRecoveryHash = () => {
-  if (typeof window === "undefined" || !window.location.hash.includes("password-recovery")) {
+  if (
+    typeof window === "undefined" ||
+    !(
+      window.location.hash.includes("password-recovery") ||
+      window.location.hash.includes("account-invitation") ||
+      /(?:^|[&#])type=invite(?:&|$)/.test(window.location.hash)
+    )
+  ) {
     return;
   }
 
@@ -730,6 +729,13 @@ export const clearPasswordRecoveryHash = () => {
 
 export const getHasPasswordRecoveryHash = () =>
   typeof window !== "undefined" && window.location.hash.includes("password-recovery");
+
+export const getHasAccountInvitationHash = () =>
+  typeof window !== "undefined" &&
+  (
+    window.location.hash.includes("account-invitation") ||
+    /(?:^|[&#])type=invite(?:&|$)/.test(window.location.hash)
+  );
 
 export const getAuditFilterStartIso = (range: AuditLogFilterRange) => {
   const now = new Date();
@@ -864,112 +870,26 @@ export const getMfaSetupStateLabel = (
 
 
 
-export const isAdminRole = (value: string | null | undefined) =>
-  (value ?? "").trim().toLowerCase() === "admin";
-
-export const normalizeCareTeamRole = (value: string | null | undefined) => {
-  const normalized = (value ?? "").trim().toLowerCase();
-
-  if (normalized === "ceo" || normalized === "chief executive officer") return "CEO";
-  if (normalized.includes("admin")) return "Admin";
-  if (
-    normalized === "psychologist / counselor" ||
-    normalized === "psychologist / counsellor" ||
-    normalized === "psychologist" ||
-    normalized === "counsellor" ||
-    normalized === "counselor"
-  ) {
-    return "Psychologist / Counselor";
-  }
-  if (normalized.includes("intern")) return "Intern";
-  return "Staff";
-};
-
-export const isRepresentativeAssignedRole = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "Psychologist / Counselor" || role === "CEO";
-};
-
-export const canUseAllRepresentativeAnalytics = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return (
-    role === "Admin" ||
-    role === "CEO" ||
-    role === "Staff" ||
-    role === "Psychologist / Counselor"
-  );
-};
-
-export const canUseIndividualRepresentativeAnalytics = (
-  value: string | null | undefined
-) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "Admin" || role === "CEO" || role === "Staff";
-};
-
-export const shouldDefaultAnalyticsToAssignedRepresentative = (
-  value: string | null | undefined
-) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "CEO" || role === "Psychologist / Counselor";
-};
-
-export const canEditClientClinicalRecords = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "Admin" || role === "CEO" || role === "Psychologist / Counselor";
-};
-
-export const canCreateClientRecords = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return (
-    role === "Admin" ||
-    role === "CEO" ||
-    role === "Psychologist / Counselor" ||
-    role === "Staff" ||
-    role === "Intern"
-  );
-};
-
-export const shouldLockClientRepresentativeToAssigned = (
-  value: string | null | undefined
-) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "CEO" || role === "Psychologist / Counselor";
-};
-
-export const canEditClientCssrsInterview = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return (
-    role === "Admin" ||
-    role === "CEO" ||
-    role === "Psychologist / Counselor" ||
-    role === "Staff" ||
-    role === "Intern"
-  );
-};
-
-export const canEditClientCssrsProtectiveFactors = (
-  value: string | null | undefined
-) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "Admin" || role === "CEO" || role === "Psychologist / Counselor";
-};
-
-export const canManageClientDocuments = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "Admin" || role === "CEO" || role === "Psychologist / Counselor" || role === "Staff";
-};
-
-export const canManageClientAssessments = (value: string | null | undefined) => {
-  const role = normalizeCareTeamRole(value);
-  return role === "Admin" || role === "CEO" || role === "Psychologist / Counselor" || role === "Staff";
-};
+export {
+  canCreateClientRecords,
+  canEditClientClinicalRecords,
+  canEditClientCssrsInterview,
+  canEditClientCssrsProtectiveFactors,
+  canManageClientAssessments,
+  canManageClientDocuments,
+  canUseAllRepresentativeAnalytics,
+  canUseIndividualRepresentativeAnalytics,
+  getCareTeamRoleCapabilities,
+  getProfileDisplayRole,
+  isAdminRole,
+  isRepresentativeAssignedRole,
+  normalizeCareTeamRole,
+  shouldDefaultAnalyticsToAssignedRepresentative,
+  shouldLockClientRepresentativeToAssigned,
+} from "./security/rolePolicy";
 
 export const getProfileDisplayName = (value: string | null | undefined) =>
   value?.trim() || "User";
-
-export const getProfileDisplayRole = (value: string | null | undefined) =>
-  normalizeCareTeamRole(value) || "Staff";
 
 export const normalizeCareTeamMemberEmail = (value: string | null | undefined) => {
   const normalized = (value ?? "").trim().toLowerCase();
@@ -1009,11 +929,6 @@ export const defaultMobileUploadBaseUrl =
 
 export const MOBILE_UPLOAD_BASE_URL =
   import.meta.env.VITE_MOBILE_UPLOAD_BASE_URL ?? defaultMobileUploadBaseUrl;
-
-export const CARE_TEAM_INVITE_REDIRECT_URL =
-  import.meta.env.VITE_CARE_TEAM_INVITE_REDIRECT_URL ??
-  import.meta.env.VITE_INVITE_REDIRECT_URL ??
-  undefined;
 
 export const createPhoneUploadToken = () => {
   const values = crypto.getRandomValues(new Uint8Array(24));
@@ -1840,4 +1755,3 @@ export const hasCompleteCssrsProtectiveFactorTexts = (
 
   return Object.values(normalized).every((text) => text.trim().length > 0);
 };
-

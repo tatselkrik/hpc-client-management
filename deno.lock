@@ -1,0 +1,40 @@
+{
+  "version": "5",
+  "redirects": {
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2.112.2"
+  },
+  "remote": {
+    "https://deno.land/std@0.224.0/async/delay.ts": "f90dd685b97c2f142b8069082993e437b1602b8e2561134827eeb7c12b95c499",
+    "https://deno.land/std@0.224.0/http/server.ts": "f9313804bf6467a1704f45f76cb6cd0a3396a3b31c316035e6a4c2035d1ea514",
+    "https://esm.sh/@supabase/supabase-js@2.112.2": "ea8a8dc3bcfe3cd929a9f6f83a5c266ad3f9d8101c34f71d465dd73f7ff1b796"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@eslint/js@^9.32.0",
+        "npm:@playwright/test@^1.59.1",
+        "npm:@supabase/supabase-js@^2.103.3",
+        "npm:@tauri-apps/api@2.10.1",
+        "npm:@tauri-apps/cli@2.10.1",
+        "npm:@tauri-apps/plugin-deep-link@^2.4.7",
+        "npm:@tauri-apps/plugin-dialog@^2.7.0",
+        "npm:@tauri-apps/plugin-fs@^2.5.0",
+        "npm:@tauri-apps/plugin-opener@2",
+        "npm:@types/node@^25.6.0",
+        "npm:@types/react-dom@^19.1.6",
+        "npm:@types/react@^19.1.8",
+        "npm:@vitejs/plugin-react@^4.6.0",
+        "npm:eslint-plugin-react-hooks@^5.2.0",
+        "npm:eslint@^9.32.0",
+        "npm:pptxgenjs@^4.0.1",
+        "npm:qrcode@^1.5.4",
+        "npm:react-dom@^19.1.0",
+        "npm:react@^19.1.0",
+        "npm:recharts@^3.8.1",
+        "npm:typescript-eslint@^8.38.0",
+        "npm:typescript@~5.8.3",
+        "npm:vite@^7.0.4"
+      ]
+    }
+  }
+}

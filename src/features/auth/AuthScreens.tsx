@@ -133,6 +133,7 @@ type PasswordRecoveryScreenProps = {
   setIsRecoveryCapsLockOn: Dispatch<SetStateAction<boolean>>;
   handleCompletePasswordRecovery: AsyncAction;
   handleLogout: AsyncAction;
+  isInvitationPasswordSetup: boolean;
 };
 
 export function PasswordRecoveryScreen({
@@ -147,6 +148,7 @@ export function PasswordRecoveryScreen({
   setIsRecoveryCapsLockOn,
   handleCompletePasswordRecovery,
   handleLogout,
+  isInvitationPasswordSetup,
 }: PasswordRecoveryScreenProps) {
   return (
     <main className="login-screen mfa-screen">
@@ -157,12 +159,16 @@ export function PasswordRecoveryScreen({
             alt={CLINIC_NAME}
             className="login-brand-logo"
           />
-          <h1 className="login-brand-title">Reset password</h1>
+          <h1 className="login-brand-title">
+            {isInvitationPasswordSetup ? "Set up your account" : "Reset password"}
+          </h1>
         </div>
 
         <div className="login-form">
           <p className="mfa-screen-copy">
-            Create a new password to finish recovering your sign-in. Use at least 8 characters with one letter and one number.
+            {isInvitationPasswordSetup
+              ? "Choose your own password to accept this invitation. Use at least 8 characters with one letter and one number."
+              : "Create a new password to finish recovering your sign-in. Use at least 8 characters with one letter and one number."}
           </p>
 
           <input
@@ -196,7 +202,11 @@ export function PasswordRecoveryScreen({
             onClick={() => void handleCompletePasswordRecovery()}
             disabled={isPasswordRecoverySubmitting}
           >
-            {isPasswordRecoverySubmitting ? "Updating..." : "Update Password"}
+            {isPasswordRecoverySubmitting
+              ? "Updating..."
+              : isInvitationPasswordSetup
+                ? "Set Password"
+                : "Update Password"}
           </button>
 
           <button

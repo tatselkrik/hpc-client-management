@@ -79,7 +79,7 @@ export function useSettingsAnnouncement({
 
   const handleClearDashboardAnnouncement = useCallback(async () => {
     if (!canManageDashboardAnnouncements) {
-      setDashboardAnnouncementStatus(feedbackMessages.permissionDenied("Only Admin, CEO, or Staff accounts can manage dashboard announcements."));
+      setDashboardAnnouncementStatus(feedbackMessages.permissionDenied("Only active care team accounts can manage dashboard announcements."));
       return;
     }
 
@@ -134,7 +134,7 @@ export function useSettingsAnnouncement({
 
   const handleSaveDashboardAnnouncement = useCallback(async () => {
     if (!canManageDashboardAnnouncements) {
-      setDashboardAnnouncementStatus(feedbackMessages.permissionDenied("Only Admin, CEO, or Staff accounts can manage dashboard announcements."));
+      setDashboardAnnouncementStatus(feedbackMessages.permissionDenied("Only active care team accounts can manage dashboard announcements."));
       return;
     }
 

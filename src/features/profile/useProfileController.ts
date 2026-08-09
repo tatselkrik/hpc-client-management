@@ -92,6 +92,7 @@ export function useProfileController({
     setMfaVerificationCodeInput,
     isMfaWorking,
     setIsMfaWorking,
+    mfaEnrollmentRequired,
     showMfaChallengeScreen,
     setShowMfaChallengeScreen,
     mfaChallengeCodeInput,
@@ -205,6 +206,7 @@ export function useProfileController({
     handleStartMfaEnrollment: profileActions.handleStartMfaEnrollment,
     handleRemoveMfaFactor: profileActions.handleRemoveMfaFactor,
     mfaMessage,
+    mfaEnrollmentRequired,
   };
 
   return {

@@ -65,7 +65,7 @@ export function useBackupTools({
 
   const handleExportClinicBackup = async () => {
     if (!canManageCareTeam) {
-      setBackupToolsStatus(feedbackMessages.permissionDenied("Only Admin accounts can export clinic backups."));
+      setBackupToolsStatus(feedbackMessages.permissionDenied("Only Admin or Staff accounts can export clinic backups."));
       return;
     }
 
