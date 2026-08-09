@@ -4,6 +4,8 @@ This file records notable changes to HPC Client Management.
 
 ## Unreleased
 
+## 0.2.0 - 2026-08-10
+
 ### Access control
 
 - Reduced account roles to Admin, Psychologist / Counselor, and Staff.
