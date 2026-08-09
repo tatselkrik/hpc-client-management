@@ -9,6 +9,7 @@ import type {
   AuditLogEntry,
   AuditLogFilterRange,
   BackupRestorePreview,
+  ClinicInfo,
   DashboardAnnouncement,
   ThemeMode,
   ClientCategory,
@@ -22,6 +23,17 @@ import { SettingsClinicInfoCard } from "./SettingsClinicInfoCard";
 import { SettingsClientCategoriesCard } from "./SettingsClientCategoriesCard";
 
 export type SettingsSectionProps = {
+  clinicInfo: ClinicInfo;
+  clinicInfoDraft: ClinicInfo;
+  setClinicInfoDraft: Dispatch<SetStateAction<ClinicInfo>>;
+  clinicInfoStatus: string;
+  canManageClinicInfo: boolean;
+  isClinicInfoEditing: boolean;
+  isClinicInfoSaving: boolean;
+  handleStartClinicInfoEdit: () => void;
+  handleCancelClinicInfoEdit: () => void;
+  handleSaveClinicInfo: () => void | Promise<void>;
+
   canManageDashboardAnnouncements: boolean;
   dashboardAnnouncement: DashboardAnnouncement;
   setDashboardAnnouncement: Dispatch<SetStateAction<DashboardAnnouncement>>;
@@ -48,13 +60,21 @@ export type SettingsSectionProps = {
 
   canManageClientCategoriesAndBackups: boolean;
   canViewAuditLogs: boolean;
+  canRestoreClinicBackup: boolean;
   isExportingBackup: boolean;
+  isRestoringBackup: boolean;
   backupToolsStatus: string;
   restorePreview: BackupRestorePreview | null;
+  isRestoreConfirmationOpen: boolean;
+  restoreConfirmationText: string;
+  setRestoreConfirmationText: Dispatch<SetStateAction<string>>;
   backupRestoreInputRef: RefObject<HTMLInputElement | null>;
   handleExportClinicBackup: () => void | Promise<void>;
   handleChooseRestorePackage: () => void;
   handleRestorePackageSelected: (event: ChangeEvent<HTMLInputElement>) => void | Promise<void>;
+  handleOpenRestoreConfirmation: () => void;
+  handleCloseRestoreConfirmation: () => void;
+  handleConfirmRestore: () => void | Promise<void>;
 
   auditLogFilter: AuditLogFilterRange;
   setAuditLogFilter: (filter: AuditLogFilterRange) => void;
@@ -65,6 +85,16 @@ export type SettingsSectionProps = {
 };
 
 export function SettingsSection({
+  clinicInfo,
+  clinicInfoDraft,
+  setClinicInfoDraft,
+  clinicInfoStatus,
+  canManageClinicInfo,
+  isClinicInfoEditing,
+  isClinicInfoSaving,
+  handleStartClinicInfoEdit,
+  handleCancelClinicInfoEdit,
+  handleSaveClinicInfo,
   canManageDashboardAnnouncements,
   dashboardAnnouncement,
   setDashboardAnnouncement,
@@ -88,13 +118,21 @@ export function SettingsSection({
   handleDeleteClientCategory,
   canManageClientCategoriesAndBackups,
   canViewAuditLogs,
+  canRestoreClinicBackup,
   isExportingBackup,
+  isRestoringBackup,
   backupToolsStatus,
   restorePreview,
+  isRestoreConfirmationOpen,
+  restoreConfirmationText,
+  setRestoreConfirmationText,
   backupRestoreInputRef,
   handleExportClinicBackup,
   handleChooseRestorePackage,
   handleRestorePackageSelected,
+  handleOpenRestoreConfirmation,
+  handleCloseRestoreConfirmation,
+  handleConfirmRestore,
   auditLogFilter,
   setAuditLogFilter,
   isAuditLogLoading,
@@ -110,7 +148,18 @@ export function SettingsSection({
         <div className="panel settings-panel">
           <div className="settings-module-grid">
             <div className="settings-module-row settings-module-row-top">
-              <SettingsClinicInfoCard />
+              <SettingsClinicInfoCard
+                clinicInfo={clinicInfo}
+                clinicInfoDraft={clinicInfoDraft}
+                setClinicInfoDraft={setClinicInfoDraft}
+                clinicInfoStatus={clinicInfoStatus}
+                canManageClinicInfo={canManageClinicInfo}
+                isClinicInfoEditing={isClinicInfoEditing}
+                isClinicInfoSaving={isClinicInfoSaving}
+                handleStartClinicInfoEdit={handleStartClinicInfoEdit}
+                handleCancelClinicInfoEdit={handleCancelClinicInfoEdit}
+                handleSaveClinicInfo={handleSaveClinicInfo}
+              />
 
               <SettingsAppearanceCard
                 themeMode={themeMode}
@@ -150,13 +199,21 @@ export function SettingsSection({
 
                 <SettingsBackupRestoreCard
                   canManageCareTeam={canManageClientCategoriesAndBackups}
+                  canRestoreClinicBackup={canRestoreClinicBackup}
                   isExportingBackup={isExportingBackup}
+                  isRestoringBackup={isRestoringBackup}
                   backupToolsStatus={backupToolsStatus}
                   restorePreview={restorePreview}
+                  isRestoreConfirmationOpen={isRestoreConfirmationOpen}
+                  restoreConfirmationText={restoreConfirmationText}
+                  setRestoreConfirmationText={setRestoreConfirmationText}
                   backupRestoreInputRef={backupRestoreInputRef}
                   handleExportClinicBackup={handleExportClinicBackup}
                   handleChooseRestorePackage={handleChooseRestorePackage}
                   handleRestorePackageSelected={handleRestorePackageSelected}
+                  handleOpenRestoreConfirmation={handleOpenRestoreConfirmation}
+                  handleCloseRestoreConfirmation={handleCloseRestoreConfirmation}
+                  handleConfirmRestore={handleConfirmRestore}
                 />
               </div>
             )}

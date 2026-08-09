@@ -187,7 +187,9 @@ function App() {
   const {
     aboutMessage,
     isCheckingForUpdates,
+    availableUpdate,
     checkForUpdates,
+    openAvailableUpdate,
   } = useAboutUpdates();
 
   const clientWorkspace = useClientWorkspaceController({
@@ -337,6 +339,8 @@ function App() {
     aboutProps: {
       aboutMessage,
       handleCheckForUpdates: checkForUpdates,
+      availableUpdate,
+      handleOpenAvailableUpdate: openAvailableUpdate,
       isCheckingForUpdates,
     },
   });

@@ -2,21 +2,26 @@ import "./about.css";
 import { SectionHeader } from "../../components/SectionHeader";
 import { StatusMessage } from "../../components/StatusMessage";
 import { APP_BUILD_INFO, CLINIC_NAME } from "../../appShared";
+import type { AvailableAppUpdate } from "./useAboutUpdates";
 
 export type AboutSectionProps = {
   aboutMessage: string;
   handleCheckForUpdates: () => void | Promise<void>;
+  availableUpdate: AvailableAppUpdate | null;
+  handleOpenAvailableUpdate: () => void | Promise<void>;
   isCheckingForUpdates?: boolean;
 };
 
 export function AboutSection({
   aboutMessage,
   handleCheckForUpdates,
+  availableUpdate,
+  handleOpenAvailableUpdate,
   isCheckingForUpdates = false,
 }: AboutSectionProps) {
   const releaseNotes = [
     "Clinic desktop workspace for client records, C-SSRS screening, 4Ps case conceptualization, progress notes, documents, assessments, analytics, care team access, settings, profile, and audit review.",
-    "Automatic update checking is planned for a future release. This build is currently updated manually by the developer.",
+    "Secure release-channel update checking is available from this page. Installation remains a deliberate user action.",
   ];
 
   return (
@@ -47,6 +52,15 @@ export function AboutSection({
               >
                 {isCheckingForUpdates ? "Checking…" : "Check for Updates"}
               </button>
+              {availableUpdate?.url && (
+                <button
+                  type="button"
+                  className="small-button about-update-download-button"
+                  onClick={handleOpenAvailableUpdate}
+                >
+                  Open version {availableUpdate.version}
+                </button>
+              )}
             </div>
           }
         />
@@ -55,6 +69,11 @@ export function AboutSection({
           <div className="about-info-row">
             <span className="about-info-label">Version</span>
             <strong className="about-info-value">{APP_BUILD_INFO.version}</strong>
+          </div>
+
+          <div className="about-info-row about-info-row-stack">
+            <span className="about-info-label">Release channel</span>
+            <strong className="about-info-value">{APP_BUILD_INFO.channel}</strong>
           </div>
 
           <div className="about-info-row about-info-row-stack">

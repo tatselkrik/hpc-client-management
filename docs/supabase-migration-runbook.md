@@ -63,6 +63,8 @@ supabase functions deploy invite-care-team-member
 supabase functions deploy remove-care-team-member
 supabase functions deploy update-care-team-member-role
 supabase functions deploy validate-upload
+supabase functions deploy check-app-update
+supabase functions deploy restore-clinic-backup
 ```
 
 ## Required Edge Function secrets
@@ -96,7 +98,9 @@ After applying migrations and deploying functions, test:
 - Document/Assessment upload, download, rename, delete permissions
 - Profile picture upload/remove
 - Analytics export
-- Backup export
+- Backup export, package review, and Admin merge restore
+- Editable clinic information
+- Secure release-channel update check
 
 ## Current known release gaps
 

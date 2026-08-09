@@ -951,6 +951,53 @@
   line-height: 1.35;
 }
 
+.settings-clinic-info-form,
+.settings-clinic-info-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-clinic-info-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-clinic-info-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.settings-clinic-info-field-wide {
+  grid-column: 1 / -1;
+}
+
+.settings-clinic-address-input {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.settings-clinic-info-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.settings-clinic-info-status {
+  margin: 14px 0 0;
+}
+
+.settings-restore-button {
+  width: 100%;
+  min-height: 48px;
+}
+
+.settings-restore-confirm-modal {
+  max-width: 560px;
+}
+
 .settings-category-add-control-row {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -971,6 +1018,24 @@
 @media (max-width: 1180px) {
 .settings-module-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .settings-clinic-info-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-clinic-info-field-wide {
+    grid-column: auto;
+  }
+
+  .settings-clinic-info-actions {
+    flex-direction: column-reverse;
+  }
+
+  .settings-clinic-info-actions .small-button {
+    width: 100%;
   }
 }
 

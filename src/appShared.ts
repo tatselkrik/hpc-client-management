@@ -189,11 +189,22 @@ export type BackupRestorePreview = {
   file_name: string;
   exported_at: string;
   product_name: string;
+  format_version: number;
+  source_project_ref: string;
   table_counts: Array<{
     key: string;
     label: string;
     count: number;
   }>;
+};
+
+export type ClinicInfo = {
+  id: number;
+  mobile_number: string;
+  landline_number: string;
+  email: string;
+  address: string;
+  updated_at?: string | null;
 };
 
 export type MfaFactor = {
@@ -571,6 +582,7 @@ export const CLINIC_NAME = "Clinic Psychological Center";
 export const APP_PRODUCT_NAME = "HPC Client Management";
 
 export const CLINIC_CLINIC_INFO = {
+  id: 1,
   name: CLINIC_NAME,
   mobile_number: "0917 000 0000",
   landline_number: "000-000-0000",
@@ -914,7 +926,9 @@ export const getCareTeamMemberDisplayName = (
 export const APP_BUILD_INFO = {
   product_name: APP_PRODUCT_NAME,
   version: import.meta.env.VITE_APP_VERSION ?? "0.1.0",
-  identifier: "com.clinic.hpcclientmanagement",
+  identifier:
+    import.meta.env.VITE_APP_IDENTIFIER ?? "com.clinic.hpcclientmanagement",
+  channel: import.meta.env.VITE_APP_CHANNEL === "staging" ? "staging" : "stable",
   environment_summary: `Tauri 2 â€¢ React â€¢ TypeScript â€¢ Vite â€¢ Supabase â€¢ ${
     import.meta.env.MODE === "production" ? "Production build" : "Development build"
   }`,
@@ -1056,6 +1070,7 @@ export const formatBytes = (value: number | null) => {
 
 export const BACKUP_TABLE_CONFIG = [
   { key: "profiles", label: "Profiles" },
+  { key: "clinic_settings", label: "Clinic Info" },
   { key: "clients", label: "Clients" },
   { key: "client_4ps", label: "4Ps" },
   { key: "client_categories", label: "Client Categories" },

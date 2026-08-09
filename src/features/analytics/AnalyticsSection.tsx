@@ -1873,6 +1873,34 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
     />
   );
 
+  const documentationCoverage = formatAnalyticsPercentage(
+    clientsWithProgressNotes.length,
+    filteredClientRows.length,
+  );
+  const analyticsQuickRead = [
+    {
+      label: "Active caseload",
+      value: `${activeClientCount.toLocaleString()} of ${filteredClientRows.length.toLocaleString()}`,
+      detail: "clients are currently active",
+      tone: "positive",
+    },
+    {
+      label: "Risk follow-up",
+      value: pendingCssrsForIdeation.length.toLocaleString(),
+      detail:
+        pendingCssrsForIdeation.length === 1
+          ? "C-SSRS screening is pending"
+          : "C-SSRS screenings are pending",
+      tone: pendingCssrsForIdeation.length > 0 ? "attention" : "positive",
+    },
+    {
+      label: "Note coverage",
+      value: documentationCoverage,
+      detail: "of filtered clients have progress notes",
+      tone: "information",
+    },
+  ];
+
   return (
     <div className="page-content analytics-page">
       <SectionHeader
@@ -1918,6 +1946,27 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
         setSexFilter={setSexFilter}
         sexOptions={sexOptions}
       />
+
+      <section className="analytics-quick-read" aria-label="Analytics quick read">
+        <div className="analytics-quick-read-intro">
+          <span className="analytics-quick-read-kicker">Selected view</span>
+          <strong>{fullFilterSummary}</strong>
+          <span>Three signals to orient the current analytics view.</span>
+        </div>
+
+        <div className="analytics-quick-read-grid">
+          {analyticsQuickRead.map((item) => (
+            <div
+              className={`analytics-quick-read-item analytics-quick-read-${item.tone}`}
+              key={item.label}
+            >
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <small>{item.detail}</small>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="analytics-section">
         <SectionHeader

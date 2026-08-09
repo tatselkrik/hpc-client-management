@@ -41,9 +41,14 @@
   align-items: center;
   justify-content: flex-end;
   flex: 0 0 auto;
+  gap: var(--space-3, 12px);
 }
 
 .about-update-button {
+  white-space: nowrap;
+}
+
+.about-update-download-button {
   white-space: nowrap;
 }
 
@@ -117,8 +122,13 @@
   }
 
   .about-header-actions,
-  .about-update-button {
+  .about-update-button,
+  .about-update-download-button {
     width: 100%;
+  }
+
+  .about-header-actions {
+    flex-direction: column;
   }
 
   .about-info-row {

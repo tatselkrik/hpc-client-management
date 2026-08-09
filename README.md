@@ -17,7 +17,8 @@ The application is currently in limited clinic testing with one psychologist.
 - CSV and PowerPoint exports
 - Email-invited care-team accounts, role-based access, and representative assignments
 - Required multi-factor authentication, idle-session locking, and audit history
-- Clinic announcements, themes, client categories, and backup review tools
+- Clinic announcements, editable contact details, themes, and client categories
+- Structured backup export, Admin-confirmed merge restore, and release update checks
 
 ## Application tour
 
@@ -29,7 +30,7 @@ The screenshots below were captured from the working desktop build. Clinic brand
 
 | Care-team administration | Clinic administration |
 | --- | --- |
-| ![Care-team roles and account creation](docs/screenshots/care-team.webp) | ![Client categories and backup review tools](docs/screenshots/administration.webp) |
+| ![Care-team roles and account creation](docs/screenshots/care-team.webp) | ![Client categories and clinic administration tools](docs/screenshots/administration.webp) |
 
 ## Technology
 

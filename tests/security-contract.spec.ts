@@ -166,3 +166,66 @@ test("phone upload remains disabled on both frontend and server while deferred",
   expect(validationService).toContain("isMobileContext && !mobileUploadEnabled");
   expect(validationService).toContain("Upload from Phone is disabled in this release.");
 });
+
+test("clinic information is editable only by MFA-verified Admin and Staff accounts", async () => {
+  const migration = await readProjectFile(
+    "supabase/migrations/20260809000500_experience_improvements.sql"
+  );
+
+  expect(migration).toContain('create table if not exists public.clinic_settings');
+  expect(migration).toContain("auth.jwt() ->> 'aal') = 'aal2'");
+  expect(migration).toContain("array['admin', 'staff']");
+  expect(migration).toContain('id = 1');
+});
+
+test("backup restore is Admin-only, fresh-MFA protected, and merge-only", async () => {
+  const service = await readProjectFile(
+    "supabase/functions/restore-clinic-backup/index.ts"
+  );
+  const migration = await readProjectFile(
+    "supabase/migrations/20260809000500_experience_improvements.sql"
+  );
+
+  expect(service).toContain("requireFreshMfaSession(token)");
+  expect(service).toContain('!== "admin"');
+  expect(service).toContain("Only an Admin can restore a clinic backup.");
+  expect(migration).toContain("on conflict (%I) do update");
+  expect(migration).toContain("Records absent from the package are never deleted");
+  expect(migration).toContain("'profiles_restored', false");
+  expect(migration).toContain("'storage_files_restored', false");
+  expect(migration).not.toContain("delete from public.clients");
+});
+
+test("update checks require an active MFA-verified account", async () => {
+  const source = await readProjectFile("supabase/functions/check-app-update/index.ts");
+
+  expect(source).toContain("hasRequiredMfa(token)");
+  expect(source).toContain("profile.is_active === false");
+  expect(source).toContain('.from("app_releases")');
+});
+
+test("all Supabase auth emails use the same Clinic security template", async () => {
+  const templateFiles = [
+    "invite.html",
+    "confirmation.html",
+    "recovery.html",
+    "magic_link.html",
+    "email_change.html",
+    "reauthentication.html",
+    "password_changed_notification.html",
+    "email_changed_notification.html",
+    "phone_changed_notification.html",
+    "identity_linked_notification.html",
+    "identity_unlinked_notification.html",
+    "mfa_added_notification.html",
+    "mfa_removed_notification.html",
+  ];
+
+  for (const fileName of templateFiles) {
+    const template = await readProjectFile(`supabase/email-templates/${fileName}`);
+    expect(template).toContain("CLINIC");
+    expect(template).toContain("HPC Client Management");
+    expect(template).toContain("does not contain client information");
+    expect(template).not.toContain("<script");
+  }
+});

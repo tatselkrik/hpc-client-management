@@ -1,4 +1,4 @@
-import { save } from "@tauri-apps/plugin-dialog";
+﻿import { save } from "@tauri-apps/plugin-dialog";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import type {
@@ -42,6 +42,7 @@ type PresentationChartData = Array<{
 
 type PresentationSlide = {
   background?: { color: string };
+  addImage: (options: Record<string, unknown>) => void;
   addShape: (shapeType: unknown, options: Record<string, unknown>) => void;
   addText: (text: string, options: Record<string, unknown>) => void;
   addChart: (
@@ -115,6 +116,26 @@ const toChartItems = (items: DistributionItem[], emptyLabel: string) => {
   return visibleItems.length > 0 ? visibleItems : [{ label: emptyLabel, value: 0 }];
 };
 
+const loadPresentationImage = async (assetPath: string) => {
+  const assetUrl =
+    typeof window === "undefined"
+      ? assetPath
+      : new URL(assetPath, window.location.href).toString();
+  const response = await fetch(assetUrl);
+  if (!response.ok) {
+    throw new Error(`Brand asset could not be loaded (${response.status}).`);
+  }
+
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 8192) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  }
+
+  const mediaType = response.headers.get("content-type") || "image/png";
+  return `data:${mediaType};base64,${btoa(binary)}`;
+};
+
 export async function exportAnalyticsPresentation({
   isAnalyticsExporting,
   setAnalyticsExportStatus,
@@ -166,20 +187,26 @@ export async function exportAnalyticsPresentation({
     const pptx = new PptxGenJS() as PresentationDeck;
     const chartType = pptx.ChartType ?? {};
     const shapeType = pptx.ShapeType ?? {};
+    const [clinicLogoData, clinicIconData] = await Promise.all([
+      loadPresentationImage("/clinic-logo.png"),
+      loadPresentationImage("/clinic-icon.png"),
+    ]);
 
     const palette = {
-      background: "FFF8F3",
+      background: "FBF8F5",
       surface: "FFFFFF",
-      text: "30121A",
-      muted: "86564D",
-      border: "F5BE9A",
-      primary: "C85B3B",
-      primarySoft: "FFF1E9",
-      secondary: "4C956C",
-      accent: "F9734D",
-      warning: "F0A94B",
-      danger: "E5232B",
-      quiet: "F8EFEA",
+      text: "172033",
+      muted: "687386",
+      border: "E8DED6",
+      primary: "E46F4C",
+      primaryDark: "9E3F2D",
+      primarySoft: "FFF0E9",
+      secondary: "347663",
+      accent: "C9553A",
+      warning: "C9872C",
+      danger: "C93F49",
+      quiet: "F4EEE9",
+      navy: "172033",
     };
 
     pptx.layout = "LAYOUT_WIDE";
@@ -217,7 +244,7 @@ export async function exportAnalyticsPresentation({
 
     const reportingRangeLabel =
       validAnalyticsDates.length > 0
-        ? `${formatPresentationDate(validAnalyticsDates[0])} – ${formatPresentationDate(
+        ? `${formatPresentationDate(validAnalyticsDates[0])} â€“ ${formatPresentationDate(
             validAnalyticsDates[validAnalyticsDates.length - 1]
           )}`
         : "Current available records";
@@ -241,31 +268,39 @@ export async function exportAnalyticsPresentation({
 
     const addSlideFrame = (slide: PresentationSlide, slideNumber: number) => {
       slide.background = { color: palette.background };
+      slide.addShape(shapeType.rect ?? "rect", {
+        x: 0,
+        y: 0,
+        w: 0.16,
+        h: 7.5,
+        fill: { color: palette.primary },
+        line: { color: palette.primary, transparency: 100 },
+      });
       slide.addShape(shapeType.line ?? "line", {
-        x: 0.55,
-        y: 6.8,
-        w: 12.2,
+        x: 0.65,
+        y: 6.92,
+        w: 12,
         h: 0,
         line: { color: palette.border, pt: 1 },
       });
       slide.addText("Aggregated clinic analytics only", {
-        x: 0.75,
-        y: 7.02,
+        x: 0.72,
+        y: 7.04,
         w: 5,
         h: 0.24,
         fontFace: "Aptos",
-        fontSize: 10,
+        fontSize: 9.5,
         color: palette.muted,
         italic: true,
         margin: 0,
       });
       slide.addText(String(slideNumber), {
-        x: 12.35,
-        y: 6.98,
+        x: 12.1,
+        y: 7.0,
         w: 0.4,
         h: 0.28,
         fontFace: "Aptos",
-        fontSize: 16,
+        fontSize: 13,
         bold: true,
         color: palette.primary,
         align: "right",
@@ -273,25 +308,35 @@ export async function exportAnalyticsPresentation({
       });
     };
 
+    const addSlideBrandMark = (slide: PresentationSlide) => {
+      slide.addImage({
+        data: clinicIconData,
+        x: 11.78,
+        y: 0.3,
+        w: 0.58,
+        h: 0.58,
+      });
+    };
+
     const addSlideHeading = (slide: PresentationSlide, title: string, subtitle: string) => {
       slide.addText(title, {
         x: 0.75,
-        y: 0.42,
-        w: 9.5,
-        h: 0.45,
+        y: 0.38,
+        w: 10.4,
+        h: 0.58,
         fontFace: "Aptos Display",
-        fontSize: 25,
+        fontSize: 35,
         bold: true,
         color: palette.text,
         margin: 0,
       });
       slide.addText(subtitle, {
         x: 0.77,
-        y: 0.96,
-        w: 10.5,
-        h: 0.28,
+        y: 1.0,
+        w: 11.2,
+        h: 0.32,
         fontFace: "Aptos",
-        fontSize: 12,
+        fontSize: 14,
         color: palette.muted,
         margin: 0,
       });
@@ -309,7 +354,7 @@ export async function exportAnalyticsPresentation({
         body,
         accentColor = palette.primary,
         fillColor = palette.surface,
-        valueFontSize = 22,
+        valueFontSize = 25,
       }: {
         title: string;
         value?: string | number;
@@ -326,7 +371,8 @@ export async function exportAnalyticsPresentation({
         h,
         rectRadius: 0.12,
         fill: { color: fillColor },
-        line: { color: palette.border, pt: 1 },
+        line: { color: palette.border, pt: 1.2 },
+        shadow: { type: "outer", color: "B7A89F", opacity: 0.14, blur: 1.5, angle: 45, distance: 1 },
       });
       slide.addShape(shapeType.rect ?? "rect", {
         x,
@@ -337,20 +383,20 @@ export async function exportAnalyticsPresentation({
         line: { color: accentColor, transparency: 100 },
       });
       slide.addText(title, {
-        x: x + 0.18,
-        y: y + 0.16,
+        x: x + 0.22,
+        y: y + 0.18,
         w: w - 0.34,
         h: 0.24,
         fontFace: "Aptos",
-        fontSize: 10,
+        fontSize: 11.5,
         bold: true,
         color: palette.muted,
         margin: 0,
       });
       if (value !== undefined) {
         slide.addText(String(value), {
-          x: x + 0.18,
-          y: y + 0.47,
+          x: x + 0.22,
+          y: y + 0.46,
           w: w - 0.34,
           h: 0.36,
           fontFace: "Aptos Display",
@@ -363,12 +409,12 @@ export async function exportAnalyticsPresentation({
       }
       if (body) {
         slide.addText(body, {
-          x: x + 0.18,
-          y: value !== undefined ? y + 0.9 : y + 0.45,
+          x: x + 0.22,
+          y: value !== undefined ? y + 0.84 : y + 0.48,
           w: w - 0.34,
-          h: Math.max(0.25, h - (value !== undefined ? 1.0 : 0.55)),
+          h: Math.max(0.18, h - (value !== undefined ? 0.9 : 0.55)),
           fontFace: "Aptos",
-          fontSize: 9.2,
+          fontSize: 10.5,
           color: palette.text,
           margin: 0,
           valign: "top",
@@ -394,11 +440,35 @@ export async function exportAnalyticsPresentation({
         w,
         h: 0.25,
         fontFace: "Aptos",
-        fontSize: 12,
+        fontSize: 14,
         bold: true,
         color: palette.text,
         margin: 0,
       });
+      if (!items.some((item) => item.value > 0)) {
+        slide.addShape(shapeType.roundRect ?? "roundRect", {
+          x,
+          y: y + 0.42,
+          w,
+          h: h - 0.42,
+          rectRadius: 0.12,
+          fill: { color: palette.quiet },
+          line: { color: palette.border, pt: 1 },
+        });
+        slide.addText("No records in the selected view", {
+          x: x + 0.25,
+          y: y + h / 2 - 0.12,
+          w: w - 0.5,
+          h: 0.3,
+          fontFace: "Aptos",
+          fontSize: 14,
+          bold: true,
+          color: palette.muted,
+          align: "center",
+          margin: 0,
+        });
+        return;
+      }
       slide.addChart(
         chartType.bar ?? "bar",
         [
@@ -417,11 +487,16 @@ export async function exportAnalyticsPresentation({
           showValue: true,
           showCategoryName: true,
           catAxisLabelFontFace: "Aptos",
-          catAxisLabelFontSize: 8,
+          catAxisLabelFontSize: 10,
           valAxisLabelFontFace: "Aptos",
-          valAxisLabelFontSize: 8,
+          valAxisLabelFontSize: 9,
           chartColors: [color],
           gapWidthPct: 45,
+          showTitle: false,
+          showCatName: false,
+          showValAxisTitle: false,
+          showCatAxisTitle: false,
+          showBorder: false,
         }
       );
     };
@@ -446,11 +521,34 @@ export async function exportAnalyticsPresentation({
         w,
         h: 0.25,
         fontFace: "Aptos",
-        fontSize: 12,
+        fontSize: 14,
         bold: true,
         color: palette.text,
         margin: 0,
       });
+      if (visibleItems.length === 0) {
+        slide.addShape(shapeType.roundRect ?? "roundRect", {
+          x,
+          y: y + 0.42,
+          w,
+          h: h - 0.42,
+          fill: { color: palette.quiet },
+          line: { color: palette.border, pt: 1 },
+        });
+        slide.addText("No coverage records in the selected view", {
+          x: x + 0.25,
+          y: y + h / 2 - 0.12,
+          w: w - 0.5,
+          h: 0.3,
+          fontFace: "Aptos",
+          fontSize: 14,
+          bold: true,
+          color: palette.muted,
+          align: "center",
+          margin: 0,
+        });
+        return;
+      }
       slide.addChart(
         chartType.bar ?? "bar",
         [
@@ -474,9 +572,9 @@ export async function exportAnalyticsPresentation({
           showValue: true,
           showCategoryName: true,
           catAxisLabelFontFace: "Aptos",
-          catAxisLabelFontSize: 8,
+          catAxisLabelFontSize: 10,
           valAxisLabelFontFace: "Aptos",
-          valAxisLabelFontSize: 8,
+          valAxisLabelFontSize: 9,
           chartColors: [palette.primary, palette.secondary],
           gapWidthPct: 50,
         }
@@ -500,11 +598,34 @@ export async function exportAnalyticsPresentation({
         w,
         h: 0.25,
         fontFace: "Aptos",
-        fontSize: 12,
+        fontSize: 14,
         bold: true,
         color: palette.text,
         margin: 0,
       });
+      if (!items.some((item) => item.value > 0)) {
+        slide.addShape(shapeType.roundRect ?? "roundRect", {
+          x,
+          y: y + 0.42,
+          w,
+          h: h - 0.42,
+          fill: { color: palette.quiet },
+          line: { color: palette.border, pt: 1 },
+        });
+        slide.addText("No trend records in the selected view", {
+          x: x + 0.25,
+          y: y + h / 2 - 0.12,
+          w: w - 0.5,
+          h: 0.3,
+          fontFace: "Aptos",
+          fontSize: 14,
+          bold: true,
+          color: palette.muted,
+          align: "center",
+          margin: 0,
+        });
+        return;
+      }
       slide.addChart(
         chartType.line ?? "line",
         [
@@ -522,9 +643,9 @@ export async function exportAnalyticsPresentation({
           showLegend: false,
           showValue: false,
           catAxisLabelFontFace: "Aptos",
-          catAxisLabelFontSize: 8,
+          catAxisLabelFontSize: 10,
           valAxisLabelFontFace: "Aptos",
-          valAxisLabelFontSize: 8,
+          valAxisLabelFontSize: 9,
           chartColors: [color],
           lineSize: 3,
         }
@@ -548,11 +669,34 @@ export async function exportAnalyticsPresentation({
         w,
         h: 0.25,
         fontFace: "Aptos",
-        fontSize: 12,
+        fontSize: 14,
         bold: true,
         color: palette.text,
         margin: 0,
       });
+      if (visibleItems.length === 0) {
+        slide.addShape(shapeType.roundRect ?? "roundRect", {
+          x,
+          y: y + 0.42,
+          w,
+          h: h - 0.42,
+          fill: { color: palette.quiet },
+          line: { color: palette.border, pt: 1 },
+        });
+        slide.addText("No file activity in the selected view", {
+          x: x + 0.25,
+          y: y + h / 2 - 0.12,
+          w: w - 0.5,
+          h: 0.3,
+          fontFace: "Aptos",
+          fontSize: 14,
+          bold: true,
+          color: palette.muted,
+          align: "center",
+          margin: 0,
+        });
+        return;
+      }
       slide.addChart(
         chartType.bar ?? "bar",
         [
@@ -575,9 +719,9 @@ export async function exportAnalyticsPresentation({
           showLegend: true,
           showValue: true,
           catAxisLabelFontFace: "Aptos",
-          catAxisLabelFontSize: 8,
+          catAxisLabelFontSize: 10,
           valAxisLabelFontFace: "Aptos",
-          valAxisLabelFontSize: 8,
+          valAxisLabelFontSize: 9,
           chartColors: [palette.primary, palette.warning],
           grouping: "stacked",
           gapWidthPct: 45,
@@ -586,92 +730,140 @@ export async function exportAnalyticsPresentation({
     };
 
     const titleSlide = pptx.addSlide();
-    titleSlide.background = { color: palette.background };
+    titleSlide.background = { color: palette.navy };
+    titleSlide.addShape(shapeType.rect ?? "rect", {
+      x: 0,
+      y: 0,
+      w: 0.18,
+      h: 7.5,
+      fill: { color: palette.primary },
+      line: { color: palette.primary, transparency: 100 },
+    });
+    titleSlide.addShape(shapeType.roundRect ?? "roundRect", {
+      x: 0.8,
+      y: 0.46,
+      w: 5.45,
+      h: 1.46,
+      rectRadius: 0.12,
+      fill: { color: palette.background },
+      line: { color: "3A4963", pt: 1 },
+    });
+    titleSlide.addImage({
+      data: clinicLogoData,
+      x: 1.02,
+      y: 0.54,
+      w: 5,
+      h: 1.41,
+    });
     titleSlide.addText("Clinic Analytics Report", {
-      x: 0.75,
-      y: 0.72,
-      w: 8.5,
-      h: 0.5,
+      x: 0.8,
+      y: 2.18,
+      w: 6.25,
+      h: 1.2,
       fontFace: "Aptos Display",
-      fontSize: 32,
+      fontSize: 50,
       bold: true,
-      color: palette.text,
+      color: "FFFFFF",
       margin: 0,
+      breakLine: false,
+      fit: "shrink",
     });
-    titleSlide.addText(`${CLINIC_NAME} • ${APP_PRODUCT_NAME}`, {
-      x: 0.78,
-      y: 1.33,
-      w: 8.4,
-      h: 0.28,
+    titleSlide.addText("A clear view of caseload, clinical follow-up, and documentation activity.", {
+      x: 0.83,
+      y: 3.47,
+      w: 5.9,
+      h: 0.64,
       fontFace: "Aptos",
-      fontSize: 14,
-      color: palette.muted,
+      fontSize: 19,
+      color: "D7DDE8",
       margin: 0,
+      valign: "mid",
     });
-    titleSlide.addText(`Reporting Period: ${reportingRangeLabel}`, {
-      x: 0.78,
-      y: 1.82,
-      w: 7.4,
-      h: 0.25,
-      fontFace: "Aptos",
-      fontSize: 12,
-      bold: true,
-      color: palette.text,
-      margin: 0,
+    titleSlide.addShape(shapeType.roundRect ?? "roundRect", {
+      x: 0.8,
+      y: 4.55,
+      w: 5.9,
+      h: 1.48,
+      rectRadius: 0.12,
+      fill: { color: "223049", transparency: 0 },
+      line: { color: "3A4963", pt: 1 },
     });
-    titleSlide.addText(`Generated: ${generatedDateLabel}`, {
-      x: 0.78,
-      y: 2.17,
-      w: 4.6,
+    titleSlide.addText("REPORTING WINDOW", {
+      x: 1.06,
+      y: 4.83,
+      w: 2.2,
       h: 0.22,
       fontFace: "Aptos",
       fontSize: 11,
-      color: palette.muted,
+      bold: true,
+      color: "F3B49F",
+      charSpacing: 1.2,
       margin: 0,
     });
-    titleSlide.addText(`Filters: ${analyticsFilterSummary}`, {
-      x: 0.78,
-      y: 2.48,
-      w: 6.6,
-      h: 0.45,
+    titleSlide.addText(reportingRangeLabel, {
+      x: 1.06,
+      y: 5.18,
+      w: 5.2,
+      h: 0.3,
       fontFace: "Aptos",
-      fontSize: 10,
-      color: palette.muted,
+      fontSize: 17,
+      bold: true,
+      color: "FFFFFF",
       margin: 0,
-      valign: "top",
+    });
+    titleSlide.addText(`Generated ${generatedDateLabel}  â€¢  ${analyticsFilterSummary}`, {
+      x: 1.06,
+      y: 5.6,
+      w: 5.2,
+      h: 0.24,
+      fontFace: "Aptos",
+      fontSize: 10.5,
+      color: "BCC6D6",
+      margin: 0,
+      fit: "shrink",
     });
 
-    addCard(titleSlide, 7.7, 0.9, 2.25, 1.35, {
+    addCard(titleSlide, 7.3, 0.72, 2.45, 1.55, {
       title: "Total Clients",
       value: analyticsClientRows.length.toLocaleString(),
       body: latestClientPoint
         ? `Latest intake period: ${latestClientPoint.label}`
         : "No intake records yet",
     });
-    addCard(titleSlide, 10.2, 0.9, 2.25, 1.35, {
+    addCard(titleSlide, 10.05, 0.72, 2.45, 1.55, {
       title: "C-SSRS Needed",
       value: clientsWithSuicidalIdeation.length.toLocaleString(),
       body: `${cssrsCompletionShare} complete`,
       accentColor: palette.danger,
     });
-    addCard(titleSlide, 7.7, 2.55, 2.25, 1.35, {
+    addCard(titleSlide, 7.3, 2.55, 2.45, 1.55, {
       title: "4Ps Complete",
       value: total4PsCompleteCount.toLocaleString(),
       body: `${total4PsNarrativeCount.toLocaleString()} narrative reports`,
       accentColor: palette.accent,
     });
-    addCard(titleSlide, 10.2, 2.55, 2.25, 1.35, {
+    addCard(titleSlide, 10.05, 2.55, 2.45, 1.55, {
       title: "Progress Notes",
       value: totalProgressNoteCount.toLocaleString(),
       body: `${clientsWithProgressNotesCount} clients with notes`,
       accentColor: palette.secondary,
     });
-    addCard(titleSlide, 0.75, 4.85, 11.7, 1.1, {
-      title: "Report sections",
+    addCard(titleSlide, 7.3, 4.38, 5.2, 1.42, {
+      title: "Inside this report",
       body:
-        "Summary metrics • Client population • Demographics • Presenting concerns • C-SSRS risk • 4Ps / Narrative Report • Records activity",
+        "Caseload summary  â€¢  Client population  â€¢  Demographics  â€¢  Presenting concerns  â€¢  C-SSRS risk  â€¢  4Ps coverage  â€¢  Records activity",
       fillColor: palette.primarySoft,
       valueFontSize: 16,
+    });
+    titleSlide.addText(`${CLINIC_NAME}  â€¢  ${APP_PRODUCT_NAME}`, {
+      x: 0.82,
+      y: 6.83,
+      w: 7.2,
+      h: 0.25,
+      fontFace: "Aptos",
+      fontSize: 10.5,
+      color: "9EABC0",
+      margin: 0,
     });
 
     const summarySlide = pptx.addSlide();
@@ -692,13 +884,20 @@ export async function exportAnalyticsPresentation({
     summaryCards.forEach(([title, value, body], index) => {
       const col = index % 3;
       const row = Math.floor(index / 3);
-      addCard(summarySlide, 0.75 + col * 4.05, 1.5 + row * 1.75, 3.65, 1.28, {
+      addCard(summarySlide, 0.75 + col * 4.05, 1.55 + row * 1.9, 3.65, 1.52, {
         title,
         value,
         body,
         accentColor: index === 3 ? palette.danger : index === 4 ? palette.accent : palette.primary,
       });
     });
+    addCard(summarySlide, 0.75, 5.55, 11.75, 0.78, {
+      title: "Quick read",
+      body: `${formatAnalyticsPercentage(activeClientCount, analyticsClientRows.length)} of filtered clients are active. ${cssrsPendingForIdeationCount} C-SSRS screening${cssrsPendingForIdeationCount === 1 ? " is" : "s are"} pending. ${formatAnalyticsPercentage(clientsWithProgressNotesCount, analyticsClientRows.length)} of clients have progress notes.`,
+      fillColor: palette.primarySoft,
+      accentColor: palette.primary,
+    });
+    addSlideBrandMark(summarySlide);
 
     const populationSlide = pptx.addSlide();
     addSlideFrame(populationSlide, 3);
@@ -729,25 +928,36 @@ export async function exportAnalyticsPresentation({
       representativeDistribution,
       palette.secondary
     );
+    addSlideBrandMark(populationSlide);
 
     const demographicsSlide = pptx.addSlide();
     addSlideFrame(demographicsSlide, 4);
     addSlideHeading(
       demographicsSlide,
-      "3. Demographics",
-      "Client profile based on structured intake fields."
+      "3. Demographic Profile",
+      "Core demographic distributions from structured intake fields."
     );
-    addBarChart(demographicsSlide, 0.75, 1.4, 3.8, 2.35, "Age Groups", ageDistribution, palette.primary);
-    addBarChart(demographicsSlide, 4.9, 1.4, 3.45, 2.35, "Sex", sexDistribution, palette.accent);
-    addBarChart(demographicsSlide, 8.7, 1.4, 3.6, 2.35, "Sexual Orientation", sexualOrientationDistribution, palette.secondary);
-    addBarChart(demographicsSlide, 0.75, 4.05, 5.55, 2.1, "Marital Status", maritalStatusDistribution, palette.warning);
-    addBarChart(demographicsSlide, 6.75, 4.05, 5.55, 2.1, "Employment Status", employmentStatusDistribution, palette.primary);
+    addBarChart(demographicsSlide, 0.75, 1.55, 3.75, 4.65, "Age Groups", ageDistribution, palette.primary);
+    addBarChart(demographicsSlide, 4.8, 1.55, 3.45, 4.65, "Sex", sexDistribution, palette.accent);
+    addBarChart(demographicsSlide, 8.55, 1.55, 3.75, 4.65, "Sexual Orientation", sexualOrientationDistribution, palette.secondary);
+    addSlideBrandMark(demographicsSlide);
+
+    const lifeContextSlide = pptx.addSlide();
+    addSlideFrame(lifeContextSlide, 5);
+    addSlideHeading(
+      lifeContextSlide,
+      "4. Life Context",
+      "Marital and employment status provide context for service planning."
+    );
+    addBarChart(lifeContextSlide, 0.75, 1.55, 5.7, 4.55, "Marital Status", maritalStatusDistribution, palette.warning);
+    addBarChart(lifeContextSlide, 6.75, 1.55, 5.55, 4.55, "Employment Status", employmentStatusDistribution, palette.primary);
+    addSlideBrandMark(lifeContextSlide);
 
     const concernsSlide = pptx.addSlide();
-    addSlideFrame(concernsSlide, 5);
+    addSlideFrame(concernsSlide, 6);
     addSlideHeading(
       concernsSlide,
-      "4. Presenting Concerns",
+      "5. Presenting Concerns",
       "Counseling reason frequency and concern patterns across the selected client view."
     );
     addBarChart(
@@ -772,12 +982,13 @@ export async function exportAnalyticsPresentation({
       body: "Diagnosis indicated",
       accentColor: palette.warning,
     });
+    addSlideBrandMark(concernsSlide);
 
     const riskSlide = pptx.addSlide();
-    addSlideFrame(riskSlide, 6);
+    addSlideFrame(riskSlide, 7);
     addSlideHeading(
       riskSlide,
-      "5. C-SSRS Risk",
+      "6. C-SSRS Risk",
       "Completion, severity, behavior, and mental-status patterns among ideation-flagged clients."
     );
     addCard(riskSlide, 0.75, 1.35, 3.65, 1.08, {
@@ -789,24 +1000,25 @@ export async function exportAnalyticsPresentation({
     addCard(riskSlide, 4.85, 1.35, 3.65, 1.08, {
       title: "C-SSRS completion",
       value: cssrsCompletionShare,
-      body: `${cssrsCompletedForIdeationCount} completed / ${clientsWithSuicidalIdeation.length} needed • ${cssrsPendingForIdeationCount} pending`,
+      body: `${cssrsCompletedForIdeationCount} completed / ${clientsWithSuicidalIdeation.length} needed â€¢ ${cssrsPendingForIdeationCount} pending`,
       accentColor: palette.secondary,
     });
     addCard(riskSlide, 8.95, 1.35, 3.35, 1.08, {
       title: "Elevated C-SSRS",
       value: elevatedCssrsCount.toLocaleString(),
-      body: "Severity 4–5 or recent behavior",
+      body: "Severity 4â€“5 or recent behavior",
       accentColor: palette.danger,
     });
     addBarChart(riskSlide, 0.75, 2.85, 3.7, 3.3, "Severity", cssrsSeverityDistribution, palette.danger);
     addBarChart(riskSlide, 4.85, 2.85, 3.55, 3.3, "Behavior", cssrsBehaviorDistribution, palette.warning);
     addBarChart(riskSlide, 8.75, 2.85, 3.55, 3.3, "Mental Status", mentalStatusDistribution, palette.primary);
+    addSlideBrandMark(riskSlide);
 
     const fourPsSlide = pptx.addSlide();
-    addSlideFrame(fourPsSlide, 7);
+    addSlideFrame(fourPsSlide, 8);
     addSlideHeading(
       fourPsSlide,
-      "6. 4Ps / Narrative Report",
+      "7. 4Ps / Narrative Report",
       "Case conceptualization completion and narrative report coverage."
     );
     addCard(fourPsSlide, 0.75, 1.55, 5.65, 1.3, {
@@ -832,12 +1044,13 @@ export async function exportAnalyticsPresentation({
       "4Ps Complete",
       "Narrative Reports"
     );
+    addSlideBrandMark(fourPsSlide);
 
     const recordsSlide = pptx.addSlide();
-    addSlideFrame(recordsSlide, 8);
+    addSlideFrame(recordsSlide, 9);
     addSlideHeading(
       recordsSlide,
-      "7. Records Activity",
+      "8. Records Activity",
       "Progress notes, file records, and documentation trends."
     );
     addCard(recordsSlide, 0.75, 1.35, 2.65, 1.08, {
@@ -893,6 +1106,194 @@ export async function exportAnalyticsPresentation({
       "Documents vs Assessments",
       recordActivityTrendSeries
     );
+    addSlideBrandMark(recordsSlide);
+
+    const takeawayItems = [
+      {
+        value: `${activeClientCount}/${analyticsClientRows.length}`,
+        label: "Active caseload",
+        detail:
+          analyticsClientRows.length > 0
+            ? `${formatAnalyticsPercentage(activeClientCount, analyticsClientRows.length)} of clients in the selected view are active.`
+            : "No clients are included in the selected view.",
+        color: palette.primary,
+      },
+      {
+        value:
+          clientsWithSuicidalIdeation.length > 0
+            ? `${cssrsCompletedForIdeationCount}/${clientsWithSuicidalIdeation.length}`
+            : "0",
+        label: "C-SSRS completion",
+        detail:
+          clientsWithSuicidalIdeation.length > 0
+            ? `${cssrsPendingForIdeationCount} screening${cssrsPendingForIdeationCount === 1 ? " remains" : "s remain"} pending.`
+            : "No ideation-flagged clients are included in this view.",
+        color: palette.danger,
+      },
+      {
+        value: formatAnalyticsPercentage(
+          clientsWithProgressNotesCount,
+          analyticsClientRows.length
+        ),
+        label: "Progress-note coverage",
+        detail: `${clientsWithoutProgressNotesCount} client${clientsWithoutProgressNotesCount === 1 ? " has" : "s have"} no progress note recorded.`,
+        color: palette.secondary,
+      },
+      {
+        value:
+          total4PsCompleteCount > 0
+            ? `${total4PsNarrativeCount}/${total4PsCompleteCount}`
+            : "0",
+        label: "4Ps narrative coverage",
+        detail:
+          total4PsCompleteCount > 0
+            ? `${narrativeMissingAfterCompleteCount} completed 4Ps record${narrativeMissingAfterCompleteCount === 1 ? " is" : "s are"} without a narrative.`
+            : "No completed 4Ps records are included in this view.",
+        color: palette.warning,
+      },
+    ];
+
+    const takeawaysSlide = pptx.addSlide();
+    takeawaysSlide.background = { color: palette.navy };
+    takeawaysSlide.addShape(shapeType.rect ?? "rect", {
+      x: 0,
+      y: 0,
+      w: 0.18,
+      h: 7.5,
+      fill: { color: palette.primary },
+      line: { color: palette.primary, transparency: 100 },
+    });
+    takeawaysSlide.addShape(shapeType.roundRect ?? "roundRect", {
+      x: 0.8,
+      y: 0.46,
+      w: 4.65,
+      h: 1.3,
+      rectRadius: 0.12,
+      fill: { color: palette.background },
+      line: { color: "3A4963", pt: 1 },
+    });
+    takeawaysSlide.addImage({
+      data: clinicLogoData,
+      x: 1.02,
+      y: 0.53,
+      w: 4.2,
+      h: 1.19,
+    });
+    takeawaysSlide.addText("Key takeaways", {
+      x: 5.9,
+      y: 0.55,
+      w: 6.4,
+      h: 0.62,
+      fontFace: "Aptos Display",
+      fontSize: 35,
+      bold: true,
+      color: "FFFFFF",
+      margin: 0,
+      align: "right",
+    });
+    takeawaysSlide.addText("What the selected records show at a glance", {
+      x: 5.9,
+      y: 1.23,
+      w: 6.4,
+      h: 0.3,
+      fontFace: "Aptos",
+      fontSize: 16,
+      color: "BCC6D6",
+      margin: 0,
+      align: "right",
+    });
+    takeawayItems.forEach((item, index) => {
+      const x = 0.82 + index * 3.08;
+      takeawaysSlide.addShape(shapeType.line ?? "line", {
+        x,
+        y: 2.35,
+        w: 2.65,
+        h: 0,
+        line: { color: item.color, pt: 3 },
+      });
+      takeawaysSlide.addText(item.value, {
+        x,
+        y: 2.63,
+        w: 2.65,
+        h: 0.65,
+        fontFace: "Aptos Display",
+        fontSize: 30,
+        bold: true,
+        color: item.color,
+        margin: 0,
+        fit: "shrink",
+      });
+      takeawaysSlide.addText(item.label, {
+        x,
+        y: 3.4,
+        w: 2.65,
+        h: 0.34,
+        fontFace: "Aptos",
+        fontSize: 16,
+        bold: true,
+        color: "FFFFFF",
+        margin: 0,
+      });
+      takeawaysSlide.addText(item.detail, {
+        x,
+        y: 3.93,
+        w: 2.65,
+        h: 1.08,
+        fontFace: "Aptos",
+        fontSize: 13,
+        color: "D7DDE8",
+        margin: 0,
+        valign: "top",
+        fit: "shrink",
+      });
+    });
+    takeawaysSlide.addShape(shapeType.line ?? "line", {
+      x: 0.82,
+      y: 5.56,
+      w: 11.5,
+      h: 0,
+      line: { color: "3A4963", pt: 1 },
+    });
+    takeawaysSlide.addText(
+      "These indicators describe the selected records and should be reviewed alongside the appropriate clinical context.",
+      {
+        x: 0.82,
+        y: 5.86,
+        w: 10.5,
+        h: 0.42,
+        fontFace: "Aptos",
+        fontSize: 17,
+        bold: true,
+        color: "FFFFFF",
+        margin: 0,
+      }
+    );
+    takeawaysSlide.addText(
+      `${analyticsFilterSummary} \u2022 Generated ${generatedDateLabel}`,
+      {
+        x: 0.82,
+        y: 6.48,
+        w: 10.5,
+        h: 0.26,
+        fontFace: "Aptos",
+        fontSize: 10.5,
+        color: "9EABC0",
+        margin: 0,
+        fit: "shrink",
+      }
+    );
+    takeawaysSlide.addText("10", {
+      x: 12.0,
+      y: 6.43,
+      w: 0.35,
+      h: 0.3,
+      fontFace: "Aptos",
+      fontSize: 13,
+      bold: true,
+      color: palette.primary,
+      align: "right",
+      margin: 0,
+    });
 
     const selectedSavePath = await save({
       title: "Save analytics presentation",
