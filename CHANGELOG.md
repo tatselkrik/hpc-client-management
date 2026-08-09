@@ -16,6 +16,7 @@ This file records notable changes to HPC Client Management.
 
 - Replaced administrator-shared temporary passwords with invitation emails and required password setup.
 - Added a Windows app link that returns accepted invitations to the installed application.
+- Added an isolated staging installer identity and invitation-link scheme so staging can coexist with the working application.
 - Required verified MFA before clinical, operational, storage, export, or AI narrative access.
 - Required a fresh MFA session for Care Team invitations, role changes, and deactivations.
 - Changed Care Team removal to reversible account deactivation.
