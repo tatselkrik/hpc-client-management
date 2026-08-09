@@ -3,11 +3,16 @@ import { expect, test } from "@playwright/test";
 import {
   CARE_TEAM_ROLE_OPTIONS,
   canCreateClientRecords,
+  canDeleteClientAssessments,
+  canDeleteClientDocuments,
   canEditClientClinicalRecords,
+  canManageClientAssessments,
+  canManageClientDocuments,
   canUseAllRepresentativeAnalytics,
   canUseIndividualRepresentativeAnalytics,
   getCareTeamRoleCapabilities,
   getProfileDisplayRole,
+  isRepresentativeAssignedRole,
   shouldLockClientRepresentativeToAssigned,
 } from "../src/security/rolePolicy";
 
@@ -17,6 +22,12 @@ test("only the three approved roles can be assigned", () => {
     "Psychologist / Counselor",
     "Staff",
   ]);
+});
+
+test("only Admin and Psychologist or Counselor accounts receive client assignments", () => {
+  expect(isRepresentativeAssignedRole("Admin")).toBe(true);
+  expect(isRepresentativeAssignedRole("Psychologist / Counselor")).toBe(true);
+  expect(isRepresentativeAssignedRole("Staff")).toBe(false);
 });
 
 test("legacy CEO resolves to Admin while Intern receives no capabilities", () => {
@@ -39,6 +50,9 @@ test("Admin has complete administration capabilities", () => {
   expect(capabilities.canViewAuditLogs).toBe(true);
   expect(canUseAllRepresentativeAnalytics("Admin")).toBe(true);
   expect(canCreateClientRecords("Admin")).toBe(true);
+  expect(canEditClientClinicalRecords("Admin")).toBe(true);
+  expect(canDeleteClientDocuments("Admin")).toBe(true);
+  expect(canDeleteClientAssessments("Admin")).toBe(true);
 });
 
 test("Staff sees full clinic data but cannot administer Admins or view System Log", () => {
@@ -49,7 +63,12 @@ test("Staff sees full clinic data but cannot administer Admins or view System Lo
   expect(capabilities.canViewAuditLogs).toBe(false);
   expect(canUseAllRepresentativeAnalytics("Staff")).toBe(true);
   expect(canUseIndividualRepresentativeAnalytics("Staff")).toBe(true);
-  expect(canEditClientClinicalRecords("Staff")).toBe(true);
+  expect(canCreateClientRecords("Staff")).toBe(true);
+  expect(canEditClientClinicalRecords("Staff")).toBe(false);
+  expect(canManageClientDocuments("Staff")).toBe(true);
+  expect(canManageClientAssessments("Staff")).toBe(true);
+  expect(canDeleteClientDocuments("Staff")).toBe(false);
+  expect(canDeleteClientAssessments("Staff")).toBe(false);
 });
 
 test("Psychologist or Counselor is limited to assigned clients and analytics", () => {
@@ -64,6 +83,8 @@ test("Psychologist or Counselor is limited to assigned clients and analytics", (
   expect(canUseIndividualRepresentativeAnalytics(role)).toBe(false);
   expect(shouldLockClientRepresentativeToAssigned(role)).toBe(true);
   expect(canEditClientClinicalRecords(role)).toBe(true);
+  expect(canDeleteClientDocuments(role)).toBe(true);
+  expect(canDeleteClientAssessments(role)).toBe(true);
 });
 
 test("unknown roles fail closed", () => {

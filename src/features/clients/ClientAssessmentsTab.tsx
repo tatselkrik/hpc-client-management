@@ -30,6 +30,7 @@ type ClientAssessmentsTabProps = {
   assessmentPreviewLoading: boolean;
   assessmentPreviewUrl: string;
   canManageAssessments?: boolean;
+  canDeleteAssessments?: boolean;
 };
 
 export function ClientAssessmentsTab({
@@ -55,6 +56,7 @@ export function ClientAssessmentsTab({
   assessmentPreviewLoading,
   assessmentPreviewUrl,
   canManageAssessments = true,
+  canDeleteAssessments = canManageAssessments,
 }: ClientAssessmentsTabProps) {
   return (
     <ClientConfiguredFilesTab
@@ -81,6 +83,7 @@ export function ClientAssessmentsTab({
       previewLoading={assessmentPreviewLoading}
       previewUrl={assessmentPreviewUrl}
       canManageFiles={canManageAssessments}
+      canDeleteFiles={canDeleteAssessments}
     />
   );
 }

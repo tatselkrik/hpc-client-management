@@ -98,6 +98,7 @@ export function ClientTabContent({
   documentPreviewLoading,
   documentPreviewUrl,
   canManageDocuments,
+  canDeleteDocuments,
   assessmentSearch,
   setAssessmentSearch,
   assessmentUploadDateFilter,
@@ -117,6 +118,7 @@ export function ClientTabContent({
   assessmentPreviewLoading,
   assessmentPreviewUrl,
   canManageAssessments,
+  canDeleteAssessments,
 }: ClientTabContentProps) {
   if (activeClientTab === "overview") {
     return (
@@ -216,6 +218,7 @@ export function ClientTabContent({
         documentPreviewLoading={documentPreviewLoading}
         documentPreviewUrl={documentPreviewUrl}
         canManageDocuments={canManageDocuments}
+        canDeleteDocuments={canDeleteDocuments}
       />
     );
   }
@@ -245,6 +248,7 @@ export function ClientTabContent({
         assessmentPreviewLoading={assessmentPreviewLoading}
         assessmentPreviewUrl={assessmentPreviewUrl}
         canManageAssessments={canManageAssessments}
+        canDeleteAssessments={canDeleteAssessments}
       />
     );
   }

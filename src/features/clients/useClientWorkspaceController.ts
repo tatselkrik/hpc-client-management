@@ -1,4 +1,4 @@
-import {
+﻿import {
   useCallback,
   useEffect,
   useMemo,
@@ -55,12 +55,15 @@ type GetClientsPropsOptions = {
 type UseClientWorkspaceControllerParams = {
   activeSection: Section;
   userEmail: string | null;
+  profileDisplayRole: string;
   canManageCareTeam: boolean;
   canCreateClientRecords: boolean;
   canEditClientClinicalRecords: boolean;
   shouldLockClientRepresentativeToAssigned: boolean;
   canManageClientDocuments: boolean;
   canManageClientAssessments: boolean;
+  canDeleteClientDocuments: boolean;
+  canDeleteClientAssessments: boolean;
   canEditClientCssrsInterview: boolean;
   canEditClientCssrsProtectiveFactors: boolean;
   canCurrentProfileAccessClient: (client: ClientAccessRecord) => boolean;
@@ -83,12 +86,15 @@ type UseClientWorkspaceControllerParams = {
 export function useClientWorkspaceController({
   activeSection,
   userEmail,
+  profileDisplayRole,
   canManageCareTeam,
   canCreateClientRecords,
   canEditClientClinicalRecords,
   shouldLockClientRepresentativeToAssigned,
   canManageClientDocuments,
   canManageClientAssessments,
+  canDeleteClientDocuments,
+  canDeleteClientAssessments,
   canEditClientCssrsInterview,
   canEditClientCssrsProtectiveFactors,
   canCurrentProfileAccessClient,
@@ -448,6 +454,8 @@ export function useClientWorkspaceController({
     setSelectedAssessmentId,
     canManageClientDocuments,
     canManageClientAssessments,
+    canDeleteClientDocuments,
+    canDeleteClientAssessments,
     setLoading,
     setDocumentsMessage,
     setAssessmentsMessage,
@@ -591,6 +599,12 @@ export function useClientWorkspaceController({
     setClientSearch,
     handleAddClient,
     canCreateClientRecords,
+    hpcRepresentativeOptions,
+    requiresNewClientRepresentativeSelection: profileDisplayRole === "Staff",
+    defaultNewClientRepresentative:
+      profileDisplayRole === "Admin"
+        ? "Clinic Administrator"
+        : assignedHpcRepresentativeName,
     loading,
     clientStatusFilter,
     setClientStatusFilter,
@@ -684,6 +698,7 @@ export function useClientWorkspaceController({
       documentPreviewLoading,
       documentPreviewUrl,
       canManageDocuments: canManageClientDocuments,
+      canDeleteDocuments: canDeleteClientDocuments,
       assessmentSearch,
       setAssessmentSearch,
       assessmentUploadDateFilter,
@@ -703,6 +718,7 @@ export function useClientWorkspaceController({
       assessmentPreviewLoading,
       assessmentPreviewUrl,
       canManageAssessments: canManageClientAssessments,
+      canDeleteAssessments: canDeleteClientAssessments,
     },
   });
 

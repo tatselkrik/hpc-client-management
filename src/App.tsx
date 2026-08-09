@@ -126,6 +126,7 @@ function App() {
 
   const permissions = useCurrentUserPermissions(profile);
   const {
+    profileDisplayRole,
     canManageCareTeam,
     canManageAdminAccounts,
     canManageClientCategoriesAndBackups,
@@ -143,6 +144,8 @@ function App() {
     canEditClientCssrsProtectiveFactorsForProfile,
     canManageClientDocumentsForProfile,
     canManageClientAssessmentsForProfile,
+    canDeleteClientDocumentsForProfile,
+    canDeleteClientAssessmentsForProfile,
     canCurrentProfileAccessClient,
     canCurrentProfileUseClientInPrimaryAnalytics,
   } = permissions;
@@ -190,12 +193,15 @@ function App() {
   const clientWorkspace = useClientWorkspaceController({
     activeSection,
     userEmail,
+    profileDisplayRole,
     canManageCareTeam: canManageClientCategoriesAndBackups,
     canCreateClientRecords: canCreateClientRecordsForProfile,
     canEditClientClinicalRecords: canEditClientClinicalRecordsForProfile,
     shouldLockClientRepresentativeToAssigned: shouldLockClientRepresentativeToAssignedForProfile,
     canManageClientDocuments: canManageClientDocumentsForProfile,
     canManageClientAssessments: canManageClientAssessmentsForProfile,
+    canDeleteClientDocuments: canDeleteClientDocumentsForProfile,
+    canDeleteClientAssessments: canDeleteClientAssessmentsForProfile,
     canEditClientCssrsInterview: canEditClientCssrsInterviewForProfile,
     canEditClientCssrsProtectiveFactors: canEditClientCssrsProtectiveFactorsForProfile,
     canCurrentProfileAccessClient,
@@ -221,7 +227,6 @@ function App() {
     profile,
     canManageCareTeam,
     canManageAdminAccounts,
-    clientRows: clientWorkspace.clientRows,
     auditLogFilter,
     loadAuditLogs,
   });

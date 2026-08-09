@@ -29,7 +29,6 @@ import {
   ANALYTICS_COLOR_TOKENS,
   CSSRS_DEMEANOR_GROUPS,
   CSSRS_IDEATION_ITEMS,
-  HPC_REPRESENTATIVE_OPTIONS,
   hasCompleteCssrsProtectiveFactorTexts,
   mergeHpcRepresentativeOptions,
 } from "../../appShared";
@@ -438,10 +437,10 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
     const clientRepresentativeOptions = analyticsClientRows.map((client) =>
       normalizeText(client.hpc_representative, "")
     );
-    const options = mergeHpcRepresentativeOptions(
-      [...HPC_REPRESENTATIVE_OPTIONS, normalizedDefaultRepresentativeFilter],
-      clientRepresentativeOptions
-    );
+    const options = mergeHpcRepresentativeOptions([
+      ...clientRepresentativeOptions,
+      normalizedDefaultRepresentativeFilter,
+    ]);
 
     if (
       normalizedDefaultRepresentativeFilter &&

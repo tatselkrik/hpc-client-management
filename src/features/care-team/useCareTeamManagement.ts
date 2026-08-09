@@ -6,7 +6,6 @@ import type {
   AuditLogFilterRange,
   CareTeamInviteForm,
   CareTeamMemberView,
-  ClientListItem,
   Profile,
   Section,
 } from "../../appShared";
@@ -30,7 +29,6 @@ type UseCareTeamManagementOptions = {
   profile: Profile | null;
   canManageCareTeam: boolean;
   canManageAdminAccounts: boolean;
-  clientRows: ClientListItem[];
   auditLogFilter: AuditLogFilterRange;
   loadAuditLogs: (range?: AuditLogFilterRange) => Promise<void>;
 };
@@ -48,7 +46,6 @@ export function useCareTeamManagement({
   profile,
   canManageCareTeam,
   canManageAdminAccounts,
-  clientRows,
   auditLogFilter,
   loadAuditLogs,
 }: UseCareTeamManagementOptions) {
@@ -63,19 +60,15 @@ export function useCareTeamManagement({
 
   const hpcRepresentativeOptions = useMemo(() => {
     const careTeamRepresentativeNames = careTeamProfiles
-      .filter((member) => isRepresentativeAssignedRole(member.role))
+      .filter(
+        (member) =>
+          member.is_active !== false && isRepresentativeAssignedRole(member.role)
+      )
       .map((member) => member.hpc_representative_name?.trim() ?? "")
       .filter((value) => value.trim() !== "");
 
-    const clientRepresentativeNames = clientRows
-      .map((client) => String(client.hpc_representative ?? "").trim())
-      .filter((value) => value !== "" && value !== "Other");
-
-    return mergeHpcRepresentativeOptions(
-      careTeamRepresentativeNames,
-      clientRepresentativeNames
-    );
-  }, [careTeamProfiles, clientRows]);
+    return mergeHpcRepresentativeOptions(careTeamRepresentativeNames);
+  }, [careTeamProfiles]);
 
   const careTeamHpcRepresentativeOptions = useMemo(
     () => [...hpcRepresentativeOptions, "Other"],
@@ -184,7 +177,10 @@ export function useCareTeamManagement({
   }, []);
 
   useEffect(() => {
-    if (!userEmail || activeSection !== "careTeam") {
+    if (
+      !userEmail ||
+      (activeSection !== "careTeam" && activeSection !== "clients")
+    ) {
       return;
     }
 

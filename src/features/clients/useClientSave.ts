@@ -4,6 +4,7 @@ import { feedbackMessages } from "../../lib/feedbackMessages";
 import type { ChildForm, ClientForm, ClientTab } from "../../appShared";
 import {
   getTodayDateInputValue,
+  normalizeHpcRepresentativeName,
   toNullableInt,
   toNullableText,
 } from "../../appShared";
@@ -100,12 +101,12 @@ export function useClientSave({
     };
   };
 
-  const handleAddClient = async () => {
+  const handleAddClient = async (initialRepresentativeName = "") => {
     if (!canCreateClientRecords) {
       setClientMessage(
         feedbackMessages.permissionDenied("Your role cannot create client records.")
       );
-      return;
+      return false;
     }
 
     const lockedRepresentativeName = getLockedRepresentativeName();
@@ -114,7 +115,16 @@ export function useClientSave({
       setClientMessage(
         "Your account needs an assigned HPC Representative in Care Team before creating clients."
       );
-      return;
+      return false;
+    }
+
+    const selectedRepresentativeName = shouldLockClientRepresentativeToAssigned
+      ? lockedRepresentativeName
+      : normalizeHpcRepresentativeName(initialRepresentativeName);
+
+    if (!selectedRepresentativeName) {
+      setClientMessage("Choose an active HPC Representative before creating a client.");
+      return false;
     }
 
     setLoading(true);
@@ -133,9 +143,7 @@ export function useClientSave({
         intake_date: defaultIntakeDate,
         client_status: "Active",
         category_path: null,
-        hpc_representative: shouldLockClientRepresentativeToAssigned
-          ? lockedRepresentativeName
-          : null,
+        hpc_representative: selectedRepresentativeName,
         hpc_representative_other: null,
       })
       .select("id")
@@ -144,17 +152,19 @@ export function useClientSave({
     if (error) {
       setClientMessage(feedbackMessages.createFailed("client", error.message));
       setLoading(false);
-      return;
+      return false;
     }
 
     await loadClients();
     await writeAuditLog("Clients", "Created", "client", data.id, "New Client", {
       summary: "Created a new client record.",
+      hpc_representative: selectedRepresentativeName,
     });
     setSelectedClientId(data.id);
     setActiveClientTab("overview");
     setClientMessage(feedbackMessages.created("client"));
     setLoading(false);
+    return true;
   };
 
   const handleSaveClientOverview = async () => {

@@ -38,6 +38,7 @@ type ClientFilesTabProps<FileRecord extends ClientStoredFileRecord> = {
   previewLoading: boolean;
   previewUrl: string;
   canManageFiles?: boolean;
+  canDeleteFiles?: boolean;
   getFileDisplayName: (file: FileRecord) => string;
 };
 
@@ -70,6 +71,7 @@ export function ClientFilesTab<FileRecord extends ClientStoredFileRecord>({
   previewLoading,
   previewUrl,
   canManageFiles = true,
+  canDeleteFiles = canManageFiles,
   getFileDisplayName,
 }: ClientFilesTabProps<FileRecord>) {
   const isImage = selectedFile?.mime_type?.startsWith("image/") ?? false;
@@ -238,14 +240,16 @@ export function ClientFilesTab<FileRecord extends ClientStoredFileRecord>({
                       Download
                     </button>
 
-                    <button
-                      className="small-button danger-button"
-                      type="button"
-                      onClick={() => handleDeleteFile(selectedFile)}
-                      disabled={loading}
-                    >
-                      Delete
-                    </button>
+                    {canDeleteFiles ? (
+                      <button
+                        className="small-button danger-button"
+                        type="button"
+                        onClick={() => handleDeleteFile(selectedFile)}
+                        disabled={loading}
+                      >
+                        Delete
+                      </button>
+                    ) : null}
                   </div>
                 ) : null}
               </div>

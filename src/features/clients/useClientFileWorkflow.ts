@@ -42,6 +42,8 @@ type UseClientFileWorkflowParams = {
   setSelectedAssessmentId: Dispatch<SetStateAction<string>>;
   canManageClientDocuments: boolean;
   canManageClientAssessments: boolean;
+  canDeleteClientDocuments: boolean;
+  canDeleteClientAssessments: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   setDocumentsMessage: Dispatch<SetStateAction<string>>;
   setAssessmentsMessage: Dispatch<SetStateAction<string>>;
@@ -62,6 +64,8 @@ export function useClientFileWorkflow({
   setSelectedAssessmentId,
   canManageClientDocuments,
   canManageClientAssessments,
+  canDeleteClientDocuments,
+  canDeleteClientAssessments,
   setLoading,
   setDocumentsMessage,
   setAssessmentsMessage,
@@ -252,7 +256,7 @@ export function useClientFileWorkflow({
 
   const handleOpenDocumentDelete = useCallback(
     (document: ClientDocument) => {
-      if (!canManageClientDocuments) {
+      if (!canDeleteClientDocuments) {
         setDocumentsMessage(CLIENT_FILE_CONFIG.document.permissionMessages.delete);
         return;
       }
@@ -260,12 +264,12 @@ export function useClientFileWorkflow({
       setSelectedDocumentId(document.id);
       setFileDeleteTarget({ kind: "document", item: document });
     },
-    [canManageClientDocuments, setDocumentsMessage, setSelectedDocumentId]
+    [canDeleteClientDocuments, setDocumentsMessage, setSelectedDocumentId]
   );
 
   const handleOpenAssessmentDelete = useCallback(
     (assessment: ClientAssessment) => {
-      if (!canManageClientAssessments) {
+      if (!canDeleteClientAssessments) {
         setAssessmentsMessage(CLIENT_FILE_CONFIG.assessment.permissionMessages.delete);
         return;
       }
@@ -273,7 +277,7 @@ export function useClientFileWorkflow({
       setSelectedAssessmentId(assessment.id);
       setFileDeleteTarget({ kind: "assessment", item: assessment });
     },
-    [canManageClientAssessments, setAssessmentsMessage, setSelectedAssessmentId]
+    [canDeleteClientAssessments, setAssessmentsMessage, setSelectedAssessmentId]
   );
 
   const handleCloseFileDeleteModal = useCallback(() => {
@@ -284,8 +288,8 @@ export function useClientFileWorkflow({
     if (!fileDeleteTarget) return;
 
     if (
-      (fileDeleteTarget.kind === "document" && !canManageClientDocuments) ||
-      (fileDeleteTarget.kind === "assessment" && !canManageClientAssessments)
+      (fileDeleteTarget.kind === "document" && !canDeleteClientDocuments) ||
+      (fileDeleteTarget.kind === "assessment" && !canDeleteClientAssessments)
     ) {
       if (fileDeleteTarget.kind === "document") {
         setDocumentsMessage(CLIENT_FILE_CONFIG.document.permissionMessages.delete);
@@ -304,8 +308,8 @@ export function useClientFileWorkflow({
 
     handleCloseFileDeleteModal();
   }, [
-    canManageClientAssessments,
-    canManageClientDocuments,
+    canDeleteClientAssessments,
+    canDeleteClientDocuments,
     fileDeleteTarget,
     handleCloseFileDeleteModal,
     handleDeleteAssessment,
