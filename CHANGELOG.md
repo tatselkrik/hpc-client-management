@@ -38,6 +38,7 @@ This file records notable changes to HPC Client Management.
 ### AI service maintenance
 
 - Updated narrative generation from the retired Gemini 2.5 Flash endpoint to the stable Gemini 3.6 Flash model contract.
+- Added completion checks, a larger response allowance, grammar guidance, and server-owned prompt versioning so incomplete AI drafts are not presented as successful reports.
 
 ## 0.1.0 - 2026-08-07
 

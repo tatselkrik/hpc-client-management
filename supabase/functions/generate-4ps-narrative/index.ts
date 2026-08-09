@@ -9,6 +9,8 @@ const allowedRoles = new Set([
   "Psychologist / Counselor",
 ]);
 
+const narrativePromptVersion = "4ps-narrative-v3";
+
 const fourPsRows = [
   ["predisposing", "PREDISPOSING"],
   ["precipitating", "PRECIPITATING"],
@@ -96,7 +98,8 @@ Writing style:
 - Start directly with the first paragraph of the report.
 - Integrate Biological, Psychological, and Social factors across Predisposing, Precipitating, Perpetuating, and Protective areas.
 - Mention strengths and supports when protective factors are provided.
-- Keep the report concise but complete, around 5 to 8 paragraphs.
+- Keep the report concise but complete, around 4 to 6 paragraphs.
+- Check the draft for grammar and ensure every paragraph, including the final sentence, is complete before returning it.
 
 4Ps table:
 ${fourPsText}`;
@@ -120,6 +123,17 @@ function extractGeminiText(responseBody: Record<string, unknown>) {
     })
     .join("")
     .trim();
+}
+
+function extractGeminiFinishReason(responseBody: Record<string, unknown>) {
+  const candidates = responseBody.candidates;
+
+  if (!Array.isArray(candidates)) return "";
+
+  const firstCandidate = candidates[0] as Record<string, unknown> | undefined;
+  return typeof firstCandidate?.finishReason === "string"
+    ? firstCandidate.finishReason
+    : "";
 }
 
 serve(async (req) => {
@@ -251,10 +265,7 @@ serve(async (req) => {
       );
     }
 
-    const promptVersion =
-      typeof payload.prompt_version === "string" && payload.prompt_version.trim()
-        ? payload.prompt_version.trim()
-        : "4ps-narrative-v1";
+    const promptVersion = narrativePromptVersion;
     const fourPsText = formatFourPsForPrompt(fourPs);
     const prompt = buildPrompt(fourPsText);
 
@@ -276,7 +287,10 @@ serve(async (req) => {
             },
           ],
           generationConfig: {
-            maxOutputTokens: 1600,
+            thinkingConfig: {
+              thinkingLevel: "low",
+            },
+            maxOutputTokens: 3200,
           },
         }),
       },
@@ -297,6 +311,17 @@ serve(async (req) => {
       return respond({ error: message }, 502);
     }
 
+    const finishReason = extractGeminiFinishReason(responseBody);
+
+    if (finishReason && finishReason !== "STOP") {
+      return respond(
+        {
+          error: `Gemini stopped before completing the narrative (${finishReason}). Please generate it again.`,
+        },
+        502,
+      );
+    }
+
     const narrativeReport = extractGeminiText(responseBody)
       .replace(/^#{1,6}\s*Narrative Report\s*\n+/i, "")
       .replace(/^\*\*Narrative Report\*\*\s*\n+/i, "")
@@ -305,6 +330,13 @@ serve(async (req) => {
 
     if (!narrativeReport) {
       return respond({ error: "Gemini returned an empty narrative report." }, 502);
+    }
+
+    if (!/[.!?]["')\]]?$/.test(narrativeReport)) {
+      return respond(
+        { error: "Gemini returned an incomplete narrative draft. Please generate it again." },
+        502,
+      );
     }
 
     await supabase.from("audit_logs").insert({

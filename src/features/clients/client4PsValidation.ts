@@ -7,7 +7,7 @@ import {
   FOUR_PS_ROWS,
 } from "../../appShared";
 
-export const CLIENT_4PS_NARRATIVE_PROMPT_VERSION = "4ps-narrative-v2";
+export const CLIENT_4PS_NARRATIVE_PROMPT_VERSION = "4ps-narrative-v3";
 
 export const getClient4PsRowFilledFieldCount = (
   form: Client4PsForm,
