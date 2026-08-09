@@ -146,4 +146,9 @@ test("AI narrative generation uses the supported stable Gemini model contract", 
   expect(source).not.toContain("temperature:");
   expect(source).not.toContain("topP:");
   expect(source).not.toContain("topK:");
+  expect(source).toContain('thinkingLevel: "low"');
+  expect(source).toContain("maxOutputTokens: 3200");
+  expect(source).toContain('finishReason !== "STOP"');
+  expect(source).toContain("Gemini returned an incomplete narrative draft.");
+  expect(source).toContain('const narrativePromptVersion = "4ps-narrative-v3"');
 });
