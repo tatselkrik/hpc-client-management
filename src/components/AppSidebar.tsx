@@ -1,4 +1,4 @@
-﻿import type { Dispatch, ReactNode, SetStateAction } from "react";
+﻿import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import {
   AboutIcon,
   AnalyticsIcon,
@@ -29,7 +29,7 @@ type AppSidebarProps = {
   handleLogout: () => void | Promise<void>;
 };
 
-const navigationItems: Array<{
+const workspaceNavigationItems: Array<{
   section: Section;
   label: string;
   icon: ReactNode;
@@ -38,6 +38,13 @@ const navigationItems: Array<{
   { section: "clients", label: "Clients", icon: <ClientsIcon /> },
   { section: "analytics", label: "Analytics", icon: <AnalyticsIcon /> },
   { section: "careTeam", label: "Care Team", icon: <CareTeamIcon /> },
+];
+
+const systemNavigationItems: Array<{
+  section: Section;
+  label: string;
+  icon: ReactNode;
+}> = [
   { section: "settings", label: "Settings", icon: <SettingsIcon /> },
   { section: "about", label: "About", icon: <AboutIcon className="nav-icon" /> },
 ];
@@ -53,26 +60,52 @@ export function AppSidebar({
   setIsSidebarCollapsed,
   handleLogout,
 }: AppSidebarProps) {
+  const [isNarrowLayout, setIsNarrowLayout] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 760
+  );
+  const isSidebarCompact = isSidebarCollapsed || isNarrowLayout;
+
+  useEffect(() => {
+    const handleWindowResize = () => setIsNarrowLayout(window.innerWidth <= 760);
+
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
+
   return (
-    <aside className={`sidebar ${isSidebarCollapsed ? "collapsed" : ""}`}>
+    <aside className={`sidebar ${isSidebarCompact ? "collapsed" : ""}`}>
       <div className="sidebar-top">
         <div className="brand-block">
           <div className="brand-row">
             <button
               type="button"
-              className={`brand-toggle ${isSidebarCollapsed ? "collapsed" : ""}`}
-              onClick={() => setIsSidebarCollapsed((value) => !value)}
-              aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className={`brand-toggle ${isSidebarCompact ? "collapsed" : ""}`}
+              onClick={() => {
+                if (!isNarrowLayout) setIsSidebarCollapsed((value) => !value);
+              }}
+              aria-label={
+                isNarrowLayout
+                  ? "Navigation is compact at this window size"
+                  : isSidebarCollapsed
+                    ? "Expand sidebar"
+                    : "Collapse sidebar"
+              }
+              title={
+                isNarrowLayout
+                  ? "Navigation is compact at this window size"
+                  : isSidebarCollapsed
+                    ? "Expand sidebar"
+                    : "Collapse sidebar"
+              }
             >
               <img
-                src={isSidebarCollapsed ? "/clinic-icon.png" : "/clinic-logo.png"}
+                src={isSidebarCompact ? "/clinic-icon.png" : "/clinic-logo.png"}
                 alt={CLINIC_NAME}
-                className={isSidebarCollapsed ? "brand-logo-icon" : "brand-logo"}
+                className={isSidebarCompact ? "brand-logo-icon" : "brand-logo"}
               />
             </button>
 
-            {!isSidebarCollapsed && (
+            {!isSidebarCompact && (
               <button
                 type="button"
                 className="collapse-button"
@@ -85,57 +118,81 @@ export function AppSidebar({
             )}
           </div>
 
-          {!isSidebarCollapsed && (
+          {!isSidebarCompact && (
             <p className="sidebar-subtitle">We listen with the ears of our hearts</p>
           )}
         </div>
 
-        <nav className="nav-menu">
-          {navigationItems.map((item) => (
-            <button
-              key={item.section}
-              className={activeSection === item.section ? "nav-button active" : "nav-button"}
-              onClick={() => setActiveSection(item.section)}
-              title={item.label}
-            >
-              {item.icon}
-              {!isSidebarCollapsed && <span>{item.label}</span>}
-            </button>
-          ))}
+        <nav className="nav-menu" aria-label="Application navigation">
+          <div className="nav-group">
+            {!isSidebarCompact && <span className="nav-group-label">Workspace</span>}
+            {workspaceNavigationItems.map((item) => (
+              <button
+                key={item.section}
+                className={activeSection === item.section ? "nav-button active" : "nav-button"}
+                onClick={() => setActiveSection(item.section)}
+                title={item.label}
+                aria-current={activeSection === item.section ? "page" : undefined}
+              >
+                <span className="nav-icon-wrap">{item.icon}</span>
+                {!isSidebarCompact && <span>{item.label}</span>}
+              </button>
+            ))}
+          </div>
 
-          <button
-            className="nav-button"
-            onClick={() => void handleLogout()}
-            disabled={loading}
-            title="Sign Out"
-          >
-            <SignOutIcon />
-            {!isSidebarCollapsed && <span>{loading ? "Please wait..." : "Sign Out"}</span>}
-          </button>
+          <div className="nav-group nav-group-system">
+            {!isSidebarCompact && <span className="nav-group-label">System</span>}
+            {systemNavigationItems.map((item) => (
+              <button
+                key={item.section}
+                className={activeSection === item.section ? "nav-button active" : "nav-button"}
+                onClick={() => setActiveSection(item.section)}
+                title={item.label}
+                aria-current={activeSection === item.section ? "page" : undefined}
+              >
+                <span className="nav-icon-wrap">{item.icon}</span>
+                {!isSidebarCompact && <span>{item.label}</span>}
+              </button>
+            ))}
+          </div>
         </nav>
       </div>
 
-      <button
-        type="button"
-        className={`profile-card ${activeSection === "profile" ? "active" : ""}`}
-        onClick={() => setActiveSection("profile")}
-        title="My Profile"
-      >
-        <div className="profile-avatar">
-          {profileAvatarUrl ? (
-            <img src={profileAvatarUrl} alt="" className="profile-avatar-image" />
-          ) : (
-            getProfileInitial(profile?.full_name, userEmail)
-          )}
-        </div>
-
-        {!isSidebarCollapsed && (
-          <div className="profile-card-copy">
-            <strong>{getProfileDisplayName(profile?.full_name)}</strong>
-            <span>{getProfileDisplayRole(profile?.role)}</span>
+      <div className="sidebar-footer">
+        <button
+          type="button"
+          className={`profile-card ${activeSection === "profile" ? "active" : ""}`}
+          onClick={() => setActiveSection("profile")}
+          title="My Profile"
+          aria-current={activeSection === "profile" ? "page" : undefined}
+        >
+          <div className="profile-avatar">
+            {profileAvatarUrl ? (
+              <img src={profileAvatarUrl} alt="" className="profile-avatar-image" />
+            ) : (
+              getProfileInitial(profile?.full_name, userEmail)
+            )}
           </div>
-        )}
-      </button>
+
+          {!isSidebarCompact && (
+            <div className="profile-card-copy">
+              <strong>{getProfileDisplayName(profile?.full_name)}</strong>
+              <span>{getProfileDisplayRole(profile?.role)}</span>
+            </div>
+          )}
+        </button>
+
+        <button
+          type="button"
+          className="nav-button sidebar-signout-button"
+          onClick={() => void handleLogout()}
+          disabled={loading}
+          title="Sign Out"
+        >
+          <span className="nav-icon-wrap"><SignOutIcon /></span>
+          {!isSidebarCompact && <span>{loading ? "Please wait..." : "Sign Out"}</span>}
+        </button>
+      </div>
     </aside>
   );
 }

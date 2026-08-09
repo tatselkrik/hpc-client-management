@@ -28,6 +28,9 @@ import {
   APP_PRODUCT_NAME,
 } from "./appShared";
 
+const shouldStartWithCompactSidebar = () =>
+  typeof window !== "undefined" && window.innerWidth <= 1024;
+
 function App() {
   useDesktopAuthDeepLinks();
 
@@ -46,7 +49,9 @@ function App() {
   const [isInvitationPasswordSetup, setIsInvitationPasswordSetup] = useState(false);
 
   const [activeSection, setActiveSection] = useState<Section>("dashboard");
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    shouldStartWithCompactSidebar
+  );
   const [intakeTimelineGrouping, setIntakeTimelineGrouping] =
     useState<IntakeTimelineGrouping>("month");
   const [intakeMonthRange, setIntakeMonthRange] = useState<IntakeMonthRange>("12M");

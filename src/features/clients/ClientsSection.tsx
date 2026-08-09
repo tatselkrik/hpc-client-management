@@ -15,6 +15,7 @@ import {
   CLIENT_STATUS_OPTIONS,
 } from "../../appShared";
 import { PlusIcon, SearchIcon } from "../../components/icons";
+import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 import { ClientListPanel } from "./ClientListPanel";
 import { ClientTabContent, type ClientTabContentProps } from "./ClientTabContent";
 
@@ -143,34 +144,51 @@ export function ClientsSection({
 
   return (
     <div className="page-content clients-page">
-      <h2 className="page-title">Clients</h2>
+      <WorkspaceHeader
+        eyebrow="Client workspace"
+        title="Clients"
+        description="Find a client, review their record, and continue documentation from one focused workspace."
+        meta={
+          <>
+            <strong>
+              {filteredClientSummary.total.toLocaleString()} visible record
+              {filteredClientSummary.total === 1 ? "" : "s"}
+            </strong>
+            <span>
+              {filteredClientSummary.active.toLocaleString()} active ·{" "}
+              {filteredClientSummary.terminated.toLocaleString()} terminated
+            </span>
+          </>
+        }
+      />
 
-      <div className="clients-topbar">
-        <div className="clients-searchbar">
-          <SearchIcon />
-          <input
-            type="text"
-            placeholder="Search clients..."
-            value={clientSearch}
-            onChange={(event) => setClientSearch(event.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        {canCreateClientRecords ? (
-          <div className="clients-actions">
-            <button
-              className="small-button primary-button add-client-button"
-              onClick={handleRequestAddClient}
-              disabled={loading}
-              title="Add a new client"
-            >
-              <PlusIcon />
-              <span>{loading ? "Please wait..." : "Add Client"}</span>
-            </button>
+      <section className="clients-command-panel" aria-label="Client search and filters">
+        <div className="clients-topbar">
+          <div className="clients-searchbar">
+            <SearchIcon />
+            <input
+              type="text"
+              placeholder="Search clients..."
+              value={clientSearch}
+              onChange={(event) => setClientSearch(event.target.value)}
+              className="search-input"
+            />
           </div>
-        ) : null}
-      </div>
+
+          {canCreateClientRecords ? (
+            <div className="clients-actions">
+              <button
+                className="small-button primary-button add-client-button"
+                onClick={handleRequestAddClient}
+                disabled={loading}
+                title="Add a new client"
+              >
+                <PlusIcon />
+                <span>{loading ? "Please wait..." : "Add Client"}</span>
+              </button>
+            </div>
+          ) : null}
+        </div>
 
       {isNewClientAssignmentOpen ? (
         <div className="app-modal-overlay" role="presentation">
@@ -238,7 +256,7 @@ export function ClientsSection({
         </div>
       ) : null}
 
-      <div className="clients-filters-row">
+        <div className="clients-filters-row">
         <label className="clients-filter">
           <span>Status</span>
           <select
@@ -304,23 +322,24 @@ export function ClientsSection({
             ))}
           </select>
         </label>
-      </div>
-
-      {hasActiveClientFilters ? (
-        <div className="active-filter-row">
-          <div className="active-filter-list">
-            <span>Active filters:</span>
-            {activeClientFilterLabels.map((label) => (
-              <span className="filter-chip" key={label}>
-                {label}
-              </span>
-            ))}
-          </div>
-          <button className="text-button" type="button" onClick={clearClientFilters}>
-            Clear all
-          </button>
         </div>
-      ) : null}
+
+        {hasActiveClientFilters ? (
+          <div className="active-filter-row">
+            <div className="active-filter-list">
+              <span>Active filters:</span>
+              {activeClientFilterLabels.map((label) => (
+                <span className="filter-chip" key={label}>
+                  {label}
+                </span>
+              ))}
+            </div>
+            <button className="text-button" type="button" onClick={clearClientFilters}>
+              Clear all
+            </button>
+          </div>
+        ) : null}
+      </section>
 
       <div className="clients-layout">
         <ClientListPanel

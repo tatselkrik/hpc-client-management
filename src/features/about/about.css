@@ -136,3 +136,96 @@
     gap: var(--space-2, 8px);
   }
 }
+
+/* Cohesive About workspace */
+.about-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.about-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  border-color: rgba(148, 163, 184, 0.2);
+  border-radius: 24px;
+  background: var(--surface-elevated);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.065);
+}
+
+.about-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 104px;
+  height: 4px;
+  border-radius: 0 24px 0 999px;
+  background: linear-gradient(90deg, var(--brand-coral), var(--brand-amber));
+}
+
+.about-panel-header {
+  margin-bottom: 17px;
+}
+
+.about-panel-header .settings-clinic-kicker {
+  color: var(--brand-coral-deep);
+}
+
+.about-popover-title {
+  margin-top: 3px;
+  font-size: clamp(24px, 2.5vw, 34px);
+  letter-spacing: -0.035em;
+}
+
+.about-description {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.about-info-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.about-info-row {
+  grid-template-columns: 1fr;
+  gap: 5px;
+  padding: 14px 15px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.about-info-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.about-info-value {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.about-release-note {
+  margin-top: 16px;
+  padding: 17px 18px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface-soft);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.workspace-header .about-header-actions {
+  width: auto;
+}
+
+@media (max-width: 660px) {
+  .about-info-list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,21 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./analytics.css";
 import { SectionHeader } from "../../components/SectionHeader";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  LabelList,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 import type {
   AnalyticsActivityRecord,
   AnalyticsClient4PsInsight,
@@ -26,7 +12,6 @@ import type {
   IntakeYearRange,
 } from "../../appShared";
 import {
-  ANALYTICS_COLOR_TOKENS,
   CSSRS_DEMEANOR_GROUPS,
   CSSRS_IDEATION_ITEMS,
   hasCompleteCssrsProtectiveFactorTexts,
@@ -36,31 +21,18 @@ import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { AnalyticsDrilldownPanel, type DrilldownPageSize } from "./AnalyticsDrilldownPanel";
+import {
+  analyticsChartColors,
+  renderBarDistributionVisual,
+  renderDonutChart,
+  renderGroupedHorizontalBarChart,
+  renderLineAreaChart,
+  type AnalyticsGroupedDistributionItem,
+} from "./AnalyticsChartRenderers";
 import { AnalyticsExportControls } from "./AnalyticsExportControls";
 import { AnalyticsFiltersPanel } from "./AnalyticsFiltersPanel";
+import { AnalyticsQuickRead, AnalyticsSummaryMetrics } from "./AnalyticsOverview";
 import type { AnalyticsViewModel } from "./useAnalyticsViewModel";
-
-type DistributionItem = {
-  label: string;
-  value: number;
-};
-
-type DonutChartOptions = {
-  centerItemLabel?: string;
-  centerLabel?: string;
-  centerMode?: "total" | "item" | "topItem";
-  className?: string;
-  hideCenterText?: boolean;
-  maxLegendItems?: number;
-  showCenterPercentage?: boolean;
-};
-
-type GroupedDistributionItem = {
-  label: string;
-  primary: number;
-  secondary: number;
-};
-
 
 type RecordActivityTrendItem = {
   key: string;
@@ -297,39 +269,6 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
   }, [normalizeClientMonthKey]);
 
   const formatYearLabel = useCallback((yearKey: string) => yearKey || "Not dated", []);
-
-  const compactTimelineLabel = useCallback((label: string) => {
-    const trimmedLabel = label.trim();
-    if (!trimmedLabel) return "";
-
-    const monthNames = [
-      "january",
-      "february",
-      "march",
-      "april",
-      "may",
-      "june",
-      "july",
-      "august",
-      "september",
-      "october",
-      "november",
-      "december",
-    ];
-
-    const [monthPart, yearPart] = trimmedLabel.split(/\s+/);
-    const monthIndex = monthNames.findIndex(
-      (monthName) =>
-        monthName.startsWith(monthPart.toLowerCase()) ||
-        monthName.slice(0, 3) === monthPart.toLowerCase().slice(0, 3)
-    );
-
-    if (monthIndex >= 0 && yearPart) {
-      return `${monthNames[monthIndex].slice(0, 3)} ${yearPart.replace(/^20/, "'")}`;
-    }
-
-    return trimmedLabel;
-  }, []);
 
   const addMonthsToMonthKey = useCallback((monthKey: string, monthOffset: number) => {
     const [year, month] = monthKey.split("-").map(Number);
@@ -660,7 +599,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
     [filteredClientRows, buildDistribution, normalizeText]
   );
 
-  const narrativeCoverageGroupedByRepresentative = useMemo<GroupedDistributionItem[]>(() => {
+  const narrativeCoverageGroupedByRepresentative = useMemo<AnalyticsGroupedDistributionItem[]>(() => {
     const representativeLabels = new Set(
       filteredClientRows.map((client) => normalizeText(client.hpc_representative, "Unassigned"))
     );
@@ -1152,382 +1091,6 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
     activeDrilldown && visibleDrilldownClients.length < activeDrilldown.clients.length
   );
 
-  const analyticsGreen = ANALYTICS_COLOR_TOKENS[1];
-  const analyticsRed = "#ef4444";
-
-  const getStatusDonutColor = (item: DistributionItem, index: number) => {
-    const label = item.label.toLowerCase();
-
-    if (label.includes("active")) return analyticsGreen;
-    if (label.includes("terminated")) return analyticsRed;
-
-    return ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-  };
-
-  const getMultipleConcernsColor = (item: DistributionItem, index: number) =>
-    item.label === "Multiple concerns"
-      ? analyticsRed
-      : ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-
-  const getSuicidalIdeationColor = (item: DistributionItem, index: number) =>
-    item.label === "With suicidal ideation"
-      ? analyticsRed
-      : ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-
-  const getPreExistingDiagnosisColor = (item: DistributionItem, index: number) => {
-    if (item.label === "Diagnosis indicated") return analyticsRed;
-    if (item.label === "No diagnosis indicated") return analyticsGreen;
-
-    return ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-  };
-
-  const getCssrsCompletionColor = (item: DistributionItem, index: number) => {
-    if (item.label === "Completed") return analyticsGreen;
-    if (item.label === "Pending") return analyticsRed;
-
-    return ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-  };
-
-  const getElevatedCssrsColor = (item: DistributionItem, index: number) =>
-    item.label === "Elevated"
-      ? analyticsRed
-      : ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-
-  const getFourPsCompletionColor = (item: DistributionItem) =>
-    item.label === "4Ps complete" ? analyticsGreen : analyticsRed;
-
-  const getNarrativeReportColor = (item: DistributionItem) =>
-    item.label === "Narrative reports" ? analyticsGreen : analyticsRed;
-
-  const getCssrsSeverityBarColor = (label: string) => {
-    const level = Number(label.replace(/[^0-9]/g, ""));
-
-    switch (level) {
-      case 1:
-        return "#facc15";
-      case 2:
-        return "#f59e0b";
-      case 3:
-        return "#fb923c";
-      case 4:
-        return "#f97316";
-      case 5:
-        return "#dc2626";
-      default:
-        return ANALYTICS_COLOR_TOKENS[0];
-    }
-  };
-
-  const chartGridColor = "rgba(148, 163, 184, 0.28)";
-  const chartAxisColor = "var(--muted)";
-
-  const chartTooltipStyle: CSSProperties = {
-    border: "1px solid var(--border)",
-    borderRadius: 14,
-    boxShadow: "var(--shadow)",
-    color: "var(--text)",
-    background: "var(--surface)",
-  };
-
-  const getChartColor = (
-    item: { label: string; value?: number },
-    index: number,
-    getItemColor?: (item: { label: string; value: number }, index: number) => string
-  ) =>
-    getItemColor?.({ label: item.label, value: item.value ?? 0 }, index) ??
-    ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length];
-
-  const formatChartPercent = (value: number, total: number) =>
-    total > 0 ? `${Math.round((value / total) * 100)}%` : "0%";
-
-  const renderBarDistributionVisual = (
-    items: Array<{ label: string; value: number }>,
-    emptyLabel: string,
-    _onSelectItem?: (item: { label: string; value: number }) => void,
-    getItemColor?: (item: { label: string; value: number }, index: number) => string
-  ) => {
-    const visibleItems = items.filter((item) => item.value > 0).slice(0, 10);
-
-    if (visibleItems.length === 0) {
-      return <div className="empty-state">{emptyLabel}</div>;
-    }
-
-    const total = visibleItems.reduce((sum, item) => sum + item.value, 0);
-    const chartHeight = Math.max(170, visibleItems.length * 34 + 34);
-
-    return (
-      <div className="analytics-recharts-shell analytics-recharts-bar-shell">
-        <ResponsiveContainer width="100%" height={chartHeight}>
-          <BarChart
-            data={visibleItems}
-            layout="vertical"
-            margin={{ top: 4, right: 42, bottom: 4, left: 8 }}
-            barCategoryGap={9}
-          >
-            <CartesianGrid horizontal={false} stroke={chartGridColor} />
-            <XAxis type="number" hide domain={[0, "dataMax"]} />
-            <YAxis
-              type="category"
-              dataKey="label"
-              width={132}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: chartAxisColor, fontSize: 12, fontWeight: 600 }}
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(99, 102, 241, 0.06)" }}
-              contentStyle={chartTooltipStyle}
-              formatter={(value) => [
-                `${Number(value).toLocaleString()} (${formatChartPercent(Number(value), total)})`,
-                "Clients",
-              ]}
-            />
-            <Bar
-              dataKey="value"
-              radius={[0, 9, 9, 0]}
-              barSize={18}
-            >
-              {visibleItems.map((item, index) => (
-                <Cell
-                  key={item.label}
-                  fill={getChartColor(item, index, getItemColor)}
-                  cursor="default"
-                />
-              ))}
-              <LabelList
-                dataKey="value"
-                position="right"
-                formatter={(value) => Number(value ?? 0).toLocaleString()}
-                className="analytics-recharts-value-label"
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  };
-
-  const renderDonutChart = (
-    items: DistributionItem[],
-    emptyLabel: string,
-    centerLabel: string,
-    _onSelectItem?: (item: DistributionItem) => void,
-    getItemColor?: (item: DistributionItem, index: number) => string,
-    options: DonutChartOptions = {}
-  ) => {
-    const visibleItems = items.filter((item) => item.value > 0);
-
-    if (visibleItems.length === 0) {
-      return <div className="empty-state">{emptyLabel}</div>;
-    }
-
-    const total = visibleItems.reduce((sum, item) => sum + item.value, 0);
-    const centerCaption = total === 1 ? centerLabel.replace(/s$/, "") : centerLabel;
-    const centerMode = options.centerMode ?? "total";
-    const sortedVisibleItems = [...visibleItems].sort(
-      (left, right) => right.value - left.value || left.label.localeCompare(right.label)
-    );
-    const selectedCenterItem =
-      centerMode === "topItem"
-        ? sortedVisibleItems[0]
-        : options.centerItemLabel
-          ? items.find((item) => item.label === options.centerItemLabel) ?? visibleItems[0]
-          : visibleItems[0];
-    const shouldShowItemCenter = centerMode !== "total" && Boolean(selectedCenterItem);
-    const centerValue = shouldShowItemCenter ? selectedCenterItem.value : total;
-    const centerText = options.showCenterPercentage
-      ? `${centerValue.toLocaleString()} (${formatChartPercent(centerValue, total)})`
-      : centerValue.toLocaleString();
-    const centerTextLabel = shouldShowItemCenter
-      ? options.centerLabel ?? selectedCenterItem.label
-      : options.centerLabel ?? centerCaption;
-
-    return (
-      <div className={`analytics-recharts-donut-layout ${options.className ?? ""}`.trim()}>
-        <div
-          className="analytics-recharts-donut-wrap"
-          role="img"
-          aria-label={`${centerLabel}: ${total.toLocaleString()}`}
-        >
-          <ResponsiveContainer width="100%" height={168}>
-            <PieChart>
-              <Pie
-                data={visibleItems}
-                dataKey="value"
-                nameKey="label"
-                innerRadius={48}
-                outerRadius={74}
-                paddingAngle={visibleItems.length > 1 ? 2 : 0}
-                stroke="var(--surface)"
-                strokeWidth={4}
-              >
-                {visibleItems.map((item, index) => (
-                  <Cell
-                    key={item.label}
-                    fill={getItemColor?.(item, index) ?? ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length]}
-                    cursor="default"
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={chartTooltipStyle}
-                formatter={(value) => [
-                  `${Number(value).toLocaleString()} (${formatChartPercent(Number(value), total)})`,
-                  "Clients",
-                ]}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-
-          {!options.hideCenterText && (
-            <div className="analytics-recharts-donut-center" aria-hidden="true">
-              <strong>{centerText}</strong>
-              <span>{centerTextLabel}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="analytics-legend analytics-recharts-legend">
-          {visibleItems.slice(0, options.maxLegendItems ?? 6).map((item, index) => {
-            const rowContent = (
-              <>
-                <span
-                  className="analytics-color-dot"
-                  style={{
-                    background: getItemColor?.(item, index) ?? ANALYTICS_COLOR_TOKENS[index % ANALYTICS_COLOR_TOKENS.length],
-                  }}
-                />
-                <span className="analytics-legend-label">{item.label}</span>
-                <strong className="analytics-legend-value">
-                  {item.value.toLocaleString()} ({formatChartPercent(item.value, total)})
-                </strong>
-              </>
-            );
-
-            return (
-              <div className="analytics-legend-row" key={item.label}>
-                {rowContent}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const renderGroupedHorizontalBarChart = (
-    items: GroupedDistributionItem[],
-    emptyLabel: string,
-    primaryLabel: string,
-    secondaryLabel: string
-  ) => {
-    const visibleItems = items.filter((item) => item.primary > 0 || item.secondary > 0).slice(0, 8);
-
-    if (visibleItems.length === 0) {
-      return <div className="empty-state">{emptyLabel}</div>;
-    }
-
-    const chartHeight = Math.max(190, visibleItems.length * 44 + 38);
-
-    return (
-      <div className="analytics-recharts-shell">
-        <div className="analytics-grouped-bar-legend">
-          <span><i className="primary" /> {primaryLabel}</span>
-          <span><i className="secondary" /> {secondaryLabel}</span>
-        </div>
-
-        <ResponsiveContainer width="100%" height={chartHeight}>
-          <BarChart
-            data={visibleItems}
-            layout="vertical"
-            margin={{ top: 8, right: 34, bottom: 4, left: 8 }}
-            barCategoryGap={12}
-          >
-            <CartesianGrid horizontal={false} stroke={chartGridColor} />
-            <XAxis type="number" hide domain={[0, "dataMax"]} />
-            <YAxis
-              type="category"
-              dataKey="label"
-              width={136}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: chartAxisColor, fontSize: 12, fontWeight: 600 }}
-            />
-            <Tooltip contentStyle={chartTooltipStyle} />
-            <Bar dataKey="primary" name={primaryLabel} fill="var(--analytics-tone-1)" radius={[0, 8, 8, 0]} barSize={12}>
-              <LabelList
-                dataKey="primary"
-                position="right"
-                formatter={(value) => Number(value ?? 0).toLocaleString()}
-                className="analytics-recharts-value-label"
-              />
-            </Bar>
-            <Bar dataKey="secondary" name={secondaryLabel} fill="var(--analytics-tone-2)" radius={[0, 8, 8, 0]} barSize={12}>
-              <LabelList
-                dataKey="secondary"
-                position="right"
-                formatter={(value) => Number(value ?? 0).toLocaleString()}
-                className="analytics-recharts-value-label"
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  };
-
-  const renderLineAreaChart = (
-    items: Array<{ label: string; value: number }>,
-    emptyLabel: string
-  ) => {
-    if (items.length === 0 || items.every((item) => item.value <= 0)) {
-      return <div className="empty-state">{emptyLabel}</div>;
-    }
-
-    const chartItems = items.map((item) => ({
-      ...item,
-      displayLabel: compactTimelineLabel(item.label),
-    }));
-
-    return (
-      <div className="analytics-recharts-shell analytics-recharts-line-shell">
-        <ResponsiveContainer width="100%" height={232}>
-          <AreaChart data={chartItems} margin={{ top: 14, right: 22, bottom: 2, left: -20 }}>
-            <CartesianGrid stroke={chartGridColor} vertical={false} />
-            <XAxis
-              dataKey="displayLabel"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: chartAxisColor, fontSize: 12, fontWeight: 600 }}
-            />
-            <YAxis
-              allowDecimals={false}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: chartAxisColor, fontSize: 12 }}
-            />
-            <Tooltip
-              contentStyle={chartTooltipStyle}
-              formatter={(value) => [Number(value).toLocaleString(), "Clients"]}
-              labelFormatter={(_, payload) =>
-                payload?.[0]?.payload?.label ? payload[0].payload.label : ""
-              }
-            />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="var(--analytics-tone-1)"
-              strokeWidth={4}
-              fill="rgba(99, 102, 241, 0.14)"
-              dot={{ r: 4, strokeWidth: 3, fill: "var(--surface)" }}
-              activeDot={{ r: 6, strokeWidth: 3 }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  };
-
   const escapeCsvCell = (value: string | number | null | undefined) => {
     const raw = value == null ? "" : String(value);
     return `"${raw.replace(/"/g, '""')}"`;
@@ -1903,13 +1466,16 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
 
   return (
     <div className="page-content analytics-page">
-      <SectionHeader
-        className="analytics-header"
+      <WorkspaceHeader
+        eyebrow="Clinical intelligence"
         title="Analytics"
-        titleAs="h2"
-        titleClassName="page-title"
-        description="Overview of client data and clinical workflow."
-        descriptionClassName="analytics-subtitle"
+        description="Understand caseload patterns, documentation coverage, and clinical workflow for the selected view."
+        meta={
+          <>
+            <strong>{filteredClientRows.length.toLocaleString()} clients</strong>
+            <span>included in the current view</span>
+          </>
+        }
         actions={<div className="analytics-header-actions">{analyticsExportControls}</div>}
       />
 
@@ -1947,78 +1513,16 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
         sexOptions={sexOptions}
       />
 
-      <section className="analytics-quick-read" aria-label="Analytics quick read">
-        <div className="analytics-quick-read-intro">
-          <span className="analytics-quick-read-kicker">Selected view</span>
-          <strong>{fullFilterSummary}</strong>
-          <span>Three signals to orient the current analytics view.</span>
-        </div>
+      <AnalyticsQuickRead
+        filterSummary={fullFilterSummary}
+        items={analyticsQuickRead}
+      />
 
-        <div className="analytics-quick-read-grid">
-          {analyticsQuickRead.map((item) => (
-            <div
-              className={`analytics-quick-read-item analytics-quick-read-${item.tone}`}
-              key={item.label}
-            >
-              <span>{item.label}</span>
-              <strong>{item.value}</strong>
-              <small>{item.detail}</small>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="analytics-section">
-        <SectionHeader
-          className="analytics-section-header"
-          kicker="1. Summary Metrics"
-          description="High-level workload and documentation indicators for the selected view."
-          descriptionClassName="analytics-section-copy"
-        />
-
-        <div className="analytics-summary-grid">
-          {summaryCards.map((card, index) => (
-            <button
-              type="button"
-              className={
-                canOpenClientLevelAnalytics
-                  ? "analytics-summary-card analytics-clickable-card"
-                  : "analytics-summary-card"
-              }
-              key={card.label}
-              onClick={() => openAnalyticsDrilldown(card.drilldownGroup)}
-              disabled={!canOpenClientLevelAnalytics}
-            >
-              <span className={`analytics-summary-icon analytics-summary-icon-${index + 1}`} aria-hidden="true">
-                {index === 0 && (
-                  <svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm8.5 0a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7ZM2.5 21v-2.2C2.5 15.6 5 13 8 13s5.5 2.6 5.5 5.8V21h-11Zm12 0v-2.5c0-1.6-.5-3-1.4-4.1 1-.9 2.2-1.4 3.4-1.4 2.8 0 5 2.4 5 5.4V21h-7Z" fill="currentColor" /></svg>
-                )}
-                {index === 1 && (
-                  <svg viewBox="0 0 24 24"><path d="M12 11a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm-8 10v-2.2C4 15.1 7.2 13 12 13s8 2.1 8 5.8V21H4Z" fill="currentColor" /></svg>
-                )}
-                {index === 2 && (
-                  <svg viewBox="0 0 24 24"><path d="M12 11a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm-8 10v-2.2C4 15.1 7.2 13 12 13s8 2.1 8 5.8V21H4Zm13.5-8.5 4 4m0-4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" /></svg>
-                )}
-                {index === 3 && (
-                  <svg viewBox="0 0 24 24"><path d="M12 2 4.5 5.4v5.8c0 4.8 3.2 9.1 7.5 10.8 4.3-1.7 7.5-6 7.5-10.8V5.4L12 2Zm0 5v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" /><path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
-                )}
-                {index === 4 && (
-                  <svg viewBox="0 0 24 24"><path d="M9.5 16.2 5.8 12.5l-2 2 5.7 5.7L21 8.7l-2-2-9.5 9.5Z" fill="currentColor" /></svg>
-                )}
-                {index === 5 && (
-                  <svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 5h6M9 12h6M9 16h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" /></svg>
-                )}
-              </span>
-              <span className="analytics-summary-label">{card.label}</span>
-              <div className="analytics-summary-main">
-                <strong className="analytics-summary-value">{card.value}</strong>
-              </div>
-              <small className="analytics-summary-meta">{card.meta}</small>
-              <small className="analytics-summary-comparison">{card.comparison}</small>
-            </button>
-          ))}
-        </div>
-      </section>
+      <AnalyticsSummaryMetrics
+        cards={summaryCards}
+        canOpenClientLevelAnalytics={canOpenClientLevelAnalytics}
+        onOpenDrilldown={openAnalyticsDrilldown}
+      />
 
       <AnalyticsDrilldownPanel
         activeDrilldown={activeDrilldown}
@@ -2113,7 +1617,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
                   "No client status data is available yet.",
                   "clients",
                   undefined,
-                  getStatusDonutColor,
+                  analyticsChartColors.status,
                   {
                     centerItemLabel: "Active",
                     centerLabel: "Active clients",
@@ -2284,7 +1788,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
               "No counseling reason data is available yet.",
               "clients",
               undefined,
-              getMultipleConcernsColor,
+              analyticsChartColors.multipleConcerns,
               {
                 centerItemLabel: "Multiple concerns",
                 centerLabel: "Multiple concerns",
@@ -2304,7 +1808,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
               "No suicidal ideation data is available yet.",
               "clients",
               undefined,
-              getSuicidalIdeationColor,
+              analyticsChartColors.suicidalIdeation,
               {
                 centerItemLabel: "With suicidal ideation",
                 centerLabel: "With suicidal ideation",
@@ -2324,7 +1828,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
               "No psychiatric diagnosis data is available yet.",
               "clients",
               undefined,
-              getPreExistingDiagnosisColor,
+              analyticsChartColors.preExistingDiagnosis,
               {
                 centerItemLabel: "Diagnosis indicated",
                 centerLabel: "Diagnosis indicated",
@@ -2360,7 +1864,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
                 "No C-SSRS completion data is available yet.",
                 "clients",
                 undefined,
-                getCssrsCompletionColor,
+                analyticsChartColors.cssrsCompletion,
                 {
                   centerItemLabel: "Pending",
                   centerLabel: "Pending",
@@ -2382,7 +1886,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
                 "No elevated C-SSRS data is available yet.",
                 "clients",
                 undefined,
-                getElevatedCssrsColor,
+                analyticsChartColors.elevatedCssrs,
                 {
                   centerItemLabel: "Elevated",
                   centerLabel: "Elevated",
@@ -2401,7 +1905,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
                 cssrsSeverityDistribution,
                 "No C-SSRS severity data is available yet.",
                 undefined,
-                (item) => getCssrsSeverityBarColor(item.label)
+                (item) => analyticsChartColors.cssrsSeverity(item.label)
               )}
             </section>
           </div>
@@ -2457,7 +1961,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
                 "No 4Ps completion data is available yet.",
                 "clients",
                 undefined,
-                getFourPsCompletionColor,
+                analyticsChartColors.fourPsCompletion,
                 {
                   centerItemLabel: "Incomplete",
                   centerLabel: "Incomplete",
@@ -2482,7 +1986,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
                 "No narrative report data is available yet.",
                 "clients",
                 undefined,
-                getNarrativeReportColor,
+                analyticsChartColors.narrativeReport,
                 {
                   centerItemLabel: "No narrative report",
                   centerLabel: "No narrative report",

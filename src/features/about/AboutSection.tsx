@@ -1,6 +1,7 @@
 import "./about.css";
 import { SectionHeader } from "../../components/SectionHeader";
 import { StatusMessage } from "../../components/StatusMessage";
+import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 import { APP_BUILD_INFO, CLINIC_NAME } from "../../appShared";
 import type { AvailableAppUpdate } from "./useAboutUpdates";
 
@@ -26,13 +27,44 @@ export function AboutSection({
 
   return (
     <div className="page-content about-page">
-      <h2>About</h2>
+      <WorkspaceHeader
+        eyebrow="Application information"
+        title="About"
+        description="Review the installed release, update channel, and the purpose of this clinic workspace."
+        meta={
+          <>
+            <strong>Version {APP_BUILD_INFO.version}</strong>
+            <span>{APP_BUILD_INFO.channel} release channel</span>
+          </>
+        }
+        actions={
+          <div className="about-header-actions">
+            <button
+              type="button"
+              className="small-button secondary-button about-update-button"
+              onClick={handleCheckForUpdates}
+              disabled={isCheckingForUpdates}
+            >
+              {isCheckingForUpdates ? "Checking…" : "Check for Updates"}
+            </button>
+            {availableUpdate?.url && (
+              <button
+                type="button"
+                className="small-button about-update-download-button"
+                onClick={handleOpenAvailableUpdate}
+              >
+                Open version {availableUpdate.version}
+              </button>
+            )}
+          </div>
+        }
+      />
 
       <div className="panel about-panel">
         <SectionHeader
           className="about-panel-header"
           contentClassName="about-panel-copy"
-          kicker="About"
+          kicker="Clinic desktop workspace"
           title={APP_BUILD_INFO.product_name}
           titleClassName="about-popover-title"
           description={
@@ -42,27 +74,6 @@ export function AboutSection({
             </>
           }
           descriptionClassName="about-description"
-          actions={
-            <div className="about-header-actions">
-              <button
-                type="button"
-                className="small-button secondary-button about-update-button"
-                onClick={handleCheckForUpdates}
-                disabled={isCheckingForUpdates}
-              >
-                {isCheckingForUpdates ? "Checking…" : "Check for Updates"}
-              </button>
-              {availableUpdate?.url && (
-                <button
-                  type="button"
-                  className="small-button about-update-download-button"
-                  onClick={handleOpenAvailableUpdate}
-                >
-                  Open version {availableUpdate.version}
-                </button>
-              )}
-            </div>
-          }
         />
 
         <div className="about-info-list">

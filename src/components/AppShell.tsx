@@ -34,7 +34,10 @@ export function AppShell({
   handleLogout,
 }: AppShellProps) {
   return (
-    <main className={`app-shell ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+    <main
+      className={`app-shell ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}
+      data-active-section={activeSection}
+    >
       <AppSidebar
         activeSection={activeSection}
         isSidebarCollapsed={isSidebarCollapsed}
@@ -47,7 +50,9 @@ export function AppShell({
         handleLogout={handleLogout}
       />
 
-      <section className="main-area">{mainContent}</section>
+      <section className="main-area">
+        <div className="main-content-frame">{mainContent}</div>
+      </section>
 
       {fileRenameModal}
       {fileDeleteModal}
