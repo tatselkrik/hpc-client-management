@@ -1,8 +1,6 @@
 ﻿/* Clinic Dark appearance overrides. */
 :root[data-theme="clinic-dark"] .login-card,
 :root[data-theme="clinic-dark"] .icon-button,
-:root[data-theme="clinic-dark"] .sidebar,
-:root[data-theme="clinic-dark"] .profile-card,
 :root[data-theme="clinic-dark"] .clients-searchbar,
 :root[data-theme="clinic-dark"] .documents-searchbar,
 :root[data-theme="clinic-dark"] .sort-dropdown-menu,
@@ -23,10 +21,6 @@
   box-shadow: var(--shadow);
 }
 
-:root[data-theme="clinic-dark"] .sidebar {
-  background: var(--sidebar-bg);
-}
-
 :root[data-theme="clinic-dark"] .login-form input,
 :root[data-theme="clinic-dark"] .search-input,
 :root[data-theme="clinic-dark"] .textarea-input,
@@ -45,12 +39,6 @@
 :root[data-theme="clinic-dark"] select optgroup {
   background: #1c1115;
   color: var(--text);
-}
-
-:root[data-theme="clinic-dark"] .nav-button.active,
-:root[data-theme="clinic-dark"] .profile-card.active {
-  background: linear-gradient(135deg, #ed1c24 0%, #f7941d 100%);
-  box-shadow: 0 10px 22px rgba(237, 28, 36, 0.28);
 }
 
 :root[data-theme="clinic-dark"] .client-list-item.active,

@@ -16,6 +16,7 @@ import type {
 } from "../../appShared";
 
 import { SettingsAnnouncementCard } from "./SettingsAnnouncementCard";
+import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 import { SettingsAppearanceCard } from "./SettingsAppearanceCard";
 import { SettingsAuditLogCard } from "./SettingsAuditLogCard";
 import { SettingsBackupRestoreCard } from "./SettingsBackupRestoreCard";
@@ -141,11 +142,21 @@ export function SettingsSection({
   handleRefreshAuditLogs,
 }: SettingsSectionProps) {
   return (
-    <div className="page-content">
-      <h2>Settings</h2>
+    <div className="page-content settings-page">
+      <WorkspaceHeader
+        eyebrow="Workspace configuration"
+        title="Settings"
+        description="Manage clinic information, appearance, announcements, categories, backups, and the controls available to your role."
+        meta={
+          <>
+            <strong>Clinic controls</strong>
+            <span>Available modules follow your account permissions</span>
+          </>
+        }
+      />
 
       <div className="settings-layout">
-        <div className="panel settings-panel">
+        <div className="settings-panel">
           <div className="settings-module-grid">
             <div className="settings-module-row settings-module-row-top">
               <SettingsClinicInfoCard

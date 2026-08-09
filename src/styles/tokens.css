@@ -5,6 +5,19 @@
 
   --app-font: "Century Gothic", CenturyGothic, "Tw Cen MT", "Avenir Next",
     "Segoe UI", Arial, sans-serif;
+  --brand-navy: #182235;
+  --brand-navy-deep: #101827;
+  --brand-coral: #e96649;
+  --brand-coral-deep: #c84d35;
+  --brand-amber: #eaa13a;
+  --brand-cream: #fff8f1;
+  --brand-sage: #397b69;
+  --brand-sage-soft: rgba(57, 123, 105, 0.14);
+  --shell-sidebar-bg: linear-gradient(180deg, #182235 0%, #111a2a 62%, #0c1422 100%);
+  --shell-sidebar-text: #f8fafc;
+  --shell-sidebar-muted: #aab5c6;
+  --shell-sidebar-border: rgba(255, 255, 255, 0.09);
+  --shell-content-max-width: 1580px;
   --app-background: radial-gradient(
     circle at top left,
     #f7fbff 0%,
@@ -142,6 +155,6 @@
   --card-gap: 16px;
 
   --sidebar-bg: rgba(255, 255, 255, 0.88);
-  --sidebar-width: 272px;
-  --sidebar-collapsed-width: 88px;
+  --sidebar-width: 264px;
+  --sidebar-collapsed-width: 92px;
 }

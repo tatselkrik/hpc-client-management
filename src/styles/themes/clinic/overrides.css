@@ -1,10 +1,4 @@
 ﻿/* Clinic appearance overrides. */
-:root[data-theme="clinic"] .nav-button.active,
-:root[data-theme="clinic"] .profile-card.active {
-  background: linear-gradient(135deg, #ed1c24 0%, #f7941d 100%);
-  box-shadow: 0 10px 22px rgba(237, 28, 36, 0.24);
-}
-
 :root[data-theme="clinic"] .theme-option.active,
 :root[data-theme="clinic"] .settings-preview-card.active {
   border-color: rgba(237, 28, 36, 0.34);

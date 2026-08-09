@@ -1,6 +1,7 @@
 import { StatusMessage } from "../../components/StatusMessage";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { SectionHeader } from "../../components/SectionHeader";
+import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 import type {
   CareTeamInviteForm,
   CareTeamMemberView,
@@ -112,14 +113,20 @@ export function CareTeamSection({
 
   return (
     <div className="page-content care-team-page">
-      <div className="care-team-header">
-        <div>
-          <h2>Care Team</h2>
-          <p className="analytics-subtitle">
-            View the care team roster and role assignments in one place.
-          </p>
-        </div>
-      </div>
+      <WorkspaceHeader
+        eyebrow="People and permissions"
+        title="Care Team"
+        description="Review the clinic roster, representative assignments, and the account controls available to your role."
+        meta={
+          <>
+            <strong>
+              {careTeamMembers.length.toLocaleString()} team member
+              {careTeamMembers.length === 1 ? "" : "s"}
+            </strong>
+            <span>Your access: {signedInRole}</span>
+          </>
+        }
+      />
 
       <div className="care-team-layout">
         <section className="panel care-team-panel">

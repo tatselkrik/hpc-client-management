@@ -1,0 +1,217 @@
+﻿/* Aesthetic readability update: Clinic Dark contrast, 4Ps AI copy, and category alignment */
+
+.client-4ps-ai-helper {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.client-4ps-ai-reminder {
+  display: block;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(180, 83, 9, 0.24);
+  border-radius: 1rem;
+  background: rgba(251, 191, 36, 0.12);
+  color: #8a520d;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.settings-category-add-row {
+  align-items: end;
+}
+
+.settings-category-add-input {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-category-add-button {
+  align-self: end;
+  min-height: 46px;
+  transform: translateY(-4px);
+}
+
+@media (max-width: 640px) {
+.settings-category-add-button {
+    transform: none;
+  }
+}
+
+.settings-category-add-field {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-category-label-text {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.settings-category-add-control-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.settings-category-add-control-row .search-input,
+.settings-category-add-control-row .settings-category-add-button {
+  min-height: 64px;
+  height: 64px;
+  margin: 0;
+}
+
+.settings-category-add-control-row .settings-category-add-button {
+  align-self: stretch;
+  transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding-inline: 28px;
+}
+
+@media (max-width: 760px) {
+.settings-category-add-control-row {
+    grid-template-columns: 1fr;
+  }
+
+.settings-category-add-control-row .search-input,
+  .settings-category-add-control-row .settings-category-add-button {
+    height: auto;
+    min-height: 52px;
+  }
+}
+
+.checkbox-group {
+  gap: 10px 12px;
+}
+
+.checkbox-option {
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  min-height: 40px;
+  line-height: 1.35;
+}
+
+.checkbox-option input[type="checkbox"] {
+  flex: 0 0 16px;
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+  min-height: 16px;
+  margin: 0;
+}
+
+.checkbox-option span {
+  display: block;
+  min-width: 0;
+}
+
+.client-4ps-table thead th {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.client-4ps-row-heading {
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-weight: 800;
+}
+
+/* Moved from settings.css: client overview responsive refinements */
+
+.client-meta-strip .client-meta-chip {
+  min-width: 0;
+  min-height: 150px;
+  justify-content: flex-start;
+  padding: 18px 20px;
+}
+
+@media (max-width: 1500px) {
+  .client-meta-strip {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .client-meta-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .client-meta-strip .client-meta-chip {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .overview-unsaved-banner,
+  .sticky-overview-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .document-list-item {
+    flex-direction: column;
+  }
+
+  .document-list-actions {
+    width: 100%;
+  }
+
+  .document-list-actions .tiny-action-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .documents-topbar-actions {
+    grid-template-columns: minmax(220px, 1fr) auto auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .documents-topbar-actions,
+  .file-preview-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .documents-topbar-actions .small-button {
+    width: 100%;
+  }
+}
+
+/* Client tab feedback/action alignment */
+.client-4ps-case-actions,
+.client-4ps-bottom-actions,
+.notes-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.status-message.client-4ps-action-status,
+.status-message.notes-editor-status {
+  flex: 1 1 280px;
+  width: auto;
+  min-width: 0;
+  max-width: 640px;
+  margin: 0 auto 0 0;
+}
+
+.client-4ps-case-actions > .small-button,
+.client-4ps-button-group,
+.notes-editor-button-group {
+  margin-left: auto;
+}
+
+.client-4ps-button-group,
+.notes-editor-button-group {
+  justify-content: flex-end;
+}

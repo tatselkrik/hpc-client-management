@@ -1084,3 +1084,125 @@
     min-height: var(--input-height);
   }
 }
+
+/* Cohesive settings workspace */
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-layout,
+.settings-panel {
+  width: 100%;
+  max-width: none;
+}
+
+.settings-panel {
+  padding: 0;
+  overflow: visible;
+}
+
+.settings-module-grid,
+.settings-module-row {
+  gap: 18px;
+}
+
+.settings-module-card {
+  position: relative;
+  gap: 15px;
+  overflow: hidden;
+  padding: 22px;
+  border-color: rgba(148, 163, 184, 0.2);
+  border-radius: 24px;
+  background: var(--surface-elevated);
+  box-shadow: 0 15px 34px rgba(15, 23, 42, 0.06);
+}
+
+.settings-module-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 86px;
+  height: 4px;
+  border-radius: 0 24px 0 999px;
+  background: linear-gradient(90deg, var(--brand-coral), var(--brand-amber));
+}
+
+.settings-clinic-kicker {
+  margin-bottom: 7px;
+  color: var(--brand-coral-deep);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+}
+
+.settings-module-title {
+  margin-top: 3px;
+  color: var(--text);
+  font-size: clamp(19px, 1.6vw, 24px);
+  letter-spacing: -0.025em;
+}
+
+.settings-module-copy,
+.settings-module-list {
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.settings-module-badge {
+  padding: 5px 8px;
+  font-size: 8px;
+}
+
+.settings-contact-card,
+.settings-address-card,
+.settings-clinic-info-card .settings-contact-card,
+.settings-clinic-info-card .settings-address-card,
+.settings-category-item,
+.settings-toggle-row,
+.settings-backup-preview,
+.settings-backup-count-card,
+.settings-announcement-details > div,
+.settings-backup-safety-note {
+  border-color: var(--border);
+  border-radius: 15px;
+  background: var(--surface-soft);
+  box-shadow: none;
+}
+
+.settings-contact-card,
+.settings-address-card,
+.settings-clinic-info-card .settings-contact-card,
+.settings-clinic-info-card .settings-address-card {
+  padding: 15px 16px;
+}
+
+.settings-clinic-value,
+.settings-clinic-info-card .settings-clinic-value {
+  font-size: clamp(16px, 1.25vw, 21px);
+}
+
+.theme-option {
+  min-height: 138px;
+  border-radius: 15px;
+  box-shadow: none;
+}
+
+.theme-option.active {
+  border-color: rgba(233, 102, 73, 0.3);
+  background: rgba(233, 102, 73, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(234, 161, 58, 0.1);
+}
+
+.settings-audit-entry {
+  border-radius: 15px;
+  background: var(--surface-soft);
+  box-shadow: none;
+}
+
+@media (max-width: 1180px) {
+  .settings-module-row {
+    grid-template-columns: 1fr;
+  }
+}

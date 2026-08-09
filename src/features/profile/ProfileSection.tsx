@@ -1,6 +1,7 @@
 import { StatusMessage } from "../../components/StatusMessage";
 import type { ChangeEvent, RefObject } from "react";
 import { SectionHeader } from "../../components/SectionHeader";
+import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 
 import type {
   AuthenticatorAssuranceState,
@@ -132,7 +133,17 @@ export function ProfileSection({
 
   return (
     <div className="page-content profile-page">
-      <h2>Profile</h2>
+      <WorkspaceHeader
+        eyebrow="Account and security"
+        title="Profile"
+        description="Manage your clinic identity, sign-in details, password, profile picture, and multi-factor authentication."
+        meta={
+          <>
+            <strong>{getProfileDisplayName(profile?.full_name)}</strong>
+            <span>{getProfileDisplayRole(profile?.role)}</span>
+          </>
+        }
+      />
 
       {mfaEnrollmentRequired && (
         <div className="panel status-message">

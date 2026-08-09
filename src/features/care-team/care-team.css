@@ -719,3 +719,202 @@
   color: var(--muted);
   font-size: 13px;
 }
+
+/* Cohesive care-team workspace */
+.care-team-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.care-team-layout {
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  gap: 18px;
+}
+
+.care-team-panel {
+  overflow: hidden;
+  padding: 0;
+  border-color: rgba(148, 163, 184, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.065);
+}
+
+.care-team-panel > .care-team-section-header {
+  margin: 0;
+  padding: 22px 23px 19px;
+  border-bottom: 1px solid var(--border);
+}
+
+.care-team-section-header h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  letter-spacing: -0.025em;
+}
+
+.care-team-helper-copy,
+.care-team-status {
+  font-size: 11px;
+}
+
+.care-team-list {
+  gap: 0;
+}
+
+.care-team-card {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 15px;
+  padding: 18px 23px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.care-team-card + .care-team-card {
+  border-top: 1px solid var(--border);
+}
+
+.care-team-card:hover {
+  background: rgba(233, 102, 73, 0.035);
+}
+
+.care-team-card-header-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.care-team-avatar {
+  width: 46px;
+  height: 46px;
+  flex-basis: 46px;
+  border: 2px solid color-mix(in srgb, var(--brand-sage) 18%, var(--border));
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--brand-sage), #62a58f);
+  font-size: 16px;
+}
+
+.care-team-card-top h4 {
+  color: var(--text);
+  font-size: 15px;
+  letter-spacing: -0.015em;
+}
+
+.care-team-representative-label {
+  font-size: 10px;
+}
+
+.care-team-card-actions {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding-left: 60px;
+}
+
+.care-team-role-editor,
+.care-team-assignment-editor,
+.care-team-role-display {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.care-team-role-editor select,
+.care-team-assignment-editor select {
+  min-height: 42px;
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font-size: 11px;
+}
+
+.care-team-role-display {
+  min-height: 42px;
+  justify-content: center;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.care-team-role-display strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.care-team-role-lock-note {
+  font-size: 9px;
+}
+
+.care-team-remove-button {
+  min-width: 0;
+  min-height: 36px;
+  height: 36px;
+  padding-inline: 11px;
+  border-radius: 11px;
+  font-size: 10px;
+}
+
+.care-team-panel-side {
+  top: 22px;
+}
+
+.care-team-panel-side .care-team-admin-stack {
+  padding: 20px 22px 22px;
+}
+
+.care-team-invite-form {
+  gap: 13px;
+}
+
+.care-team-invite-form .form-label {
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.care-team-invite-form .search-input,
+.care-team-invite-form select {
+  min-height: 43px;
+  margin: 0;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font-size: 11px;
+}
+
+@media (max-width: 1160px) {
+  .care-team-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .care-team-panel-side {
+    position: static;
+  }
+}
+
+@media (max-width: 660px) {
+  .care-team-card-header-row,
+  .care-team-member-identity {
+    align-items: flex-start;
+  }
+
+  .care-team-card-header-row {
+    flex-direction: column;
+  }
+
+  .care-team-card-actions {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+  }
+
+  .care-team-remove-button {
+    width: 100%;
+  }
+}

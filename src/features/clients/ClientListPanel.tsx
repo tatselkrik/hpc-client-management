@@ -35,6 +35,9 @@ const sortLabel = (value: SortMode) => {
   return "Last modified";
 };
 
+const getClientInitial = (name: string | null | undefined) =>
+  name?.trim().charAt(0).toUpperCase() || "C";
+
 export function ClientListPanel({
   filteredClientSummary,
   clientSort,
@@ -51,7 +54,8 @@ export function ClientListPanel({
     <div className="clients-sidebar">
       <div className="clients-list-header">
         <div className="clients-list-header-left">
-          <h3>Client List</h3>
+          <span className="clients-list-kicker">Directory</span>
+          <h3>Client list</h3>
           <p className="clients-record-summary">
             <span>
               {filteredClientSummary.total} record
@@ -70,12 +74,13 @@ export function ClientListPanel({
           <div className="sort-dropdown">
             <button
               type="button"
-              className="icon-button"
+              className="secondary-button clients-sort-button"
               onClick={() => setIsClientSortMenuOpen((value) => !value)}
               title={`Sort: ${sortLabel(clientSort)}`}
               aria-label={`Sort: ${sortLabel(clientSort)}`}
             >
               <SortIcon />
+              <span>{sortLabel(clientSort)}</span>
             </button>
 
             {isClientSortMenuOpen && (
@@ -140,8 +145,18 @@ export function ClientListPanel({
                     }}
                   >
                     <div className="client-list-item-top">
-                      <div className="client-list-name">
-                        {client.client_name || "Unnamed Client"}
+                      <div className="client-list-identity">
+                        <span className="client-list-avatar" aria-hidden="true">
+                          {getClientInitial(client.client_name)}
+                        </span>
+                        <div className="client-list-identity-copy">
+                          <div className="client-list-name">
+                            {client.client_name || "Unnamed Client"}
+                          </div>
+                          <div className="client-list-category">
+                            {formatCategoryPath(client.category_path)}
+                          </div>
+                        </div>
                       </div>
 
                       <span
@@ -151,10 +166,6 @@ export function ClientListPanel({
                       >
                         {client.status}
                       </span>
-                    </div>
-
-                    <div className="client-list-category">
-                      {formatCategoryPath(client.category_path)}
                     </div>
 
                     <small>

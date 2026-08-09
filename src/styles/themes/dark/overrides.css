@@ -39,8 +39,6 @@
 
 :root[data-theme="dark"] .login-card,
 :root[data-theme="dark"] .icon-button,
-:root[data-theme="dark"] .sidebar,
-:root[data-theme="dark"] .profile-card,
 :root[data-theme="dark"] .clients-searchbar,
 :root[data-theme="dark"] .documents-searchbar,
 :root[data-theme="dark"] .sort-dropdown-menu,
@@ -59,25 +57,6 @@
   background: var(--surface-overlay);
   border-color: var(--border);
   box-shadow: var(--shadow);
-}
-
-:root[data-theme="dark"] .sidebar {
-  background: var(--sidebar-bg);
-}
-
-:root[data-theme="dark"] .profile-card.active {
-  background: linear-gradient(180deg, #74a7ff 0%, #5c96fb 100%);
-  color: var(--button-primary-text);
-  border-color: rgba(116, 167, 255, 0.42);
-  box-shadow: 0 10px 22px rgba(116, 167, 255, 0.24);
-}
-
-:root[data-theme="dark"] .profile-card.active .profile-card-copy strong {
-  color: var(--button-primary-text);
-}
-
-:root[data-theme="dark"] .profile-card.active .profile-card-copy span {
-  color: rgba(11, 18, 32, 0.78);
 }
 
 :root[data-theme="dark"] .login-form input,
