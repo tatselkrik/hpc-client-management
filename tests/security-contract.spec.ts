@@ -84,3 +84,27 @@ test("Edge Functions receive explicit least-privilege service grants", async () 
   expect(grants).toContain("on table public.audit_logs");
   expect(grants).not.toContain("grant all");
 });
+
+test("Staff client creation requires an active clinical representative and cannot delete files", async () => {
+  const migration = await readProjectFile(
+    "supabase/migrations/20260809000200_staff_client_assignment_permissions.sql"
+  );
+
+  expect(migration).toContain("hpc_is_assignable_representative");
+  expect(migration).toContain("'psychologist / counselor'");
+  expect(migration).toContain("hpc_profile_can_create_client(hpc_representative)");
+  expect(migration).toContain("hpc_profile_can_delete_client_documents(client_id)");
+  expect(migration).toContain("hpc_profile_can_delete_client_assessments(client_id)");
+  expect(migration).toContain("grant update (document_name)");
+  expect(migration).toContain("grant update (assessment_name)");
+});
+
+test("the Admin representative is always Clinic Administrator", async () => {
+  const migration = await readProjectFile(
+    "supabase/migrations/20260809000300_assign_admin_representative.sql"
+  );
+
+  expect(migration).toContain("set hpc_representative_name = 'Clinic Administrator'");
+  expect(migration).toContain("new.hpc_representative_name := 'Clinic Administrator'");
+  expect(migration).toContain("hpc_profiles_enforce_representative_assignment");
+});

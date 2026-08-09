@@ -30,7 +30,7 @@ export const normalizeCareTeamRole = (value: string | null | undefined) => {
 };
 
 export const isRepresentativeAssignedRole = (value: string | null | undefined) =>
-  normalizeCareTeamRole(value) === "Psychologist / Counselor";
+  ["Admin", "Psychologist / Counselor"].includes(normalizeCareTeamRole(value));
 
 export const canUseAllRepresentativeAnalytics = (value: string | null | undefined) => {
   const role = normalizeCareTeamRole(value);
@@ -50,11 +50,13 @@ export const shouldDefaultAnalyticsToAssignedRepresentative = (
 
 export const canEditClientClinicalRecords = (value: string | null | undefined) => {
   const role = normalizeCareTeamRole(value);
-  return role === "Admin" || role === "Psychologist / Counselor" || role === "Staff";
+  return role === "Admin" || role === "Psychologist / Counselor";
 };
 
-export const canCreateClientRecords = (value: string | null | undefined) =>
-  canEditClientClinicalRecords(value);
+export const canCreateClientRecords = (value: string | null | undefined) => {
+  const role = normalizeCareTeamRole(value);
+  return role === "Admin" || role === "Psychologist / Counselor" || role === "Staff";
+};
 
 export const shouldLockClientRepresentativeToAssigned = (
   value: string | null | undefined
@@ -68,9 +70,19 @@ export const canEditClientCssrsProtectiveFactors = (
 ) => canEditClientClinicalRecords(value);
 
 export const canManageClientDocuments = (value: string | null | undefined) =>
-  canEditClientClinicalRecords(value);
+  ["Admin", "Psychologist / Counselor", "Staff"].includes(
+    normalizeCareTeamRole(value)
+  );
 
 export const canManageClientAssessments = (value: string | null | undefined) =>
+  ["Admin", "Psychologist / Counselor", "Staff"].includes(
+    normalizeCareTeamRole(value)
+  );
+
+export const canDeleteClientDocuments = (value: string | null | undefined) =>
+  canEditClientClinicalRecords(value);
+
+export const canDeleteClientAssessments = (value: string | null | undefined) =>
   canEditClientClinicalRecords(value);
 
 export const getProfileDisplayRole = (value: string | null | undefined) =>

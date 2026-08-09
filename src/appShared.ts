@@ -872,6 +872,8 @@ export const getMfaSetupStateLabel = (
 
 export {
   canCreateClientRecords,
+  canDeleteClientAssessments,
+  canDeleteClientDocuments,
   canEditClientClinicalRecords,
   canEditClientCssrsInterview,
   canEditClientCssrsProtectiveFactors,
@@ -1102,37 +1104,6 @@ export const SEX_OPTIONS = ["Male", "Female", "Other"];
 
 export const CHILD_SEX_OPTIONS = SEX_OPTIONS;
 
-export const DEFAULT_HPC_REPRESENTATIVE_OPTIONS = [
-  "Clinic Administrator",
-  "Ms Therese",
-  "Ms Yanglee",
-  "Ms Christine",
-  "Doc Ade",
-  "Ms Marg",
-  "Ms Daisy",
-  "Ms Trish",
-  "Ms June",
-];
-
-
-const REMOVED_HPC_REPRESENTATIVE_OPTIONS = new Set(
-  [
-    "kit",
-    "dr. rivera",
-    "dr rivera",
-    "counselor lim",
-    "hpc staff",
-    "intake team",
-  ].map((option) => option.toLowerCase())
-);
-
-export const HPC_REPRESENTATIVE_OPTIONS = [...DEFAULT_HPC_REPRESENTATIVE_OPTIONS];
-
-export const CARE_TEAM_HPC_REPRESENTATIVE_OPTIONS = [
-  ...DEFAULT_HPC_REPRESENTATIVE_OPTIONS,
-  "Other",
-];
-
 export const normalizeHpcRepresentativeName = (value: string) => {
   const normalized = value.trim().replace(/\s+/g, " ");
 
@@ -1144,21 +1115,13 @@ export const normalizeHpcRepresentativeName = (value: string) => {
 };
 
 export const mergeHpcRepresentativeOptions = (
-  representativeNames: string[],
-  existingClientRepresentatives: string[] = []
+  representativeNames: string[]
 ) => {
-  const normalizedDefaults = new Set(
-    DEFAULT_HPC_REPRESENTATIVE_OPTIONS.map((option) => option.toLowerCase())
-  );
-  const customOptions = [...representativeNames, ...existingClientRepresentatives]
+  const normalizedNames = representativeNames
     .map((value) => normalizeHpcRepresentativeName(value))
-    .filter((value) => value !== "" && value !== "Other")
-    .filter((value) => !REMOVED_HPC_REPRESENTATIVE_OPTIONS.has(value.toLowerCase()))
-    .filter((value) => !normalizedDefaults.has(value.toLowerCase()));
+    .filter((value) => value !== "" && value !== "Other");
 
-  return Array.from(
-    new Set([...DEFAULT_HPC_REPRESENTATIVE_OPTIONS, ...customOptions])
-  );
+  return Array.from(new Set(normalizedNames));
 };
 
 export const COUNSELLING_REASON_OPTIONS = [

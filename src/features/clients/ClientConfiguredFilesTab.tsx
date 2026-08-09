@@ -39,6 +39,7 @@ export type ClientConfiguredFilesTabProps<FileRecord extends ClientStoredFileRec
   previewLoading: boolean;
   previewUrl: string;
   canManageFiles?: boolean;
+  canDeleteFiles?: boolean;
 };
 
 export function ClientConfiguredFilesTab<FileRecord extends ClientStoredFileRecord>({
@@ -65,6 +66,7 @@ export function ClientConfiguredFilesTab<FileRecord extends ClientStoredFileReco
   previewLoading,
   previewUrl,
   canManageFiles = true,
+  canDeleteFiles = canManageFiles,
 }: ClientConfiguredFilesTabProps<FileRecord>) {
   const config = CLIENT_FILE_CONFIG[kind];
 
@@ -98,6 +100,7 @@ export function ClientConfiguredFilesTab<FileRecord extends ClientStoredFileReco
       previewLoading={previewLoading}
       previewUrl={previewUrl}
       canManageFiles={canManageFiles}
+      canDeleteFiles={canDeleteFiles}
       getFileDisplayName={(file) => getClientFileDisplayName(kind, file)}
     />
   );

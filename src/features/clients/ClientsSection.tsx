@@ -3,6 +3,7 @@ import type {
   RefObject,
   SetStateAction,
 } from "react";
+import { useState } from "react";
 
 import type {
   ClientListItem,
@@ -25,8 +26,11 @@ export type GroupedClient = ClientListItem & {
 export type ClientsSectionProps = {
   clientSearch: string;
   setClientSearch: (value: string) => void;
-  handleAddClient: () => void;
+  handleAddClient: (initialRepresentativeName?: string) => Promise<boolean>;
   canCreateClientRecords: boolean;
+  hpcRepresentativeOptions: string[];
+  requiresNewClientRepresentativeSelection: boolean;
+  defaultNewClientRepresentative: string;
   loading: boolean;
   clientStatusFilter: "all" | ClientStatus;
   setClientStatusFilter: (value: "all" | ClientStatus) => void;
@@ -80,6 +84,9 @@ export function ClientsSection({
   setClientSearch,
   handleAddClient,
   canCreateClientRecords,
+  hpcRepresentativeOptions,
+  requiresNewClientRepresentativeSelection,
+  defaultNewClientRepresentative,
   loading,
   clientStatusFilter,
   setClientStatusFilter,
@@ -112,6 +119,28 @@ export function ClientsSection({
   clientQuickSummary,
   clientTabContentProps,
 }: ClientsSectionProps) {
+  const [isNewClientAssignmentOpen, setIsNewClientAssignmentOpen] = useState(false);
+  const [newClientRepresentative, setNewClientRepresentative] = useState("");
+
+  const handleRequestAddClient = () => {
+    if (requiresNewClientRepresentativeSelection) {
+      setNewClientRepresentative("");
+      setIsNewClientAssignmentOpen(true);
+      return;
+    }
+
+    void handleAddClient(defaultNewClientRepresentative);
+  };
+
+  const handleConfirmAddClient = async () => {
+    const wasCreated = await handleAddClient(newClientRepresentative);
+
+    if (wasCreated) {
+      setIsNewClientAssignmentOpen(false);
+      setNewClientRepresentative("");
+    }
+  };
+
   return (
     <div className="page-content clients-page">
       <h2 className="page-title">Clients</h2>
@@ -128,22 +157,86 @@ export function ClientsSection({
           />
         </div>
 
-        <div className="clients-actions">
-          <button
-            className="small-button primary-button add-client-button"
-            onClick={handleAddClient}
-            disabled={loading || !canCreateClientRecords}
-            title={
-              canCreateClientRecords
-                ? "Add a new client"
-                : "Your role cannot create client records."
-            }
-          >
-            <PlusIcon />
-            <span>{loading ? "Please wait..." : "Add Client"}</span>
-          </button>
-        </div>
+        {canCreateClientRecords ? (
+          <div className="clients-actions">
+            <button
+              className="small-button primary-button add-client-button"
+              onClick={handleRequestAddClient}
+              disabled={loading}
+              title="Add a new client"
+            >
+              <PlusIcon />
+              <span>{loading ? "Please wait..." : "Add Client"}</span>
+            </button>
+          </div>
+        ) : null}
       </div>
+
+      {isNewClientAssignmentOpen ? (
+        <div className="app-modal-overlay" role="presentation">
+          <form
+            className="app-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-client-assignment-title"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void handleConfirmAddClient();
+            }}
+          >
+            <div className="app-modal-header">
+              <div>
+                <h3 id="new-client-assignment-title">Assign New Client</h3>
+                <p className="app-modal-subtitle">
+                  Choose the HPC Representative who will receive this client.
+                </p>
+              </div>
+            </div>
+
+            <label className="form-label">
+              HPC Representative
+              <select
+                className="search-input"
+                value={newClientRepresentative}
+                onChange={(event) => setNewClientRepresentative(event.target.value)}
+                required
+                autoFocus
+              >
+                <option value="">Select representative</option>
+                {hpcRepresentativeOptions.map((representative) => (
+                  <option key={representative} value={representative}>
+                    {representative}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {hpcRepresentativeOptions.length === 0 ? (
+              <p className="app-modal-helper">
+                No active Admin or Psychologist/Counselor has an HPC Representative name yet.
+              </p>
+            ) : null}
+
+            <div className="app-modal-actions">
+              <button
+                type="button"
+                className="small-button secondary-button"
+                onClick={() => setIsNewClientAssignmentOpen(false)}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="small-button"
+                disabled={loading || !newClientRepresentative}
+              >
+                {loading ? "Creating..." : "Create Client"}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
 
       <div className="clients-filters-row">
         <label className="clients-filter">

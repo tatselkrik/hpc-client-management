@@ -11,7 +11,7 @@ const roleOptions = new Set([
 ]);
 
 function roleRequiresRepresentative(role: string) {
-  return role === "Psychologist / Counselor";
+  return role === "Admin" || role === "Psychologist / Counselor";
 }
 
 type InvitePayload = {
@@ -163,7 +163,7 @@ serve(async (req) => {
 
     if (roleRequiresRepresentative(role) && !hpcRepresentativeName) {
       return respond(
-        { error: "HPC Representative is required for Psychologist / Counselor accounts." },
+        { error: "HPC Representative is required for Admin and Psychologist / Counselor accounts." },
         400,
       );
     }

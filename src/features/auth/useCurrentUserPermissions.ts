@@ -3,6 +3,8 @@ import { useCallback } from "react";
 import type { Profile } from "../../appShared";
 import {
   canCreateClientRecords,
+  canDeleteClientAssessments,
+  canDeleteClientDocuments,
   canEditClientClinicalRecords,
   canEditClientCssrsInterview,
   canEditClientCssrsProtectiveFactors,
@@ -58,6 +60,10 @@ export function useCurrentUserPermissions(profile: Profile | null) {
     canManageClientDocuments(profileDisplayRole);
   const canManageClientAssessmentsForProfile =
     canManageClientAssessments(profileDisplayRole);
+  const canDeleteClientDocumentsForProfile =
+    canDeleteClientDocuments(profileDisplayRole);
+  const canDeleteClientAssessmentsForProfile =
+    canDeleteClientAssessments(profileDisplayRole);
 
   const canCurrentProfileAccessClient = useCallback(
     (client: ClientRepresentativeRecord) => {
@@ -104,6 +110,8 @@ export function useCurrentUserPermissions(profile: Profile | null) {
     canEditClientCssrsProtectiveFactorsForProfile,
     canManageClientDocumentsForProfile,
     canManageClientAssessmentsForProfile,
+    canDeleteClientDocumentsForProfile,
+    canDeleteClientAssessmentsForProfile,
     canCurrentProfileAccessClient,
     canCurrentProfileUseClientInPrimaryAnalytics,
   };

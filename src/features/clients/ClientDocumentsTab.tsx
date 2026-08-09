@@ -34,6 +34,7 @@ type ClientDocumentsTabProps = {
   documentPreviewLoading: boolean;
   documentPreviewUrl: string;
   canManageDocuments?: boolean;
+  canDeleteDocuments?: boolean;
 };
 
 export function ClientDocumentsTab({
@@ -59,6 +60,7 @@ export function ClientDocumentsTab({
   documentPreviewLoading,
   documentPreviewUrl,
   canManageDocuments = true,
+  canDeleteDocuments = canManageDocuments,
 }: ClientDocumentsTabProps) {
   return (
     <ClientConfiguredFilesTab
@@ -85,6 +87,7 @@ export function ClientDocumentsTab({
       previewLoading={documentPreviewLoading}
       previewUrl={documentPreviewUrl}
       canManageFiles={canManageDocuments}
+      canDeleteFiles={canDeleteDocuments}
     />
   );
 }
