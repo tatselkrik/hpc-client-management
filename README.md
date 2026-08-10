@@ -2,9 +2,9 @@
 
 HPC Client Management is a Windows desktop application for managing clinic client records, clinical documentation, care-team access, analytics, and day-to-day administrative workflows.
 
-The application is currently in limited clinic testing with one psychologist.
+**Current version:** 0.2.2 · **Platform:** Windows desktop · **Availability:** Private clinic deployment
 
-![HPC Client Management dashboard with identifying information redacted](docs/screenshots/dashboard.webp)
+The application is currently in limited clinic testing.
 
 ## Core capabilities
 
@@ -18,19 +18,78 @@ The application is currently in limited clinic testing with one psychologist.
 - Email-invited care-team accounts, role-based access, and representative assignments
 - Required multi-factor authentication, idle-session locking, and audit history
 - Clinic announcements, editable contact details, themes, and client categories
-- Structured backup export, Admin-confirmed merge restore, and release update checks
+- Structured backup export and Admin-confirmed merge restore
+- Authenticated, privately distributed, cryptographically signed application updates
+
+## Access model
+
+| Role | Access summary |
+| --- | --- |
+| Admin | Clinic-wide access, account administration, backup restore, and system activity review |
+| Psychologist / Counselor | Assigned clients, personal dashboard and analytics, the care-team directory, and permitted clinic display settings |
+| Staff | Clinic-wide operational workflows without authority over Admin accounts, backup restoration, or the system log |
 
 ## Application tour
 
-The screenshots below were captured from the working desktop build. Clinic branding and identifying information have been redacted.
+The screenshots below use staging test records. Clinic-specific branding and identifying information have been blurred.
 
-| Case conceptualization | Analytics |
-| --- | --- |
-| ![4Ps case conceptualization screen](docs/screenshots/case-conceptualization.webp) | ![Analytics filters and summary metrics](docs/screenshots/analytics.webp) |
+![HPC Client Management dashboard](docs/screenshots/dashboard-v0.2.2.jpg)
 
-| Care-team administration | Clinic administration |
-| --- | --- |
-| ![Care-team roles and account creation](docs/screenshots/care-team.webp) | ![Client categories and clinic administration tools](docs/screenshots/administration.webp) |
+<details>
+<summary><strong>Client workspace</strong></summary>
+
+![HPC Client Management client workspace](docs/screenshots/clients-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>4Ps case conceptualization</strong></summary>
+
+![HPC Client Management 4Ps case conceptualization](docs/screenshots/case-conceptualization-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Analytics and reporting</strong></summary>
+
+![HPC Client Management analytics](docs/screenshots/analytics-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Care Team</strong></summary>
+
+![HPC Client Management Care Team](docs/screenshots/care-team-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Settings, backup, and audit activity</strong></summary>
+
+![HPC Client Management settings](docs/screenshots/settings-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Profile and multi-factor authentication</strong></summary>
+
+![HPC Client Management profile and MFA settings](docs/screenshots/profile-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>About and signed updates</strong></summary>
+
+![HPC Client Management About page and signed updater](docs/screenshots/about-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Sign in</strong></summary>
+
+![HPC Client Management sign-in screen](docs/screenshots/login-v0.2.2.jpg)
+
+</details>
 
 ## Technology
 
@@ -50,6 +109,7 @@ supabase/migrations/  Database baseline migrations
 supabase/functions/   Server-side Edge Functions
 docs/                 Deployment notes, verification queries, and screenshots
 public/               Application assets
+scripts/              Build, backup, cutover, signing, and release utilities
 ```
 
 Local environment values, dependencies, generated builds, installers, Rust build output, uploaded files, and backup exports are excluded from source control.
