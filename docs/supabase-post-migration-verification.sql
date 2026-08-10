@@ -59,7 +59,13 @@ select
   file_size_limit,
   allowed_mime_types
 from storage.buckets
-where id in ('client-documents', 'client-assessments', 'profile-pictures', 'public-assets')
+where id in (
+  'app-updates',
+  'client-documents',
+  'client-assessments',
+  'profile-pictures',
+  'public-assets'
+)
 order by id;
 
 -- 6) Seeded default categories
@@ -124,3 +130,47 @@ select
     'public.hpc_restore_backup_service(jsonb, uuid)',
     'EXECUTE'
   ) as service_role_can_restore;
+
+-- Expected: authenticated_can_restore = false and service_role_can_restore = true.
+
+-- 13) Private updater tables and grants.
+select
+  has_table_privilege(
+    'authenticated',
+    'public.app_release_artifacts',
+    'SELECT'
+  ) as authenticated_can_read_artifacts,
+  has_table_privilege(
+    'service_role',
+    'public.app_release_artifacts',
+    'SELECT'
+  ) as service_role_can_read_artifacts,
+  has_table_privilege(
+    'service_role',
+    'public.app_release_artifacts',
+    'INSERT'
+  ) as service_role_can_publish_artifacts;
+
+-- Expected: false, true, true.
+
+-- 14) Active release metadata. A coordinated production cutover must have one
+-- active stable 0.2.2 row. Staging should have one active staging row.
+select channel, version, count(*) as active_release_count
+from public.app_releases
+where is_active = true
+group by channel, version
+order by channel, version;
+
+-- 15) Authenticated users must not receive a direct Storage policy for the
+-- private updater bucket. Downloads are issued by the app-updater function.
+select policyname, roles, cmd, qual, with_check
+from pg_policies
+where schemaname = 'storage'
+  and tablename = 'objects'
+  and (
+    coalesce(qual, '') like '%app-updates%'
+    or coalesce(with_check, '') like '%app-updates%'
+  )
+order by policyname;
+
+-- Expected: zero rows.

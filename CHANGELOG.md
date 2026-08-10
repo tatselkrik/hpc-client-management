@@ -14,6 +14,13 @@ This file records notable changes to HPC Client Management.
 - Selected this validated updater build line as the next production cutover
   baseline; no client-record or role-policy behavior changed from 0.2.1.
 
+### Documentation
+
+- Replaced the obsolete release-candidate manual link with a role-aware 0.2.2
+  user guide for everyday operation.
+- Reconciled the migration runbook, secrets checklist, verification queries,
+  and staging record with the 0.2.2 database, updater, and deployment process.
+
 ## 0.2.1 - 2026-08-10
 
 ### Private signed updates
