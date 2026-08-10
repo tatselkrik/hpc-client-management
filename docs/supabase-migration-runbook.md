@@ -53,9 +53,12 @@ Since Docker Desktop was unavailable on the source machine, the safest no-Docker
 5. Set Edge Function secrets.
 6. Run the verification queries in `docs/supabase-post-migration-verification.sql`.
 
-## Applying with Supabase CLI
+## Applying a fresh remote project with Supabase CLI
 
-When Docker Desktop is available:
+Docker is not required to link to a hosted project or run `db push`. Docker (or
+another compatible container runtime) is required only for commands that start
+or compare against the local Supabase stack, such as `supabase start` and a
+local `db reset`.
 
 ```bash
 supabase link --project-ref YOUR_NEW_PROJECT_REF
@@ -83,21 +86,35 @@ supabase functions deploy app-updater
 supabase functions deploy restore-clinic-backup
 ```
 
-## Required Edge Function secrets
+## Edge Function environment
 
-Set these in the target Supabase project. Do not commit values.
+Supabase supplies these hosted Edge Function variables automatically. Confirm
+that they are available, but do not copy their values into the repository:
 
 ```text
 SUPABASE_URL
 SUPABASE_SERVICE_ROLE_KEY
+```
+
+Set the following application secrets in the target project. Do not commit
+their values:
+
+```text
 GEMINI_API_KEY
 GEMINI_MODEL
 CARE_TEAM_INVITE_REDIRECT_URL
+MOBILE_UPLOAD_ENABLED
 HPC_ALLOWED_CORS_ORIGINS
 ALLOWED_CORS_ORIGINS
 ```
 
-`GEMINI_MODEL`, `HPC_ALLOWED_CORS_ORIGINS`, and `ALLOWED_CORS_ORIGINS` are optional depending on deployment choices. `CARE_TEAM_INVITE_REDIRECT_URL` is required for email invitations and should be set to `hpc-client-management://auth/invite` for the installed Windows app.
+`GEMINI_MODEL`, `HPC_ALLOWED_CORS_ORIGINS`, and `ALLOWED_CORS_ORIGINS` are
+optional depending on deployment choices. `CARE_TEAM_INVITE_REDIRECT_URL` is
+required for email invitations and should be
+`hpc-client-management://auth/invite` for the production Windows app or
+`hpc-client-management-staging://auth/invite` for staging.
+
+`MOBILE_UPLOAD_ENABLED` must remain `false` while Upload from Phone is deferred.
 
 ## Post-migration manual checks
 
@@ -107,11 +124,13 @@ After applying migrations and deploying functions, test:
 - Admin, Psychologist / Counselor, and Staff role matrix
 - Staff denial when creating, promoting, editing, or deactivating an Admin
 - Deactivated user access denial and retained account history
-- Client CRUD and representative scoping
-- C-SSRS access for Admin, assigned Psychologist / Counselor, and Staff
+- Client creation, overview editing, deletion, and representative scoping for each role
+- C-SSRS editing for Admin and the assigned Psychologist / Counselor; Staff
+  overview access must not grant clinical editing
 - 4Ps narrative generation for Admin and the assigned Psychologist / Counselor only
 - Mandatory MFA before clinical or operational access
-- Document/Assessment upload, download, rename, delete permissions
+- Document/Assessment upload, download, and rename for all approved roles;
+  deletion only for Admin and the assigned Psychologist / Counselor
 - Profile picture upload/remove
 - Analytics export
 - Backup export, package review, and Admin merge restore

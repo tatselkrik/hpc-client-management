@@ -171,12 +171,15 @@ See the [Supabase migration runbook](docs/supabase-migration-runbook.md) for the
 
 ## Documentation
 
+- [HPC Client Management 0.2.2 user guide](docs/user-guide-0.2.2.md)
+- [Printable 0.2.2 user guide](docs/HPC_Client_Management_0.2.2_User_Guide.docx)
 - [Release history](CHANGELOG.md)
 - [Supabase migration runbook](docs/supabase-migration-runbook.md)
 - [Deployment and secrets checklist](docs/deployment-secrets-checklist.md)
 - [Post-migration verification queries](docs/supabase-post-migration-verification.sql)
 - [Live authentication trigger verification](docs/verify-live-auth-triggers.sql)
-- [User guide and release-candidate testing manual](HPC_Client_Management_v1.1.0_rc1_User_Guide_and_RC_Testing_Manual.docx)
+- [Production 0.2.2 cutover procedure](docs/production-0.2.2-cutover.md)
+- [Staging security verification](docs/staging-security-verification.md)
 
 ## Data handling
 
