@@ -192,9 +192,10 @@ function App() {
   const {
     aboutMessage,
     isCheckingForUpdates,
+    isInstallingUpdate,
     availableUpdate,
     checkForUpdates,
-    openAvailableUpdate,
+    installAvailableUpdate,
   } = useAboutUpdates();
 
   const clientWorkspace = useClientWorkspaceController({
@@ -345,8 +346,9 @@ function App() {
       aboutMessage,
       handleCheckForUpdates: checkForUpdates,
       availableUpdate,
-      handleOpenAvailableUpdate: openAvailableUpdate,
+      handleInstallAvailableUpdate: installAvailableUpdate,
       isCheckingForUpdates,
+      isInstallingUpdate,
     },
   });
 

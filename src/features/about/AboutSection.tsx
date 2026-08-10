@@ -9,20 +9,22 @@ export type AboutSectionProps = {
   aboutMessage: string;
   handleCheckForUpdates: () => void | Promise<void>;
   availableUpdate: AvailableAppUpdate | null;
-  handleOpenAvailableUpdate: () => void | Promise<void>;
+  handleInstallAvailableUpdate: () => void | Promise<void>;
   isCheckingForUpdates?: boolean;
+  isInstallingUpdate?: boolean;
 };
 
 export function AboutSection({
   aboutMessage,
   handleCheckForUpdates,
   availableUpdate,
-  handleOpenAvailableUpdate,
+  handleInstallAvailableUpdate,
   isCheckingForUpdates = false,
+  isInstallingUpdate = false,
 }: AboutSectionProps) {
   const releaseNotes = [
     "Clinic desktop workspace for client records, C-SSRS screening, 4Ps case conceptualization, progress notes, documents, assessments, analytics, care team access, settings, profile, and audit review.",
-    "Secure release-channel update checking is available from this page. Installation remains a deliberate user action.",
+    "Signed updates can be checked, reviewed, installed, and restarted from this page.",
   ];
 
   return (
@@ -43,17 +45,22 @@ export function AboutSection({
               type="button"
               className="small-button secondary-button about-update-button"
               onClick={handleCheckForUpdates}
-              disabled={isCheckingForUpdates}
+              disabled={isCheckingForUpdates || isInstallingUpdate}
             >
               {isCheckingForUpdates ? "Checking…" : "Check for Updates"}
             </button>
-            {availableUpdate?.url && (
+            {availableUpdate && (availableUpdate.installable || availableUpdate.url) && (
               <button
                 type="button"
                 className="small-button about-update-download-button"
-                onClick={handleOpenAvailableUpdate}
+                onClick={handleInstallAvailableUpdate}
+                disabled={isInstallingUpdate}
               >
-                Open version {availableUpdate.version}
+                {isInstallingUpdate
+                  ? "Installing update…"
+                  : availableUpdate.installable
+                    ? `Update to ${availableUpdate.version}`
+                    : `Open version ${availableUpdate.version}`}
               </button>
             )}
           </div>

@@ -4,6 +4,29 @@ This file records notable changes to HPC Client Management.
 
 ## Unreleased
 
+## 0.2.2 - 2026-08-10
+
+### Signed update validation
+
+- Added the second signed staging release used to prove that an installed
+  updater-enabled version can privately download, verify, install, and restart
+  into the next version without manual installer access.
+- Selected this validated updater build line as the next production cutover
+  baseline; no client-record or role-policy behavior changed from 0.2.1.
+
+## 0.2.1 - 2026-08-10
+
+### Private signed updates
+
+- Added an authenticated Tauri updater that downloads, verifies, installs, and
+  restarts from the About page after explicit user confirmation.
+- Added a private Supabase Storage release bucket and an MFA-protected dynamic
+  update endpoint that issues short-lived download links only to active users.
+- Added encrypted local updater signing, signed build artifacts, and release
+  commands locked to the staging and production Supabase project references.
+- Kept the private GitHub source repository separate from application update
+  distribution; ordinary Git pushes do not publish clinic updates.
+
 ## 0.2.0 - 2026-08-10
 
 ### Access control

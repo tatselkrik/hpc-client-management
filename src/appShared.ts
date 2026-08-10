@@ -594,7 +594,7 @@ export const getCareTeamMemberDisplayName = (
 
 export const APP_BUILD_INFO = {
   product_name: APP_PRODUCT_NAME,
-  version: import.meta.env.VITE_APP_VERSION ?? "0.2.0",
+  version: import.meta.env.VITE_APP_VERSION ?? "0.2.2",
   identifier:
     import.meta.env.VITE_APP_IDENTIFIER ?? "com.clinic.hpcclientmanagement",
   channel: import.meta.env.VITE_APP_CHANNEL === "staging" ? "staging" : "stable",
