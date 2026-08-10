@@ -178,7 +178,6 @@ See the [Supabase migration runbook](docs/supabase-migration-runbook.md) for the
 - [Deployment and secrets checklist](docs/deployment-secrets-checklist.md)
 - [Post-migration verification queries](docs/supabase-post-migration-verification.sql)
 - [Live authentication trigger verification](docs/verify-live-auth-triggers.sql)
-- [Production 0.2.2 cutover procedure](docs/production-0.2.2-cutover.md)
 - [Staging security verification](docs/staging-security-verification.md)
 
 ## Data handling
