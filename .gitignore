@@ -28,8 +28,10 @@ test-results/
 
 # Local archives, exports, and backup packages
 *.zip
+*.dump
 *.backup.json
 backups/
+private-backups/
 
 # Logs and caches
 *.log

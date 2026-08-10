@@ -1,4 +1,4 @@
-# HPC Client Management — Supabase Migration Runbook
+﻿# HPC Client Management â€” Supabase Migration Runbook
 
 Generated from the live Supabase CSV exports supplied on 4 May 2026.
 
@@ -18,6 +18,17 @@ Run the files in this exact order:
 6. `supabase/migrations/20260504000600_seed_defaults.sql`
 7. `supabase/migrations/20260807000100_security_hardening.sql`
 8. `supabase/migrations/20260809000100_edge_function_service_grants.sql`
+9. `supabase/migrations/20260809000200_staff_client_assignment_permissions.sql`
+10. `supabase/migrations/20260809000300_assign_admin_representative.sql`
+11. `supabase/migrations/20260809000400_inactive_profile_status_message.sql`
+12. `supabase/migrations/20260809000500_experience_improvements.sql`
+13. `supabase/migrations/20260810000300_private_app_updates.sql`
+
+Release-publication migrations are environment-specific:
+
+- `20260810000100_publish_staging_0_2_0.sql` is for staging only.
+- `20260810000400_publish_production_0_2_2.sql` is for the coordinated
+  production cutover only.
 
 ## Important notes
 
@@ -28,15 +39,15 @@ Run the files in this exact order:
 - Only the standard default client categories are seeded: `Bago`, `Himamaylan`, and `Cauayan`.
 - Live/admin-created categories from the export such as `Capuchin`, `Clinic`, and `Silay` are intentionally excluded from seed defaults.
 - Auth schema triggers were verified separately from the live project and are included in `20260504000300_public_triggers.sql`:
-  - `on_auth_user_created_profile` on `auth.users` after insert → `public.handle_new_user_profile()`
-  - `hpc_sync_profile_email_after_auth_update` on `auth.users` after update → `public.hpc_sync_profile_email_from_auth()`
+  - `on_auth_user_created_profile` on `auth.users` after insert â†’ `public.handle_new_user_profile()`
+  - `hpc_sync_profile_email_after_auth_update` on `auth.users` after update â†’ `public.hpc_sync_profile_email_from_auth()`
 
 ## Applying without Docker
 
 Since Docker Desktop was unavailable on the source machine, the safest no-Docker path is:
 
 1. Create a fresh Supabase project.
-2. Open Supabase Dashboard → SQL Editor.
+2. Open Supabase Dashboard â†’ SQL Editor.
 3. Run each migration file in order.
 4. Deploy Edge Functions.
 5. Set Edge Function secrets.
@@ -51,7 +62,11 @@ supabase link --project-ref YOUR_NEW_PROJECT_REF
 supabase db push
 ```
 
-Do not use `db push` against the current live project unless you have reviewed the diff and have a verified backup.
+Do not use `db push` against the current live project. Version 1 was created
+manually and has no migration-history table. Follow
+`docs/production-0.2.2-cutover.md`, create a verified database and Storage
+backup, apply only the reviewed post-baseline files, and then repair migration
+history.
 
 ## Edge Functions to deploy
 
@@ -64,6 +79,7 @@ supabase functions deploy remove-care-team-member
 supabase functions deploy update-care-team-member-role
 supabase functions deploy validate-upload
 supabase functions deploy check-app-update
+supabase functions deploy app-updater
 supabase functions deploy restore-clinic-backup
 ```
 
@@ -100,7 +116,7 @@ After applying migrations and deploying functions, test:
 - Analytics export
 - Backup export, package review, and Admin merge restore
 - Editable clinic information
-- Secure release-channel update check
+- Private signed release check, installation, and restart
 
 ## Current known release gaps
 
