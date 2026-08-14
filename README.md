@@ -1,4 +1,5 @@
 # HPC Client Management
+[![Quality checks](https://github.com/tatselkrik/hpc-client-management/actions/workflows/quality.yml/badge.svg)](https://github.com/tatselkrik/hpc-client-management/actions/workflows/quality.yml)
 
 HPC Client Management is a Windows desktop application for managing clinic client records, clinical documentation, care-team access, analytics, and day-to-day administrative workflows.
 
