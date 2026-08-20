@@ -3,9 +3,11 @@
 
 HPC Client Management is a Windows desktop application for managing clinic client records, clinical documentation, care-team access, analytics, and day-to-day administrative workflows.
 
-**Current version:** 0.2.2 · **Platform:** Windows desktop · **Availability:** Private clinic deployment
+**Current version:** 0.2.2 · **Platform:** Windows desktop · **Status:** Stable clinic deployment
 
-The application is currently in limited clinic testing.
+Version 0.2.2 is installed at the clinic and on the maintenance PC and has
+completed initial operational verification. The appointment calendar is
+planned for a future version and is not part of 0.2.2.
 
 ## Core capabilities
 

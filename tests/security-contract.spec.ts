@@ -48,6 +48,12 @@ test("database migration deactivates Interns and requires MFA for protected reco
 
   expect(migration).toContain("like '%intern%'");
   expect(migration).toContain("is_active = false");
+  expect(migration).toContain(
+    "disable trigger prevent_client_profile_role_changes"
+  );
+  expect(migration).toContain(
+    "enable trigger prevent_client_profile_role_changes"
+  );
   expect(migration).toContain('create policy "hpc require mfa"');
   expect(migration).toContain("auth.jwt() ->> 'aal', '') = 'aal2'");
   expect(migration).toContain("revoke insert, update, delete on table public.audit_logs");
@@ -257,6 +263,8 @@ test("production cutover requires a fresh verified backup", async () => {
   expect(cutover).toContain('"--single-transaction"');
   expect(cutover).toContain('"MOBILE_UPLOAD_ENABLED=false"');
   expect(cutover).toContain('"GEMINI_MODEL=gemini-3.6-flash"');
+  expect(cutover).toContain('$auditMigrationsPath');
+  expect(cutover).toContain('"--workdir", $auditPath, "--yes"');
 });
 
 test("all Supabase auth emails use the same Clinic security template", async () => {
