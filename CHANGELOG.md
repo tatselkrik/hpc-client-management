@@ -6,6 +6,16 @@ This file records notable changes to HPC Client Management.
 
 ## 0.2.2 - 2026-08-10
 
+### Stable clinic deployment
+
+- Finalized 0.2.2 as the stable clinic snapshot on 20 August 2026 after
+  successful installation at the clinic and on the maintenance PC.
+- Corrected the production cutover tooling used during deployment so migration
+  history repair remains self-contained and the reviewed role normalization can
+  run safely against the Version 1 baseline trigger.
+- Deferred the appointment calendar to a future version; it is not included in
+  the 0.2.2 release.
+
 ### Signed update validation
 
 - Added the second signed staging release used to prove that an installed

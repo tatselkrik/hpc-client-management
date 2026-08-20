@@ -3,6 +3,12 @@
 
 -- Keep only the approved roles. Legacy CEO accounts become Admins. Legacy Intern and
 -- unknown-role accounts become inactive Staff records so their history is retained.
+-- The Version 1 baseline already protects these fields with a trigger intended for
+-- client sessions. Temporarily disable that trigger for this reviewed migration;
+-- the surrounding cutover transaction guarantees it is restored on failure.
+alter table public.profiles
+  disable trigger prevent_client_profile_role_changes;
+
 update public.profiles
 set role = 'Admin'
 where lower(trim(coalesce(role, ''))) in ('ceo', 'chief executive officer');
@@ -35,6 +41,9 @@ set role = 'Staff',
     is_active = false
 where role not in ('Admin', 'Psychologist / Counselor', 'Staff')
    or role is null;
+
+alter table public.profiles
+  enable trigger prevent_client_profile_role_changes;
 
 alter table public.profiles
   alter column is_active set default false;
