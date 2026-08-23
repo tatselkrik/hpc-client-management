@@ -32,6 +32,10 @@ export const normalizeCareTeamRole = (value: string | null | undefined) => {
 export const isRepresentativeAssignedRole = (value: string | null | undefined) =>
   ["Admin", "Psychologist / Counselor"].includes(normalizeCareTeamRole(value));
 
+export const hasHpcRepresentativeAssignment = (
+  value: string | null | undefined
+) => Boolean(value?.trim());
+
 export const canUseAllRepresentativeAnalytics = (value: string | null | undefined) => {
   const role = normalizeCareTeamRole(value);
   return role === "Admin" || role === "Staff";
@@ -78,6 +82,23 @@ export const canManageClientAssessments = (value: string | null | undefined) =>
   ["Admin", "Psychologist / Counselor", "Staff"].includes(
     normalizeCareTeamRole(value)
   );
+
+export const canManageAppointments = (value: string | null | undefined) =>
+  ["Admin", "Staff"].includes(normalizeCareTeamRole(value));
+
+export const canViewAllAppointments = (value: string | null | undefined) =>
+  canManageAppointments(value);
+
+export const canManageCalendarConfiguration = (
+  value: string | null | undefined
+) => normalizeCareTeamRole(value) === "Admin";
+
+export const canManageOwnAvailability = (value: string | null | undefined) =>
+  normalizeCareTeamRole(value) === "Psychologist / Counselor";
+
+export const canUpdateOwnAppointmentStatus = (
+  value: string | null | undefined
+) => normalizeCareTeamRole(value) === "Psychologist / Counselor";
 
 export const canDeleteClientDocuments = (value: string | null | undefined) =>
   canEditClientClinicalRecords(value);

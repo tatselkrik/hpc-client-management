@@ -54,6 +54,7 @@ export function AppAuthenticatedLayout({
   activeSection,
   dashboardProps,
   clientsProps,
+  calendarProps,
   analyticsProps,
   careTeamProps,
   profileProps,
@@ -112,6 +113,7 @@ export function AppAuthenticatedLayout({
           activeSection={displayedSection}
           dashboardProps={dashboardProps}
           clientsProps={clientsProps}
+          calendarProps={calendarProps}
           analyticsProps={analyticsProps}
           careTeamProps={careTeamProps}
           profileProps={profileProps}

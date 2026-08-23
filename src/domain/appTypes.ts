@@ -1,6 +1,7 @@
 ﻿export type Section =
   | "dashboard"
   | "clients"
+  | "calendar"
   | "analytics"
   | "careTeam"
   | "profile"

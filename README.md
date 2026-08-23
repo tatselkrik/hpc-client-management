@@ -3,15 +3,38 @@
 
 HPC Client Management is a Windows desktop application for managing clinic client records, clinical documentation, care-team access, analytics, and day-to-day administrative workflows.
 
-**Current version:** 0.2.2 · **Platform:** Windows desktop · **Status:** Stable clinic deployment
+**Current version:** 0.3.5 · **Platform:** Windows desktop · **Status:** Production release
 
-Version 0.2.2 is installed at the clinic and on the maintenance PC and has
-completed initial operational verification. The appointment calendar is
-planned for a future version and is not part of 0.2.2.
+Version 0.3.5 carries forward the clinic Appointment Calendar, clinician and team
+availability, operational status tracking, server-timed appointment history,
+calendar analytics, and production database hardening introduced in 0.3.4. This
+patch refreshes the in-app release notes and operator documentation without
+changing clinic data or clinical-care workflows.
+
+## Version 0.3.5 release highlights
+
+- Staff and Admin can book and manage appointments for existing clients and
+  provisional first-timers without creating a client before intake.
+- Active HPC Representatives can maintain dated availability, while Staff and
+  Admin can review team availability and Admin can configure clinic hours,
+  services, and appointment lengths.
+- The Schedule includes weekly and daily views, explicit status actions,
+  Philippine time, immutable server timestamps, conflict prevention, and
+  recoverable removal of test or mistaken appointments.
+- Row-level-security helpers, function privileges, audit identity stamping, and
+  foreign-key indexes were hardened without changing existing clinical-care
+  workflows.
+- The About page, README, changelog, and user guide now describe the current
+  calendar release consistently.
+
+See the [complete release history](CHANGELOG.md) for 0.1.0 through 0.3.5.
 
 ## Core capabilities
 
 - Centralized client intake and record management
+- Staff-managed appointment booking for existing clients and first-timers
+- Clinician availability, configurable services, appointment lengths, and clinic hours
+- Provider calendars, operational appointment statuses, intake handoff, and double-booking protection
 - 4Ps case conceptualization across biological, psychological, and social factors
 - Clinician-reviewed narrative drafting for completed 4Ps records
 - C-SSRS assessment workflow and follow-up indicators
@@ -28,13 +51,37 @@ planned for a future version and is not part of 0.2.2.
 
 | Role | Access summary |
 | --- | --- |
-| Admin | Clinic-wide access, account administration, backup restore, and system activity review |
-| Psychologist / Counselor | Assigned clients, personal dashboard and analytics, the care-team directory, and permitted clinic display settings |
-| Staff | Clinic-wide operational workflows without authority over Admin accounts, backup restoration, or the system log |
+| Admin | Clinic-wide access, all Staff scheduling controls, calendar setup, account administration, backup restore, and system activity review |
+| Psychologist / Counselor | Assigned clients, own appointment calendar and availability, personal dashboard and analytics, and the care-team directory |
+| Staff | Clinic-wide booking and appointment operations without authority over calendar setup, Admin accounts, backup restoration, or the system log |
 
 ## Application tour
 
 The screenshots below use staging test records. Clinic-specific branding and identifying information have been blurred.
+
+### Appointment Calendar
+
+> **Screenshot placeholder:** Weekly Schedule view for version 0.3.5. Replace
+> this callout with `docs/screenshots/calendar-week-v0.3.5.jpg` after the new
+> redacted screenshot is approved.
+
+<details>
+<summary><strong>Daily appointment status board</strong></summary>
+
+> **Screenshot placeholder:** Daily status board and appointment timeline.
+> Replace with `docs/screenshots/calendar-status-board-v0.3.5.jpg`.
+
+</details>
+
+<details>
+<summary><strong>Team availability and clinic setup</strong></summary>
+
+> **Screenshot placeholder:** Team availability and Admin clinic setup. Replace
+> with `docs/screenshots/calendar-availability-v0.3.5.jpg`.
+
+</details>
+
+### Existing workspaces
 
 ![HPC Client Management dashboard](docs/screenshots/dashboard-v0.2.2.jpg)
 
@@ -84,6 +131,9 @@ The screenshots below use staging test records. Clinic-specific branding and ide
 <summary><strong>About and signed updates</strong></summary>
 
 ![HPC Client Management About page and signed updater](docs/screenshots/about-v0.2.2.jpg)
+
+> **Screenshot placeholder:** Refresh this image with the 0.3.5 release notes
+> after the About-page update is installed.
 
 </details>
 
@@ -174,14 +224,15 @@ See the [Supabase migration runbook](docs/supabase-migration-runbook.md) for the
 
 ## Documentation
 
-- [HPC Client Management 0.2.2 user guide](docs/user-guide-0.2.2.md)
-- [Printable 0.2.2 user guide](docs/HPC_Client_Management_0.2.2_User_Guide.docx)
+- [HPC Client Management 0.3.5 user guide](docs/user-guide-0.3.5.md)
+- [Printable 0.3.5 user guide](docs/HPC_Client_Management_0.3.5_User_Guide.docx)
+- [Appointment Calendar scope and staged rollout record](docs/appointment-calendar-0.3.0.md)
 - [Release history](CHANGELOG.md)
 - [Supabase migration runbook](docs/supabase-migration-runbook.md)
 - [Deployment and secrets checklist](docs/deployment-secrets-checklist.md)
 - [Post-migration verification queries](docs/supabase-post-migration-verification.sql)
 - [Live authentication trigger verification](docs/verify-live-auth-triggers.sql)
-- [Staging security verification](docs/staging-security-verification.md)
+- [Archived 0.2.2 staging security verification](docs/staging-security-verification.md)
 
 ## Data handling
 

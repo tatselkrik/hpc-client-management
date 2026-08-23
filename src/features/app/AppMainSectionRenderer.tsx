@@ -12,6 +12,10 @@ import {
   type AnalyticsSectionShellProps,
 } from "../analytics/AnalyticsSectionShell";
 import {
+  CalendarSection,
+  type CalendarSectionProps,
+} from "../calendar/CalendarSection";
+import {
   CareTeamSection,
   type CareTeamSectionProps,
 } from "../care-team/CareTeamSection";
@@ -32,6 +36,7 @@ export type AppMainSectionRendererProps = {
   activeSection: Section;
   dashboardProps: DashboardSectionProps;
   clientsProps: ClientsSectionProps;
+  calendarProps: CalendarSectionProps;
   analyticsProps: AnalyticsSectionShellProps;
   careTeamProps: CareTeamSectionProps;
   profileProps: ProfileSectionProps;
@@ -43,6 +48,7 @@ export function AppMainSectionRenderer({
   activeSection,
   dashboardProps,
   clientsProps,
+  calendarProps,
   analyticsProps,
   careTeamProps,
   profileProps,
@@ -55,6 +61,10 @@ export function AppMainSectionRenderer({
 
   if (activeSection === "clients") {
     return <ClientsSection {...clientsProps} />;
+  }
+
+  if (activeSection === "calendar") {
+    return <CalendarSection {...calendarProps} />;
   }
 
   if (activeSection === "analytics") {

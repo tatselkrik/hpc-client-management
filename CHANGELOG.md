@@ -4,6 +4,119 @@ This file records notable changes to HPC Client Management.
 
 ## Unreleased
 
+## 0.3.5 - 2026-08-24
+
+### Release information and documentation
+
+- Updated the About page so its release notes describe the Appointment Calendar,
+  availability, status history, and database hardening delivered in 0.3.4.
+- Updated the README, changelog, and user guide for the current release and added
+  clearly labeled placeholders for new redacted calendar screenshots.
+- Kept this as an application-only patch: no database migration, Edge Function,
+  stored clinic data, or clinical-care workflow changed.
+
+## 0.3.4 - 2026-08-24
+
+### Production release
+
+- Promoted the staging-validated calendar and hardening work to production
+  through the private signed updater and verified an installed 0.2.2 upgrade to
+  0.3.4 without losing existing client, user, note, or Storage records.
+- Completed production role, availability, booking, conflict, intake handoff,
+  status-history, audit, updater, backup, and advisor verification before the
+  release was finalized.
+
+### Appointment Calendar
+
+- Added Staff and Admin appointment booking for existing clients and
+  provisional first-timers, plus rescheduling, confirmation, arrival,
+  cancellation, no-show, intake handoff, and recoverable removal.
+- Added clinician and team availability, clinic hours, services, appointment
+  lengths, weekly and daily schedule views, a Philippine clock, explicit status
+  actions, and immutable server-timed history.
+- Added appointment activity to Analytics while leaving messaging, payments,
+  SMS, video calls, client portals, tasks, documents/forms, and clinical-care
+  changes outside this release.
+
+### Database and API hardening
+
+- Moved privileged row-level-security helpers out of the exposed Data API schema
+  while preserving the existing role and client-access rules.
+- Removed anonymous and unnecessary signed-in execution of privileged database
+  functions, fixed mutable function search paths, and retained only the RPCs
+  required by the desktop application.
+- Consolidated overlapping read policies and cached stable authentication checks
+  so access decisions remain equivalent with less per-row policy work.
+- Protected client-authored audit events with server-stamped identity and time
+  fields, and added indexes for every foreign key reported by the advisor.
+
+## 0.3.3 - 2026-08-23
+
+### Calendar interaction polish
+
+- Kept booking, cancellation, and removal errors inside their active modal,
+  while successful modal actions now close automatically and leave a readable,
+  dismissible confirmation.
+- Replaced browser prompts for appointment cancellation and removal with a
+  clear appointment-specific confirmation that explains recoverable removal
+  and requires an operational reason.
+- Replaced the unbounded existing-client dropdown with a searchable picker that
+  renders at most 12 matches at once and remains usable with large caseloads.
+- Preserved success feedback after calendar data refreshes for availability,
+  clinic-hours, services, appointment edits, and status changes.
+
+## 0.3.2 - 2026-08-23
+
+### Daily clinic flow
+
+- Added a day-focused appointment status board with explicit action buttons for
+  Scheduled, Confirmed, Arrived, Intake, In Session, and Completed milestones.
+- Added an immutable, database-timed status history showing when and by whom
+  each appointment milestone was recorded.
+- Added a live Philippine clock to the Calendar workspace. Display time uses
+  Asia/Manila while saved workflow times come from the database server.
+- Grouped matching clinician hours in the all-clinicians availability view and
+  made availability blocks open readable, read-only details for Staff and Admin.
+- Added status-history coverage to clinic backup export and merge restore.
+
+## 0.3.1 - 2026-08-23
+
+### Staging calendar repairs
+
+- Repaired the shared calendar audit trigger so clinic hours, appointment
+  services, availability, and appointment changes save and audit correctly.
+- Recognized every active account with an HPC Representative assignment as a
+  clinician, including an Admin clinician such as Clinic Administrator.
+- Replaced the date-exception list with a dated weekly timeline where clinicians
+  can set available or unavailable blocks, and added a read-only Team
+  availability tab for Staff and Admin.
+- Prevented overlapping dated available/unavailable blocks in both the interface
+  and database.
+- Added audited soft removal for mistaken appointments while preventing removal
+  after intake or clinical care has begun.
+- Added covering indexes for all appointment-calendar foreign keys and retained
+  Philippine-time, MFA, RLS, audit, and double-booking safeguards.
+
+## 0.3.0 - 2026-08-23
+
+### Appointment calendar
+
+- Added a staff-managed Calendar workspace for booking, rescheduling,
+  confirming, cancelling, arrival tracking, no-shows, and intake handoff.
+- Added separate booking flows for existing clients and first-timers. A
+  first-timer remains provisional until staff begins intake after arrival;
+  that action creates and links the client record transactionally.
+- Added personal weekly availability and date exceptions for psychologists and
+  counselors, plus Admin-managed clinic hours, services, and appointment
+  lengths.
+- Added Philippine-time scheduling, database-enforced provider availability,
+  service durations, valid status transitions, and double-booking prevention.
+- Added role-aware calendar access, MFA enforcement, audit history, backup and
+  restore coverage, and appointment activity in Analytics.
+- Telecounseling is recorded only as a session mode for future integration; no
+  video-call, messaging, payment, SMS, client-portal, document, form, or task
+  system is included.
+
 ## 0.2.2 - 2026-08-10
 
 ### Stable clinic deployment

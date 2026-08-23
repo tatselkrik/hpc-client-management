@@ -13,6 +13,12 @@ export const ClientsIcon = ({ className = "nav-icon" }: { className?: string }) 
   </svg>
 );
 
+export const CalendarIcon = ({ className = "nav-icon" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+    <path d="M7 2h2v2h6V2h2v2h1.5A2.5 2.5 0 0 1 21 6.5v12a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-12A2.5 2.5 0 0 1 5.5 4H7V2Zm11.5 7h-13v9.5c0 .28.22.5.5.5h12c.28 0 .5-.22.5-.5V9ZM7 11h3v3H7v-3Zm4 0h3v3h-3v-3Zm4 0h3v3h-3v-3ZM7 15h3v3H7v-3Zm4 0h3v3h-3v-3Z" fill="currentColor" />
+  </svg>
+);
+
 export const AnalyticsIcon = ({ className = "nav-icon" }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
     <path d="M5 19.5h14v1.5H3V4h2v15.5Zm3-2.5H6v-5h2v5Zm5 0h-2V7h2v10Zm5 0h-2V10h2v7Z" fill="currentColor" />

@@ -2,6 +2,7 @@
 import {
   AboutIcon,
   AnalyticsIcon,
+  CalendarIcon,
   CareTeamIcon,
   ClientsIcon,
   CollapseIcon,
@@ -36,6 +37,7 @@ const workspaceNavigationItems: Array<{
 }> = [
   { section: "dashboard", label: "Dashboard", icon: <DashboardIcon /> },
   { section: "clients", label: "Clients", icon: <ClientsIcon /> },
+  { section: "calendar", label: "Calendar", icon: <CalendarIcon /> },
   { section: "analytics", label: "Analytics", icon: <AnalyticsIcon /> },
   { section: "careTeam", label: "Care Team", icon: <CareTeamIcon /> },
 ];

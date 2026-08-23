@@ -179,7 +179,9 @@ export function useCareTeamManagement({
   useEffect(() => {
     if (
       !userEmail ||
-      (activeSection !== "careTeam" && activeSection !== "clients")
+      (activeSection !== "careTeam" &&
+        activeSection !== "clients" &&
+        activeSection !== "calendar")
     ) {
       return;
     }

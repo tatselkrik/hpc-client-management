@@ -14,6 +14,7 @@ import { useCurrentUserPermissions } from "./features/auth/useCurrentUserPermiss
 import { useAuditWriter } from "./features/audit/useAuditWriter";
 import { useClientWorkspaceController } from "./features/clients/useClientWorkspaceController";
 import { useCareTeamManagement } from "./features/care-team/useCareTeamManagement";
+import { useCalendarController } from "./features/calendar/useCalendarController";
 import { useDashboardController } from "./features/dashboard/useDashboardController";
 import { useProfileController } from "./features/profile/useProfileController";
 import { useSettingsController } from "./features/settings/useSettingsController";
@@ -239,6 +240,18 @@ function App() {
     loadAuditLogs,
   });
 
+  const calendarController = useCalendarController({
+    activeSection,
+    profile,
+    clients: clientWorkspace.clients,
+    careTeamMembers: careTeamController.careTeamMembers,
+    loadClients: clientWorkspace.loadClients,
+    setClientMessage: clientWorkspace.setClientMessage,
+    setSelectedClientId: clientWorkspace.setSelectedClientId,
+    setActiveClientTab: clientWorkspace.setActiveClientTab,
+    setActiveSection,
+  });
+
   const { dashboardProps } = useDashboardController({
     analyticsDashboardInputs: clientWorkspace.analyticsDashboardInputs,
     analyticsViewModel: clientWorkspace.analyticsViewModel,
@@ -337,6 +350,7 @@ function App() {
     authFlow: authFlowController,
     dashboardProps,
     clientWorkspace,
+    calendar: calendarController,
     careTeam: careTeamController,
     canManageCareTeam,
     canManageAdminAccounts,
