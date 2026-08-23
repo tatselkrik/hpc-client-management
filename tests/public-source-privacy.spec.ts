@@ -38,6 +38,18 @@ const publicValuePatterns = [
   /https?:\/\/[a-z0-9]{20}\.supabase\.co\b/i,
 ];
 
+const approvedScreenshots = [
+  "docs/screenshots/about-v0.2.2.jpg",
+  "docs/screenshots/analytics-v0.2.2.jpg",
+  "docs/screenshots/care-team-v0.2.2.jpg",
+  "docs/screenshots/case-conceptualization-v0.2.2.jpg",
+  "docs/screenshots/clients-v0.2.2.jpg",
+  "docs/screenshots/dashboard-v0.2.2.jpg",
+  "docs/screenshots/login-v0.2.2.jpg",
+  "docs/screenshots/profile-v0.2.2.jpg",
+  "docs/screenshots/settings-v0.2.2.jpg",
+];
+
 async function collectPublicFiles(): Promise<string[]> {
   const { stdout } = await execFileAsync(
     "git",
@@ -91,6 +103,24 @@ test("public source excludes private operational artifacts", async () => {
   expect(files).not.toContain("docs/staging-security-verification.md");
   expect(files.filter((path) => /^public\/.*-(icon|logo)\.(png|jpe?g)$/i.test(path))).toEqual([]);
   expect(files.some((path) => path.startsWith("docs/mockups/"))).toBe(false);
-  expect(files.some((path) => path.startsWith("docs/screenshots/"))).toBe(false);
+  expect(
+    files.filter((path) => path.startsWith("docs/screenshots/")).sort()
+  ).toEqual(approvedScreenshots);
   expect(files.some((path) => path.startsWith("private-backups/"))).toBe(false);
+});
+
+test("calendar tour uses placeholders until redacted screenshots are approved", async () => {
+  const files = await collectPublicFiles();
+  const readme = await readFile(resolve(root, "README.md"), "utf8");
+  const pendingCalendarScreenshots = [
+    "docs/screenshots/calendar-week-v0.3.5.jpg",
+    "docs/screenshots/calendar-status-board-v0.3.5.jpg",
+    "docs/screenshots/calendar-availability-v0.3.5.jpg",
+  ];
+
+  for (const path of pendingCalendarScreenshots) {
+    expect(readme).toContain(`**Screenshot placeholder:**`);
+    expect(readme).toContain(path);
+    expect(files).not.toContain(path);
+  }
 });
