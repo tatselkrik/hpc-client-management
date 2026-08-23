@@ -44,6 +44,98 @@ milestones.
 - Support for authenticated, privately distributed signed updates when an
   operator configures an updater endpoint and signing key
 
+## Application tour
+
+The approved screenshots below use staging test records. Clinic-specific
+branding, account details, and identifying information have been blurred.
+
+### Appointment Calendar
+
+> **Screenshot placeholder:** Weekly Schedule view for version 0.3.5. Replace
+> this callout with `docs/screenshots/calendar-week-v0.3.5.jpg` after the new
+> redacted screenshot is approved.
+
+<details>
+<summary><strong>Daily appointment status board</strong></summary>
+
+> **Screenshot placeholder:** Daily status board and appointment timeline.
+> Replace with `docs/screenshots/calendar-status-board-v0.3.5.jpg` after the
+> redacted screenshot is approved.
+
+</details>
+
+<details>
+<summary><strong>Team availability and clinic setup</strong></summary>
+
+> **Screenshot placeholder:** Team availability and Admin clinic setup. Replace
+> with `docs/screenshots/calendar-availability-v0.3.5.jpg` after the redacted
+> screenshot is approved.
+
+</details>
+
+### Existing workspaces
+
+![HPC Client Management dashboard](docs/screenshots/dashboard-v0.2.2.jpg)
+
+<details>
+<summary><strong>Client workspace</strong></summary>
+
+![HPC Client Management client workspace](docs/screenshots/clients-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>4Ps case conceptualization</strong></summary>
+
+![HPC Client Management 4Ps case conceptualization](docs/screenshots/case-conceptualization-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Analytics and reporting</strong></summary>
+
+![HPC Client Management analytics](docs/screenshots/analytics-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Care Team</strong></summary>
+
+![HPC Client Management Care Team](docs/screenshots/care-team-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Settings, backup, and audit activity</strong></summary>
+
+![HPC Client Management settings](docs/screenshots/settings-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>Profile and multi-factor authentication</strong></summary>
+
+![HPC Client Management profile and MFA settings](docs/screenshots/profile-v0.2.2.jpg)
+
+</details>
+
+<details>
+<summary><strong>About and signed updates</strong></summary>
+
+![HPC Client Management About page and signed updater](docs/screenshots/about-v0.2.2.jpg)
+
+> **Screenshot placeholder:** Refresh this image with the 0.3.5 release notes
+> after the updated About page is captured and redacted.
+
+</details>
+
+<details>
+<summary><strong>Sign in</strong></summary>
+
+![HPC Client Management sign-in screen](docs/screenshots/login-v0.2.2.jpg)
+
+</details>
+
 ## Access model
 
 | Role | Access summary |
@@ -57,7 +149,8 @@ milestones.
 This repository is a privacy-safe source snapshot. It contains no clinic data,
 real clinic branding, clinic contact details, live Supabase project references,
 updater endpoints, signing material, deployment credentials, private backups,
-or operational screenshots. Names and contact details in tests and examples are
+or unredacted operational screenshots. The published screenshots were reviewed
+and deliberately blurred; names and contact details in tests and examples are
 fictional.
 
 The deployed clinic application is configured separately with local environment
@@ -81,7 +174,7 @@ src-tauri/            Tauri desktop shell and generic configuration
 supabase/migrations/  Database baseline migrations
 supabase/functions/   Server-side Edge Functions
 supabase/email-templates/ Generic authentication email templates
-docs/                 User and database-verification documentation
+docs/                 User guides, approved screenshots, and verification files
 public/               Generic application assets
 tests/                Role, workflow, security, calendar, and privacy checks
 ```
