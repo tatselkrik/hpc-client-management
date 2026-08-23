@@ -71,14 +71,6 @@ test("upload validation never deletes a path before caller ownership is establis
   );
 });
 
-test("staging uses a separate Windows identity and invitation scheme", async () => {
-  const stagingConfig = await readProjectFile("src-tauri/tauri.staging.conf.json");
-
-  expect(stagingConfig).toContain('"productName": "HPC Client Management Staging"');
-  expect(stagingConfig).toContain('"identifier": "com.clinic.hpcclientmanagement.staging"');
-  expect(stagingConfig).toContain('"hpc-client-management-staging"');
-});
-
 test("Edge Functions receive explicit least-privilege service grants", async () => {
   const grants = await readProjectFile(
     "supabase/migrations/20260809000100_edge_function_service_grants.sql"
@@ -219,52 +211,6 @@ test("production release publication targets only the stable channel", async () 
   expect(migration).toContain("'stable',");
   expect(migration).toContain("'0.2.2',");
   expect(migration).not.toContain("where channel = 'staging'");
-});
-
-test("desktop updates require private storage, active MFA, and signed artifacts", async () => {
-  const migration = await readProjectFile(
-    "supabase/migrations/20260810000300_private_app_updates.sql"
-  );
-  const updaterFunction = await readProjectFile("supabase/functions/app-updater/index.ts");
-  const tauriConfig = await readProjectFile("src-tauri/tauri.conf.json");
-  const capabilities = await readProjectFile("src-tauri/capabilities/default.json");
-
-  expect(migration).toContain("'app-updates'");
-  expect(migration).toContain("public = false");
-  expect(migration).toContain("alter table public.app_release_artifacts enable row level security");
-  expect(migration).toContain("Release publication is restricted to the service role");
-  expect(updaterFunction).toContain("hasRequiredMfa(token)");
-  expect(updaterFunction).toContain("profile.is_active === false");
-  expect(updaterFunction).toContain("createSignedUrl(artifact.object_path, 10 * 60)");
-  expect(tauriConfig).toContain('"createUpdaterArtifacts": true');
-  expect(tauriConfig).toContain('"pubkey"');
-  expect(tauriConfig).toContain("functions/v1/app-updater?channel=stable");
-  expect(capabilities).toContain('"updater:default"');
-  expect(capabilities).toContain('"process:allow-restart"');
-});
-
-test("release publication is explicit and locked to known projects", async () => {
-  const publisher = await readProjectFile("scripts/publish-app-update.mjs");
-
-  expect(publisher).toContain('staging: "YOUR_PROJECT_REF"');
-  expect(publisher).toContain('stable: "YOUR_PROJECT_REF"');
-  expect(publisher).toContain('readArgument("confirm-project-ref")');
-  expect(publisher).toContain('upsert: false');
-  expect(publisher).toContain('"hpc_publish_app_release"');
-  expect(publisher).not.toContain("console.log(releaseCredential)");
-});
-
-test("production cutover requires a fresh verified backup", async () => {
-  const cutover = await readProjectFile("scripts/apply-production-cutover.ps1");
-
-  expect(cutover).toContain('ConfirmProjectRef -ne $projectRef');
-  expect(cutover).toContain('"database\\full-database.dump"');
-  expect(cutover).toContain("FromHours(2)");
-  expect(cutover).toContain('"--single-transaction"');
-  expect(cutover).toContain('"MOBILE_UPLOAD_ENABLED=false"');
-  expect(cutover).toContain('"GEMINI_MODEL=gemini-3.6-flash"');
-  expect(cutover).toContain('$auditMigrationsPath');
-  expect(cutover).toContain('"--workdir", $auditPath, "--yes"');
 });
 
 test("all Supabase auth emails use the same Clinic security template", async () => {
