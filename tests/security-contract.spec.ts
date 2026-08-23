@@ -1,4 +1,4 @@
-﻿import { readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { expect, test } from "@playwright/test";
@@ -213,6 +213,28 @@ test("production release publication targets only the stable channel", async () 
   expect(migration).not.toContain("where channel = 'staging'");
 });
 
+test("update services require private storage and an active MFA-verified account", async () => {
+  const migration = await readProjectFile(
+    "supabase/migrations/20260810000300_private_app_updates.sql"
+  );
+  const updaterFunction = await readProjectFile("supabase/functions/app-updater/index.ts");
+  const tauriConfig = await readProjectFile("src-tauri/tauri.conf.json");
+  const capabilities = await readProjectFile("src-tauri/capabilities/default.json");
+
+  expect(migration).toContain("'app-updates'");
+  expect(migration).toContain("public = false");
+  expect(migration).toContain("alter table public.app_release_artifacts enable row level security");
+  expect(migration).toContain("Release publication is restricted to the service role");
+  expect(updaterFunction).toContain("hasRequiredMfa(token)");
+  expect(updaterFunction).toContain("profile.is_active === false");
+  expect(updaterFunction).toContain("createSignedUrl(artifact.object_path, 10 * 60)");
+  expect(tauriConfig).toContain('"createUpdaterArtifacts": true');
+  expect(tauriConfig).not.toContain('"pubkey"');
+  expect(tauriConfig).not.toContain("functions/v1/app-updater");
+  expect(capabilities).toContain('"updater:default"');
+  expect(capabilities).toContain('"process:allow-restart"');
+});
+
 test("all Supabase auth emails use the same Clinic security template", async () => {
   const templateFiles = [
     "invite.html",
@@ -232,7 +254,7 @@ test("all Supabase auth emails use the same Clinic security template", async () 
 
   for (const fileName of templateFiles) {
     const template = await readProjectFile(`supabase/email-templates/${fileName}`);
-    expect(template).toContain("CLINIC");
+    expect(template).toContain("HPC CLINIC");
     expect(template).toContain("HPC Client Management");
     expect(template).toContain("does not contain client information");
     expect(template).not.toContain("<script");

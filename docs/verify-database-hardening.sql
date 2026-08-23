@@ -1,4 +1,4 @@
--- Staging verification for the HPC Client Management 0.3.4 hardening.
+-- Deployment verification for the HPC Client Management database hardening.
 -- Structural checks are read-only. Behavioral writes run inside a transaction
 -- that is always rolled back.
 
@@ -146,7 +146,7 @@ select set_config(
     'sub', profiles.id,
     'role', 'authenticated',
     'aal', 'aal2',
-    'email', coalesce(profiles.email, 'staging-admin@example.invalid')
+    'email', coalesce(profiles.email, 'verification-admin@example.invalid')
   )::text,
   true
 )
@@ -176,7 +176,7 @@ begin
     'Hardening rollback test',
     'hardening',
     null,
-    'Rollback-only staging verification',
+    'Rollback-only deployment verification',
     jsonb_build_object('verification', true)
   );
 
@@ -197,7 +197,7 @@ select set_config(
     'sub', profiles.id,
     'role', 'authenticated',
     'aal', 'aal2',
-    'email', coalesce(profiles.email, 'staging-staff@example.invalid')
+    'email', coalesce(profiles.email, 'verification-staff@example.invalid')
   )::text,
   true
 )
@@ -256,7 +256,7 @@ select set_config(
     'sub', expected.profile_id,
     'role', 'authenticated',
     'aal', 'aal2',
-    'email', 'staging-clinician@example.invalid'
+    'email', 'verification-clinician@example.invalid'
   )::text,
   true
 )
@@ -267,7 +267,7 @@ set local role authenticated;
 do $clinician_behavior$
 begin
   if auth.uid() is null then
-    raise exception 'Staging needs an active clinician for role verification.';
+    raise exception 'The verification environment needs an active clinician for role verification.';
   end if;
 
   if (select count(*) from public.clients) <>

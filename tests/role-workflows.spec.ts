@@ -1,4 +1,4 @@
-﻿import { expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("authenticated role workflows", () => {
   test("Admin can administer the clinic and defaults new clients to Clinic Administrator", async ({ page }) => {

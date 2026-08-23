@@ -1,9 +1,8 @@
-﻿# HPC Client Management 0.3.5 User Guide
+# HPC Client Management 0.3.5 User Guide
 
 This guide covers the installed Windows application for Admin, Staff, and
-Psychologist / Counselor accounts. Existing screens use redacted staging test
-records; clearly labeled placeholders identify the new 0.3.5 screenshots still
-to be added.
+Psychologist / Counselor accounts. The public guide contains no clinic records,
+identifying screenshots, or private deployment configuration.
 
 ## Important use rules
 
@@ -57,8 +56,6 @@ Enter your email and password, then enter the current six-digit authenticator
 code. Password recovery is not currently available from the sign-in screen. If
 you cannot sign in, contact the clinic Admin.
 
-![Redacted HPC Client Management sign-in screen](screenshots/login-v0.2.2.jpg)
-
 ## 2. Dashboard
 
 Dashboard summarizes the records your role is allowed to access. It shows
@@ -68,8 +65,6 @@ priorities, and recent work.
 - Select a client in **Needs attention** or **Recent work** to open that record.
 - Psychologist / Counselor totals and activity include only assigned clients.
 - Staff and Admin see their permitted clinic-wide operational view.
-
-![Redacted HPC Client Management dashboard](screenshots/dashboard-v0.2.2.jpg)
 
 ## 3. Clients
 
@@ -105,13 +100,6 @@ from the directory to open the record workspace.
 Staff can maintain Overview information and upload, download, or rename
 Documents and Assessments. Staff cannot edit clinical 4Ps, C-SSRS, or progress
 notes and cannot delete uploaded paperwork.
-
-<details>
-<summary><strong>View the redacted client workspace</strong></summary>
-
-![Redacted client workspace](screenshots/clients-v0.2.2.jpg)
-
-</details>
 
 ## 4. Appointment Calendar
 
@@ -176,15 +164,6 @@ Removal is available only before intake or clinical care begins. Confirm the
 correct appointment, enter an operational reason, and remove it. Removal is
 recoverable and remains in the audit history; it is not an unrecorded deletion.
 
-> **Screenshot placeholder:** Weekly Calendar Schedule. Replace this callout
-> with `screenshots/calendar-week-v0.3.5.jpg` after approval.
-
-> **Screenshot placeholder:** Daily status board and milestone timeline. Replace
-> with `screenshots/calendar-status-board-v0.3.5.jpg`.
-
-> **Screenshot placeholder:** Team Availability and Admin Clinic Setup. Replace
-> with `screenshots/calendar-availability-v0.3.5.jpg`.
-
 ## 5. 4Ps case conceptualization and narrative draft
 
 Complete the four 4Ps rows across the Biological, Psychological, and Social
@@ -198,13 +177,6 @@ or clinical decision.
 **Privacy restriction:** Do not place client names, contact details, addresses,
 employer or school names, record numbers, or other identifying details in 4Ps
 content that will be sent for narrative generation.
-
-<details>
-<summary><strong>View the redacted 4Ps workspace</strong></summary>
-
-![Redacted 4Ps case conceptualization workspace](screenshots/case-conceptualization-v0.2.2.jpg)
-
-</details>
 
 ## 6. Documents and Assessments
 
@@ -234,13 +206,6 @@ booking stage, mode, services, and clinician workload for the selected period.
 Exports follow the same access rules as the screen. A Psychologist / Counselor
 export contains only assigned-client data.
 
-<details>
-<summary><strong>View the redacted analytics workspace</strong></summary>
-
-![Redacted analytics workspace](screenshots/analytics-v0.2.2.jpg)
-
-</details>
-
 ## 8. Care Team
 
 ### Admin
@@ -263,20 +228,13 @@ New members receive an email invitation, create their own password, and enroll
 in MFA. Use **Deactivate** instead of deleting an account so its history remains
 available. A deactivated account cannot enter the workspace.
 
-<details>
-<summary><strong>View the redacted Care Team workspace</strong></summary>
-
-![Redacted Care Team workspace](screenshots/care-team-v0.2.2.jpg)
-
-</details>
-
 ## 9. Settings
 
 The modules shown in Settings depend on the signed-in role.
 
 - **Contact details:** Admin and Staff can update clinic mobile, landline, email,
   and location information.
-- **Appearance:** choose Light, Dark, HPC, or HPC Dark. The preference is saved
+- **Appearance:** choose Light, Dark, Clinic, or Clinic Dark. The preference is saved
   on the current device.
 - **Clinic notice banner:** all active roles can publish or disable a shared
   Dashboard notice.
@@ -297,13 +255,6 @@ The in-app package does not recreate Supabase Auth accounts and does not restore
 deleted Storage file contents. A full disaster-recovery process requires
 separate database and Storage backups.
 
-<details>
-<summary><strong>View the redacted Settings workspace</strong></summary>
-
-![Redacted Settings workspace](screenshots/settings-v0.2.2.jpg)
-
-</details>
-
 ## 10. Profile and account security
 
 Select your name or profile card in the lower-left sidebar to open **Profile**.
@@ -318,13 +269,6 @@ From this screen you can:
 Use one authenticator device per staff account whenever possible. Removing the
 only working authenticator may prevent the account from completing MFA.
 
-<details>
-<summary><strong>View the redacted Profile workspace</strong></summary>
-
-![Redacted Profile and MFA workspace](screenshots/profile-v0.2.2.jpg)
-
-</details>
-
 ## 11. Check for and install updates
 
 1. Open **About**.
@@ -337,11 +281,6 @@ only working authenticator may prevent the account from completing MFA.
 An active account with completed MFA is required. The update comes from the
 private application release channel; pushing source code to Git does not update
 the clinic application automatically.
-
-![Redacted About and signed updater screen](screenshots/about-v0.2.2.jpg)
-
-> **Screenshot placeholder:** Replace the image above with the About screen
-> showing version 0.3.5 and the current Appointment Calendar release notes.
 
 ## 12. Common messages
 

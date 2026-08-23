@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import {
   AboutIcon,
   AnalyticsIcon,
@@ -101,7 +101,7 @@ export function AppSidebar({
               }
             >
               <img
-                src={isSidebarCompact ? "/clinic-icon.png" : "/clinic-logo.png"}
+                src={isSidebarCompact ? "/hpc-icon.svg" : "/hpc-logo.svg"}
                 alt={CLINIC_NAME}
                 className={isSidebarCompact ? "brand-logo-icon" : "brand-logo"}
               />

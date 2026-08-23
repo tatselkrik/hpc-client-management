@@ -1,148 +1,68 @@
 # HPC Client Management
+
 [![Quality checks](https://github.com/tatselkrik/hpc-client-management/actions/workflows/quality.yml/badge.svg)](https://github.com/tatselkrik/hpc-client-management/actions/workflows/quality.yml)
 
-HPC Client Management is a Windows desktop application for managing clinic client records, clinical documentation, care-team access, analytics, and day-to-day administrative workflows.
+HPC Client Management is a Windows desktop application for clinic client
+records, clinical documentation, care-team access, analytics, appointment
+scheduling, and day-to-day administrative workflows.
 
-**Current version:** 0.3.5 · **Platform:** Windows desktop · **Status:** Production release
+**Current version:** 0.3.5 · **Platform:** Windows desktop · **Status:** Stable
 
-Version 0.3.5 carries forward the clinic Appointment Calendar, clinician and team
-availability, operational status tracking, server-timed appointment history,
-calendar analytics, and production database hardening introduced in 0.3.4. This
-patch refreshes the in-app release notes and operator documentation without
-changing clinic data or clinical-care workflows.
-
-## Version 0.3.5 release highlights
+## Version 0.3.5 highlights
 
 - Staff and Admin can book and manage appointments for existing clients and
   provisional first-timers without creating a client before intake.
-- Active HPC Representatives can maintain dated availability, while Staff and
-  Admin can review team availability and Admin can configure clinic hours,
-  services, and appointment lengths.
-- The Schedule includes weekly and daily views, explicit status actions,
-  Philippine time, immutable server timestamps, conflict prevention, and
-  recoverable removal of test or mistaken appointments.
-- Row-level-security helpers, function privileges, audit identity stamping, and
-  foreign-key indexes were hardened without changing existing clinical-care
-  workflows.
-- The About page, README, changelog, and user guide now describe the current
-  calendar release consistently.
+- Active clinicians can maintain their availability. Staff and Admin can review
+  team availability, while Admin can configure clinic hours, services, and
+  appointment lengths.
+- Weekly and daily schedules provide explicit status actions, Philippine time,
+  immutable server timestamps, conflict prevention, and recoverable removal of
+  mistaken appointments.
+- Appointment activity is included in Analytics.
+- Database permissions, row-level-security helpers, audit identity stamping,
+  and foreign-key indexes are hardened without changing clinical-care records.
 
-See the [complete release history](CHANGELOG.md) for 0.1.0 through 0.3.5.
+See the [release history](CHANGELOG.md) for the stable 0.1.0, 0.2.2, and 0.3.5
+milestones.
 
 ## Core capabilities
 
 - Centralized client intake and record management
-- Staff-managed appointment booking for existing clients and first-timers
-- Clinician availability, configurable services, appointment lengths, and clinic hours
-- Provider calendars, operational appointment statuses, intake handoff, and double-booking protection
-- 4Ps case conceptualization across biological, psychological, and social factors
-- Clinician-reviewed narrative drafting for completed 4Ps records
-- C-SSRS assessment workflow and follow-up indicators
+- Staff-managed appointments for existing clients and first-timers
+- Clinician availability, team availability, clinic hours, services, and
+  appointment lengths
+- Weekly and daily schedules, intake handoff, operational statuses, and
+  double-booking protection
+- 4Ps case conceptualization with clinician-reviewed narrative drafting
+- C-SSRS screening workflow and follow-up indicators
 - Progress notes, documents, and assessment uploads
 - Dashboard priorities and clinic-wide analytics
 - CSV and PowerPoint exports
-- Email-invited care-team accounts, role-based access, and representative assignments
+- Email-invited care-team accounts and role-based access
 - Required multi-factor authentication, idle-session locking, and audit history
-- Clinic announcements, editable contact details, themes, and client categories
 - Structured backup export and Admin-confirmed merge restore
-- Authenticated, privately distributed, cryptographically signed application updates
+- Support for authenticated, privately distributed signed updates when an
+  operator configures an updater endpoint and signing key
 
 ## Access model
 
 | Role | Access summary |
 | --- | --- |
-| Admin | Clinic-wide access, all Staff scheduling controls, calendar setup, account administration, backup restore, and system activity review |
-| Psychologist / Counselor | Assigned clients, own appointment calendar and availability, personal dashboard and analytics, and the care-team directory |
+| Admin | Clinic-wide access, Staff scheduling controls, calendar setup, account administration, backup restore, and system activity review |
+| Psychologist / Counselor | Assigned clients, own calendar and availability, personal dashboard and analytics, and the care-team directory |
 | Staff | Clinic-wide booking and appointment operations without authority over calendar setup, Admin accounts, backup restoration, or the system log |
 
-## Application tour
+## Public-source boundary
 
-The screenshots below use staging test records. Clinic-specific branding and identifying information have been blurred.
+This repository is a privacy-safe source snapshot. It contains no clinic data,
+real clinic branding, clinic contact details, live Supabase project references,
+updater endpoints, signing material, deployment credentials, private backups,
+or operational screenshots. Names and contact details in tests and examples are
+fictional.
 
-### Appointment Calendar
-
-> **Screenshot placeholder:** Weekly Schedule view for version 0.3.5. Replace
-> this callout with `docs/screenshots/calendar-week-v0.3.5.jpg` after the new
-> redacted screenshot is approved.
-
-<details>
-<summary><strong>Daily appointment status board</strong></summary>
-
-> **Screenshot placeholder:** Daily status board and appointment timeline.
-> Replace with `docs/screenshots/calendar-status-board-v0.3.5.jpg`.
-
-</details>
-
-<details>
-<summary><strong>Team availability and clinic setup</strong></summary>
-
-> **Screenshot placeholder:** Team availability and Admin clinic setup. Replace
-> with `docs/screenshots/calendar-availability-v0.3.5.jpg`.
-
-</details>
-
-### Existing workspaces
-
-![HPC Client Management dashboard](docs/screenshots/dashboard-v0.2.2.jpg)
-
-<details>
-<summary><strong>Client workspace</strong></summary>
-
-![HPC Client Management client workspace](docs/screenshots/clients-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>4Ps case conceptualization</strong></summary>
-
-![HPC Client Management 4Ps case conceptualization](docs/screenshots/case-conceptualization-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>Analytics and reporting</strong></summary>
-
-![HPC Client Management analytics](docs/screenshots/analytics-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>Care Team</strong></summary>
-
-![HPC Client Management Care Team](docs/screenshots/care-team-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>Settings, backup, and audit activity</strong></summary>
-
-![HPC Client Management settings](docs/screenshots/settings-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>Profile and multi-factor authentication</strong></summary>
-
-![HPC Client Management profile and MFA settings](docs/screenshots/profile-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>About and signed updates</strong></summary>
-
-![HPC Client Management About page and signed updater](docs/screenshots/about-v0.2.2.jpg)
-
-> **Screenshot placeholder:** Refresh this image with the 0.3.5 release notes
-> after the About-page update is installed.
-
-</details>
-
-<details>
-<summary><strong>Sign in</strong></summary>
-
-![HPC Client Management sign-in screen](docs/screenshots/login-v0.2.2.jpg)
-
-</details>
+The deployed clinic application is configured separately with local environment
+values and private operational assets. Those values are intentionally not
+recoverable from this repository.
 
 ## Technology
 
@@ -157,15 +77,14 @@ The screenshots below use staging test records. Clinic-specific branding and ide
 
 ```text
 src/                  React application and feature modules
-src-tauri/            Tauri desktop shell and configuration
+src-tauri/            Tauri desktop shell and generic configuration
 supabase/migrations/  Database baseline migrations
 supabase/functions/   Server-side Edge Functions
-docs/                 Deployment notes, verification queries, and screenshots
-public/               Application assets
-scripts/              Build, backup, cutover, signing, and release utilities
+supabase/email-templates/ Generic authentication email templates
+docs/                 User and database-verification documentation
+public/               Generic application assets
+tests/                Role, workflow, security, calendar, and privacy checks
 ```
-
-Local environment values, dependencies, generated builds, installers, Rust build output, uploaded files, and backup exports are excluded from source control.
 
 ## Getting started
 
@@ -178,36 +97,39 @@ Local environment values, dependencies, generated builds, installers, Rust build
 
 ### Configure the application
 
-1. Install the JavaScript dependencies:
+1. Install dependencies:
 
    ```bash
    npm ci
    ```
 
-2. Copy `env.example` to `.env.local` and add the frontend configuration for the target Supabase project:
+2. Copy `env.example` to `.env.local`.
+
+3. Add the URL and publishable key for your own Supabase project:
 
    ```text
-   VITE_SUPABASE_URL=
-   VITE_SUPABASE_PUBLISHABLE_KEY=
+   VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
    ```
 
-3. Add any optional session, upload, or update settings described in `env.example`.
+4. Replace the fictional clinic defaults and generic assets only in your private
+   deployment configuration. Never commit secret or identifying values.
 
 ### Run locally
-
-Start the web interface:
 
 ```bash
 npm run dev
 ```
 
-Start the desktop application:
+For the desktop shell:
 
 ```bash
 npm run tauri dev
 ```
 
 ### Validate and build
+
+Run these checks sequentially:
 
 ```bash
 npm run lint -- --max-warnings=0
@@ -216,27 +138,38 @@ npm run build
 npm run tauri build
 ```
 
+The public Tauri configuration intentionally has no live updater endpoint. An
+operator must configure private updater settings outside public source before
+building a deployable signed release.
+
 ## Supabase setup
 
-The migration baseline in `supabase/migrations/` is designed for a fresh Supabase project. Apply the migrations in timestamp order, deploy the Edge Functions, configure their server-side secrets, and run the verification queries.
+Apply the migrations in `supabase/migrations/` to a new Supabase project in
+timestamp order, deploy the Edge Functions, configure server-side secrets, and
+run the verification queries. Review Supabase Data API exposure and grants as
+well as row-level-security policies before using the application with any real
+records.
 
-See the [Supabase migration runbook](docs/supabase-migration-runbook.md) for the complete sequence.
+See the [migration runbook](docs/supabase-migration-runbook.md) for the generic
+setup sequence.
 
 ## Documentation
 
-- [HPC Client Management 0.3.5 user guide](docs/user-guide-0.3.5.md)
-- [Printable 0.3.5 user guide](docs/HPC_Client_Management_0.3.5_User_Guide.docx)
-- [Appointment Calendar scope and staged rollout record](docs/appointment-calendar-0.3.0.md)
+- [Version 0.3.5 user guide](docs/user-guide-0.3.5.md)
+- [Appointment Calendar architecture](docs/appointment-calendar.md)
 - [Release history](CHANGELOG.md)
 - [Supabase migration runbook](docs/supabase-migration-runbook.md)
-- [Deployment and secrets checklist](docs/deployment-secrets-checklist.md)
-- [Post-migration verification queries](docs/supabase-post-migration-verification.sql)
-- [Live authentication trigger verification](docs/verify-live-auth-triggers.sql)
-- [Archived 0.2.2 staging security verification](docs/staging-security-verification.md)
+- [Post-migration verification](docs/supabase-post-migration-verification.sql)
+- [Appointment Calendar verification](docs/verify-appointment-calendar.sql)
+- [Database-hardening verification](docs/verify-database-hardening.sql)
+- [Authentication-trigger verification](docs/verify-live-auth-triggers.sql)
 
 ## Data handling
 
-Runtime credentials and clinical data are not stored in this repository. Frontend-safe configuration belongs in an untracked `.env.local`; server credentials belong in Supabase project secrets. Backup exports and uploaded clinical files should remain in approved storage locations.
+Runtime credentials and clinical data do not belong in Git. Frontend-safe
+configuration belongs in an untracked `.env.local`; service credentials belong
+in Supabase project secrets. Backup exports and uploaded clinical files must
+remain in approved private storage.
 
 ## License
 

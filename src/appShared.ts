@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   ThemeMode,
 } from "./domain/appTypes";
 import type {
@@ -248,16 +248,17 @@ export const emptyDashboardAnnouncement = (): DashboardAnnouncement => ({
   is_active: false,
 });
 
-export const CLINIC_NAME = "Clinic Psychological Center";
+export const CLINIC_NAME =
+  import.meta.env.VITE_CLINIC_NAME?.trim() || "Sample Psychological Center";
 export const APP_PRODUCT_NAME = "HPC Client Management";
 
-export const CLINIC_CLINIC_INFO = {
+export const DEFAULT_CLINIC_INFO = {
   id: 1,
   name: CLINIC_NAME,
-  mobile_number: "0917 000 0000",
-  landline_number: "000-000-0000",
-  email: "clinic@example.com",
-  address: "Sample Psychological Center V, City Center Ave., Brgy. 33, Bacolod City",
+  mobile_number: import.meta.env.VITE_CLINIC_MOBILE?.trim() || "",
+  landline_number: import.meta.env.VITE_CLINIC_LANDLINE?.trim() || "",
+  email: import.meta.env.VITE_CLINIC_EMAIL?.trim() || "",
+  address: import.meta.env.VITE_CLINIC_ADDRESS?.trim() || "",
 };
 
 export { CARE_TEAM_ROLE_OPTIONS } from "./security/rolePolicy";
@@ -474,7 +475,7 @@ export const formatAuditDetails = (details: Record<string, unknown> | null | und
   return detailEntries
     .slice(0, 4)
     .map(([key, value]) => `${key.replace(/_/g, " ")}: ${formatAuditDetailValue(value)}`)
-    .join(" â€¢ ");
+    .join(" • ");
 };
 
 export const getAuditTargetLabel = (entry: AuditLogEntry) =>
@@ -603,9 +604,9 @@ export const APP_BUILD_INFO = {
   product_name: APP_PRODUCT_NAME,
   version: import.meta.env.VITE_APP_VERSION ?? "0.3.5",
   identifier:
-    import.meta.env.VITE_APP_IDENTIFIER ?? "com.clinic.hpcclientmanagement",
+    import.meta.env.VITE_APP_IDENTIFIER ?? "com.example.hpcclientmanagement",
   channel: import.meta.env.VITE_APP_CHANNEL === "staging" ? "staging" : "stable",
-  environment_summary: `Tauri 2 â€¢ React â€¢ TypeScript â€¢ Vite â€¢ Supabase â€¢ ${
+  environment_summary: `Tauri 2 • React • TypeScript • Vite • Supabase • ${
     import.meta.env.MODE === "production" ? "Production build" : "Development build"
   }`,
 };
@@ -721,7 +722,7 @@ export const truncateAuditDetails = (value: string, maxLength = 100) => {
     return trimmed;
   }
 
-  return `${trimmed.slice(0, Math.max(0, maxLength - 1)).trimEnd()}â€¦`;
+  return `${trimmed.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
 };
 
 export const toNullableText = (value: string) => {

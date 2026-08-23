@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP on
 \pset pager off
 
--- Read-only production preflight for HPC Client Management.
+-- Read-only deployment preflight for HPC Client Management.
 -- This script returns counts and configuration metadata only. It does not
 -- select client names, email addresses, clinical content, or file names.
 

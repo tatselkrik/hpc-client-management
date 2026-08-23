@@ -5,5 +5,4 @@ export const APP_RELEASE_NOTES = [
   "Added clinician availability, team availability, configurable clinic hours, services, appointment lengths, and database-enforced double-booking protection.",
   "Added a daily status board, Philippine clock, and immutable server-timed appointment history for Scheduled through Completed milestones.",
   "Hardened database permissions and row-level-security performance while preserving the existing client, clinical documentation, analytics, and signed-update workflows.",
-  "Version 0.3.5 refreshes the About release notes and operator documentation; it does not change clinic data or clinical-care workflows.",
 ] as const;

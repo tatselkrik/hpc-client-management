@@ -1,4 +1,4 @@
-﻿:root[data-theme="clinic-dark"] {
+:root[data-theme="clinic-dark"] {
   color-scheme: dark;
   --app-background: radial-gradient(circle at top left, rgba(239, 68, 68, 0.18), transparent 44%),
     linear-gradient(135deg, #120b0d 0%, #1c1115 52%, #0f0c10 100%);

@@ -1,4 +1,4 @@
-﻿import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
 import { hasRequiredMfa } from "../_shared/security.ts";
@@ -77,7 +77,7 @@ function formatFourPsForPrompt(fourPs: FourPsPayload) {
 }
 
 function buildPrompt(fourPsText: string) {
-  return `You are assisting a clinician at Clinic Psychological Center with drafting a case conceptualization narrative.
+  return `You are assisting a clinician at a psychological clinic with drafting a case conceptualization narrative.
 
 Generate only the Narrative Report section from the provided 4Ps case conceptualization table.
 

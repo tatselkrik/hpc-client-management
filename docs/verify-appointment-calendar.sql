@@ -1,4 +1,4 @@
--- Staging verification for the HPC Client Management 0.3.2 calendar migrations.
+-- Deployment verification for the HPC Client Management calendar migrations.
 -- Structural checks are read-only. Behavioral writes run inside a transaction
 -- that is always rolled back.
 
@@ -190,7 +190,7 @@ select set_config(
     'sub', profiles.id,
     'role', 'authenticated',
     'aal', 'aal2',
-    'email', coalesce(profiles.email, 'staging-admin@example.invalid')
+    'email', coalesce(profiles.email, 'verification-admin@example.invalid')
   )::text,
   true
 )
@@ -235,7 +235,7 @@ begin
   limit 1;
 
   if test_provider_id is null or test_service_id is null then
-    raise exception 'Staging needs one active clinician and one active 60-minute service.';
+    raise exception 'The verification environment needs one active clinician and one active 60-minute service.';
   end if;
 
   test_start := (test_date + time '09:00') at time zone 'Asia/Manila';
@@ -264,7 +264,7 @@ begin
     test_start,
     test_end,
     'scheduled',
-    'Rollback-only staging verification.'
+    'Rollback-only deployment verification.'
   )
   returning id into test_appointment_id;
 

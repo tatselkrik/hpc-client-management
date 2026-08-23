@@ -1,4 +1,4 @@
-﻿-- HPC Client Management 0.3.1 calendar repairs (staging-applied migration).
+-- HPC Client Management 0.3.1 calendar repairs (staging-applied migration).
 -- Apply to staging first. This keeps appointment removal recoverable, recognizes
 -- every active HPC Representative as a clinician, and prevents conflicting
 -- dated availability blocks.

@@ -1,4 +1,4 @@
-﻿-- Staging experience improvements: editable clinic contact details, release checks,
+-- Staging experience improvements: editable clinic contact details, release checks,
 -- and an Admin-only merge restore path for app-generated JSON backups.
 
 create table if not exists public.clinic_settings (
@@ -27,10 +27,10 @@ insert into public.clinic_settings (
 )
 values (
   1,
-  '0917 000 0000',
-  '000-000-0000',
-  'clinic@example.com',
-  'Sample Psychological Center V, City Center Ave., Brgy. 33, Bacolod City'
+  '',
+  '',
+  '',
+  ''
 )
 on conflict (id) do nothing;
 

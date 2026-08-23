@@ -1,4 +1,4 @@
-﻿/* Clinic appearance overrides. */
+/* Clinic appearance overrides. */
 :root[data-theme="clinic"] .theme-option.active,
 :root[data-theme="clinic"] .settings-preview-card.active {
   border-color: rgba(237, 28, 36, 0.34);

@@ -1,5 +1,5 @@
-﻿-- The clinic Admin is the Clinic Administrator representative. Keep this profile assignment
--- stable so Clinic Administrator is always available for new-client assignment.
+-- The generic installation uses a fictional Admin representative. Replace this
+-- value in a private deployment if the clinic uses a different naming policy.
 
 alter table public.profiles
   disable trigger prevent_client_profile_role_changes;

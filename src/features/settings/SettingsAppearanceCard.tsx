@@ -1,4 +1,4 @@
-﻿import { SectionHeader } from "../../components/SectionHeader";
+import { SectionHeader } from "../../components/SectionHeader";
 import type { Dispatch, SetStateAction } from "react";
 import type { ThemeMode } from "../../appShared";
 
