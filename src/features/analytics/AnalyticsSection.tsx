@@ -32,6 +32,7 @@ import {
 import { AnalyticsExportControls } from "./AnalyticsExportControls";
 import { AnalyticsFiltersPanel } from "./AnalyticsFiltersPanel";
 import { AnalyticsQuickRead, AnalyticsSummaryMetrics } from "./AnalyticsOverview";
+import { AppointmentAnalyticsPanel } from "./AppointmentAnalyticsPanel";
 import type { AnalyticsViewModel } from "./useAnalyticsViewModel";
 
 type RecordActivityTrendItem = {
@@ -1512,6 +1513,8 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
         setSexFilter={setSexFilter}
         sexOptions={sexOptions}
       />
+
+      <AppointmentAnalyticsPanel />
 
       <AnalyticsQuickRead
         filterSummary={fullFilterSummary}

@@ -1,8 +1,9 @@
-﻿# HPC Client Management 0.2.2 User Guide
+﻿# HPC Client Management 0.3.5 User Guide
 
 This guide covers the installed Windows application for Admin, Staff, and
-Psychologist / Counselor accounts. The screens shown use redacted staging test
-records.
+Psychologist / Counselor accounts. Existing screens use redacted staging test
+records; clearly labeled placeholders identify the new 0.3.5 screenshots still
+to be added.
 
 ## Important use rules
 
@@ -13,7 +14,7 @@ records.
 - Do not enter client names or other identifying details in 4Ps information sent
   for AI narrative generation. The current Gemini data-handling arrangement has
   not been approved for identifying clinical information.
-- Upload from Phone is not available in version 0.2.2. Use the desktop Documents
+- Upload from Phone is not available in version 0.3.5. Use the desktop Documents
   and Assessments tabs.
 
 ## Access by role
@@ -21,7 +22,9 @@ records.
 | Area | Admin | Staff | Psychologist / Counselor |
 | --- | --- | --- | --- |
 | Dashboard and client list | All permitted clinic records | All permitted clinic records | Assigned clients only |
-| Create clients | Yes; Clinic Administrator is the default representative | Yes; must choose an Admin or Psychologist / Counselor representative | Yes; assigned to their own representative profile |
+| Appointment Schedule | Book and manage all appointments | Book and manage all appointments | View own appointments and update permitted session statuses |
+| Availability | Own availability plus team view and clinic setup | Read-only team availability | Own dated availability |
+| Create clients | Yes; Clinic Administrator is the default representative | Yes; must choose an active clinical HPC Representative | Yes; assigned to their own representative profile |
 | Client Overview | Edit | Edit | Edit assigned clients |
 | 4Ps, C-SSRS, and progress notes | Edit | Read-only | Edit assigned clients |
 | Documents and Assessments | Upload, download, rename, and delete | Upload, download, and rename; no deletion | Upload, download, rename, and delete for assigned clients |
@@ -84,8 +87,8 @@ from the directory to open the record workspace.
 3. Confirm the HPC Representative:
    - Admin starts with **Clinic Administrator** and may transfer the client to another active
      clinical representative.
-   - Staff must choose an active Admin or Psychologist / Counselor
-     representative. Staff cannot assign a client to Staff.
+   - Staff must choose an active clinical HPC Representative. Staff cannot
+     assign a client to an account without a clinical representative identity.
    - Psychologist / Counselor accounts use their own assigned representative.
 4. Save the record.
 
@@ -110,7 +113,79 @@ notes and cannot delete uploaded paperwork.
 
 </details>
 
-## 4. 4Ps case conceptualization and narrative draft
+## 4. Appointment Calendar
+
+Calendar is an internal clinic workspace. Clients do not book through a portal;
+Staff or Admin records appointments after a walk-in or telephone request.
+
+### Schedule and role views
+
+- **Staff and Admin:** See the clinic schedule, book appointments, reschedule,
+  confirm, record arrival, cancel, mark no-show, begin intake for first-timers,
+  and remove mistaken appointments before care begins.
+- **Psychologist / Counselor and other active HPC Representatives:** See their
+  own schedule and maintain dated availability. They do not receive the Staff
+  booking controls unless their account is also Admin.
+- **Admin:** Inherits Staff controls and can configure clinic hours, services,
+  and default appointment lengths.
+
+### Book an appointment
+
+1. Open **Calendar**, select **Schedule**, and choose **Book Appointment**.
+2. Choose the client stage:
+   - **Existing client:** Search for and select the client record. The picker
+     shows a limited set of matches so it remains usable with large caseloads.
+   - **First-timer:** Enter only the provisional booking name and optional
+     contact number. This does not create a client record.
+3. Choose the clinician, service, mode, date, and time shown as available.
+4. Add only operational scheduling notes. Do not place diagnoses or sensitive
+   clinical details in the appointment note.
+5. Save and confirm that the appointment appears in the weekly schedule.
+
+The database rejects appointments outside clinic hours, outside the selected
+clinician's availability, with an invalid service length, or overlapping an
+existing appointment for that clinician.
+
+### Availability and clinic setup
+
+- Active HPC Representatives use **My Availability** to mark dated available
+  or unavailable time blocks. Conflicting blocks on the same date are rejected.
+- Staff and Admin use **Team Availability** to compare clinicians. Select a
+  visible block to read its full date, time, and availability details.
+- Admin uses **Clinic Setup** to maintain clinic hours, services, and standard
+  appointment lengths.
+
+### Status actions, intake, and recorded time
+
+Use the explicit action buttons rather than dragging appointments between
+columns. The normal flow is **Scheduled -> Confirmed -> Arrived -> Intake in
+Progress -> In Session -> Completed**. Existing clients skip Intake in Progress.
+Cancelled and No-show are separate end states.
+
+Each status change records the signed-in user and database server time. The live
+clock and displayed appointment times use Philippine time. Workstation clock
+changes do not alter the saved milestone time.
+
+For a first-timer, **Begin Intake** creates and links the client record only
+after arrival. Complete the intake interview in the new client record before
+clinical work continues.
+
+### Remove a mistaken test appointment
+
+Removal is available only before intake or clinical care begins. Confirm the
+correct appointment, enter an operational reason, and remove it. Removal is
+recoverable and remains in the audit history; it is not an unrecorded deletion.
+
+> **Screenshot placeholder:** Weekly Calendar Schedule. Replace this callout
+> with `screenshots/calendar-week-v0.3.5.jpg` after approval.
+
+> **Screenshot placeholder:** Daily status board and milestone timeline. Replace
+> with `screenshots/calendar-status-board-v0.3.5.jpg`.
+
+> **Screenshot placeholder:** Team Availability and Admin Clinic Setup. Replace
+> with `screenshots/calendar-availability-v0.3.5.jpg`.
+
+## 5. 4Ps case conceptualization and narrative draft
 
 Complete the four 4Ps rows across the Biological, Psychological, and Social
 columns. Save the record before leaving the client.
@@ -131,7 +206,7 @@ content that will be sent for narrative generation.
 
 </details>
 
-## 5. Documents and Assessments
+## 6. Documents and Assessments
 
 1. Open the client and select **Documents** or **Assessments**.
 2. Choose the appropriate desktop upload control.
@@ -143,10 +218,12 @@ they can access. Staff cannot delete uploads. Admin and the assigned
 Psychologist / Counselor should delete only after confirming that the correct
 record and file have been selected.
 
-## 6. Analytics and exports
+## 7. Analytics and exports
 
 Use **Analytics** to review caseload, documentation coverage, demographics,
 presenting concerns, C-SSRS follow-up, 4Ps completion, and records activity.
+The Appointment Calendar panel also summarizes appointment volume, statuses,
+booking stage, mode, services, and clinician workload for the selected period.
 
 1. Set the date range and any status, category, representative, age-group, or
    sex filters.
@@ -164,7 +241,7 @@ export contains only assigned-client data.
 
 </details>
 
-## 7. Care Team
+## 8. Care Team
 
 ### Admin
 
@@ -193,7 +270,7 @@ available. A deactivated account cannot enter the workspace.
 
 </details>
 
-## 8. Settings
+## 9. Settings
 
 The modules shown in Settings depend on the signed-in role.
 
@@ -227,7 +304,7 @@ separate database and Storage backups.
 
 </details>
 
-## 9. Profile and account security
+## 10. Profile and account security
 
 Select your name or profile card in the lower-left sidebar to open **Profile**.
 From this screen you can:
@@ -248,7 +325,7 @@ only working authenticator may prevent the account from completing MFA.
 
 </details>
 
-## 10. Check for and install updates
+## 11. Check for and install updates
 
 1. Open **About**.
 2. Select **Check for Updates**.
@@ -263,7 +340,10 @@ the clinic application automatically.
 
 ![Redacted About and signed updater screen](screenshots/about-v0.2.2.jpg)
 
-## 11. Common messages
+> **Screenshot placeholder:** Replace the image above with the About screen
+> showing version 0.3.5 and the current Appointment Calendar release notes.
+
+## 12. Common messages
 
 | Message or situation | What to do |
 | --- | --- |
@@ -273,13 +353,16 @@ the clinic application automatically.
 | **Your account profile was not found** | Contact the clinic Admin so the invitation and profile can be checked. |
 | Invitation email rate limit | Wait for the Supabase mail limit to clear before sending another invitation. Avoid repeated retries. |
 | Narrative generation failed | Confirm the required 4Ps rows are complete, save the record, and try again without identifying details. |
+| Clinician is not available for this time | Review My Availability or Team Availability and select a time within clinic hours. |
+| Appointment conflicts with another booking | Choose a different clinician or time. Do not try to bypass the conflict. |
+| Available and unavailable times conflict | Adjust or remove the overlapping dated availability block before saving. |
 | Update cannot be installed | Confirm internet access, sign in with MFA again, and retry from About. Do not install an unsigned file from another source. |
 
-## 12. End-of-session checklist
+## 13. End-of-session checklist
 
 - Save the current client record.
 - Confirm uploads finished and appear in the correct client tab.
+- Confirm appointment status changes and removal messages completed successfully.
 - Close any exported files that contain clinic information.
 - Store exports and backups only in approved private locations.
 - Sign out of HPC Client Management.
-

@@ -9,6 +9,7 @@
 @import "./styles/components/app-modals.css";
 @import "./features/mobile-upload/mobile-upload.css";
 @import "./features/care-team/care-team.css";
+@import "./features/calendar/calendar.css";
 @import "./features/profile/profile.css";
 
 @import "./styles/themes/index.css";

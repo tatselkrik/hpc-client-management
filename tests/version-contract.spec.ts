@@ -16,10 +16,13 @@ test("all application version sources stay synchronized", async () => {
   };
   const sharedMetadata = await readProjectFile("src/appShared.ts");
   const exampleEnvironment = await readProjectFile("env.example");
+  const releaseNotes = await readProjectFile("src/releaseNotes.ts");
 
   expect(version).toMatch(/^\d+\.\d+\.\d+$/);
   expect(cargoManifest).toContain(`version = "${version}"`);
   expect(tauriConfig.version).toBe(version);
   expect(sharedMetadata).toContain(`VITE_APP_VERSION ?? "${version}"`);
   expect(exampleEnvironment).toContain(`VITE_APP_VERSION=${version}`);
+  expect(releaseNotes).toContain(`APP_RELEASE_NOTES_VERSION = "${version}"`);
+  expect(releaseNotes).toContain("export const APP_RELEASE_NOTES = [");
 });

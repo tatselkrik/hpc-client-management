@@ -3,6 +3,7 @@ import { SectionHeader } from "../../components/SectionHeader";
 import { StatusMessage } from "../../components/StatusMessage";
 import { WorkspaceHeader } from "../../components/WorkspaceHeader";
 import { APP_BUILD_INFO, CLINIC_NAME } from "../../appShared";
+import { APP_RELEASE_NOTES, APP_RELEASE_NOTES_VERSION } from "../../releaseNotes";
 import type { AvailableAppUpdate } from "./useAboutUpdates";
 
 export type AboutSectionProps = {
@@ -22,11 +23,6 @@ export function AboutSection({
   isCheckingForUpdates = false,
   isInstallingUpdate = false,
 }: AboutSectionProps) {
-  const releaseNotes = [
-    "Clinic desktop workspace for client records, C-SSRS screening, 4Ps case conceptualization, progress notes, documents, assessments, analytics, care team access, settings, profile, and audit review.",
-    "Signed updates can be checked, reviewed, installed, and restarted from this page.",
-  ];
-
   return (
     <div className="page-content about-page">
       <WorkspaceHeader
@@ -108,9 +104,9 @@ export function AboutSection({
         </div>
 
         <div className="about-release-note">
-          <strong>Release notes</strong>
+          <strong>Release notes for version {APP_RELEASE_NOTES_VERSION}</strong>
           <ul className="about-release-list">
-            {releaseNotes.map((note) => (
+            {APP_RELEASE_NOTES.map((note) => (
               <li key={note}>{note}</li>
             ))}
           </ul>

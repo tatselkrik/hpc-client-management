@@ -37,6 +37,7 @@ private-backups/
 *.log
 .eslintcache
 .cache/
+.codex-tmp/
 
 # Editor and operating-system files
 .idea/

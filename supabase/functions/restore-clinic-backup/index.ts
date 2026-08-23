@@ -9,7 +9,13 @@ const MAX_RESTORE_ROWS = 100_000;
 const RESTORABLE_TABLES = new Set([
   "client_categories",
   "clinic_settings",
+  "appointment_services",
+  "clinic_hours",
   "clients",
+  "care_team_availability",
+  "care_team_availability_overrides",
+  "appointments",
+  "appointment_status_events",
   "client_children",
   "client_4ps",
   "client_cssrs",

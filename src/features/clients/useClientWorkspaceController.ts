@@ -179,7 +179,11 @@ export function useClientWorkspaceController({
   });
 
   useEffect(() => {
-    if (activeSection === "clients" || activeSection === "settings") {
+    if (
+      activeSection === "clients" ||
+      activeSection === "settings" ||
+      activeSection === "calendar"
+    ) {
       void loadClientCategories();
     }
   }, [activeSection, loadClientCategories]);

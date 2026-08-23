@@ -23,6 +23,7 @@ export type * from "./domain/appTypes";
 export type * from "./domain/authTypes";
 export type * from "./domain/clientTypes";
 export type * from "./domain/analyticsTypes";
+export type * from "./domain/calendarTypes";
 export * from "./features/cssrs/cssrsDomain";
 
 export type AuditLogFilterRange = "today" | "last_7_days" | "month" | "all";
@@ -552,6 +553,11 @@ export const getMfaSetupStateLabel = (
 
 
 export {
+  canManageAppointments,
+  canManageCalendarConfiguration,
+  canManageOwnAvailability,
+  canUpdateOwnAppointmentStatus,
+  canViewAllAppointments,
   canCreateClientRecords,
   canDeleteClientAssessments,
   canDeleteClientDocuments,
@@ -564,6 +570,7 @@ export {
   canUseIndividualRepresentativeAnalytics,
   getCareTeamRoleCapabilities,
   getProfileDisplayRole,
+  hasHpcRepresentativeAssignment,
   isAdminRole,
   isRepresentativeAssignedRole,
   normalizeCareTeamRole,
@@ -594,7 +601,7 @@ export const getCareTeamMemberDisplayName = (
 
 export const APP_BUILD_INFO = {
   product_name: APP_PRODUCT_NAME,
-  version: import.meta.env.VITE_APP_VERSION ?? "0.2.2",
+  version: import.meta.env.VITE_APP_VERSION ?? "0.3.5",
   identifier:
     import.meta.env.VITE_APP_IDENTIFIER ?? "com.clinic.hpcclientmanagement",
   channel: import.meta.env.VITE_APP_CHANNEL === "staging" ? "staging" : "stable",
@@ -740,7 +747,13 @@ export const formatBytes = (value: number | null) => {
 export const BACKUP_TABLE_CONFIG = [
   { key: "profiles", label: "Profiles" },
   { key: "clinic_settings", label: "Clinic Info" },
+  { key: "appointment_services", label: "Appointment Services" },
+  { key: "clinic_hours", label: "Clinic Hours" },
   { key: "clients", label: "Clients" },
+  { key: "care_team_availability", label: "Care Team Availability" },
+  { key: "care_team_availability_overrides", label: "Availability Exceptions" },
+  { key: "appointments", label: "Appointments" },
+  { key: "appointment_status_events", label: "Appointment Status History" },
   { key: "client_4ps", label: "4Ps" },
   { key: "client_categories", label: "Client Categories" },
   { key: "client_children", label: "Children" },

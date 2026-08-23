@@ -8,6 +8,7 @@ import type { AboutSectionProps } from "../about/AboutSection";
 import type { AuthFlowController } from "../auth/useAuthFlowController";
 import type { CareTeamManagementController } from "../care-team/useCareTeamManagement";
 import type { ClientWorkspaceController } from "../clients/useClientWorkspaceController";
+import type { CalendarController } from "../calendar/useCalendarController";
 import type { DashboardSectionProps } from "../dashboard/DashboardSection";
 import type { ProfileSectionProps } from "../profile/ProfileSection";
 import type { SettingsController } from "../settings/useSettingsController";
@@ -25,6 +26,7 @@ type UseAppRootPropsOptions = {
   authFlow: AuthFlowController;
   dashboardProps: DashboardSectionProps;
   clientWorkspace: ClientWorkspaceController;
+  calendar: CalendarController;
   careTeam: CareTeamManagementController;
   canManageCareTeam: boolean;
   canManageAdminAccounts: boolean;
@@ -45,6 +47,7 @@ export function useAppRootProps({
   authFlow,
   dashboardProps,
   clientWorkspace,
+  calendar,
   careTeam,
   canManageCareTeam,
   canManageAdminAccounts,
@@ -67,6 +70,7 @@ export function useAppRootProps({
     activeSection,
     dashboardProps,
     clientsProps,
+    calendarProps: calendar,
     analyticsProps: {
       viewModel: clientWorkspace.analyticsViewModel,
     },
