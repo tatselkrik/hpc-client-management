@@ -1,4 +1,4 @@
-﻿export type Section =
+export type Section =
   | "dashboard"
   | "clients"
   | "calendar"

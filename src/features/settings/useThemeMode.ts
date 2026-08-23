@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { ThemeMode } from "../../appShared";
 import { readStoredTheme, THEME_STORAGE_KEY } from "../../appShared";

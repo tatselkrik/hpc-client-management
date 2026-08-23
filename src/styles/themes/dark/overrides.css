@@ -1,4 +1,4 @@
-﻿/* Dark appearance overrides. */
+/* Dark appearance overrides. */
 :root[data-theme="dark"] .app-modal-warning {
   border-color: rgba(248, 113, 113, 0.36);
   background: rgba(127, 29, 29, 0.22);

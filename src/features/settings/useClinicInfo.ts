@@ -1,7 +1,7 @@
-﻿import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { ClinicInfo, Profile, Section, WriteAuditLog } from "../../appShared";
-import { CLINIC_CLINIC_INFO } from "../../appShared";
+import { DEFAULT_CLINIC_INFO as DEFAULT_PUBLIC_CLINIC_INFO } from "../../appShared";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { supabase } from "../../lib/supabase";
 
@@ -14,10 +14,10 @@ type UseClinicInfoOptions = {
 
 const DEFAULT_CLINIC_INFO: ClinicInfo = {
   id: 1,
-  mobile_number: CLINIC_CLINIC_INFO.mobile_number,
-  landline_number: CLINIC_CLINIC_INFO.landline_number,
-  email: CLINIC_CLINIC_INFO.email,
-  address: CLINIC_CLINIC_INFO.address,
+  mobile_number: DEFAULT_PUBLIC_CLINIC_INFO.mobile_number,
+  landline_number: DEFAULT_PUBLIC_CLINIC_INFO.landline_number,
+  email: DEFAULT_PUBLIC_CLINIC_INFO.email,
+  address: DEFAULT_PUBLIC_CLINIC_INFO.address,
 };
 
 const normalizeClinicInfo = (value: Partial<ClinicInfo>): ClinicInfo => ({

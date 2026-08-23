@@ -1,4 +1,4 @@
-﻿:root[data-theme="clinic"] {
+:root[data-theme="clinic"] {
   color-scheme: light;
   --app-background: radial-gradient(circle at top left, rgba(237, 28, 36, 0.16), transparent 42%),
     linear-gradient(135deg, #fff7ed 0%, #fff 100%);

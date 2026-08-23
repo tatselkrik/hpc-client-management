@@ -154,7 +154,7 @@ select
 -- Expected: false, true, true.
 
 -- 14) Active release metadata. A coordinated production cutover must have one
--- active stable 0.3.5 row. Staging should have one active staging row.
+-- active stable 0.3.5 row. A separate nonproduction channel may have its own row.
 select channel, version, count(*) as active_release_count
 from public.app_releases
 where is_active = true

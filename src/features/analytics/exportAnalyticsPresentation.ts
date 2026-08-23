@@ -1,4 +1,4 @@
-﻿import { save } from "@tauri-apps/plugin-dialog";
+import { save } from "@tauri-apps/plugin-dialog";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import type {
@@ -188,8 +188,8 @@ export async function exportAnalyticsPresentation({
     const chartType = pptx.ChartType ?? {};
     const shapeType = pptx.ShapeType ?? {};
     const [clinicLogoData, clinicIconData] = await Promise.all([
-      loadPresentationImage("/clinic-logo.png"),
-      loadPresentationImage("/clinic-icon.png"),
+      loadPresentationImage("/hpc-logo.svg"),
+      loadPresentationImage("/hpc-icon.svg"),
     ]);
 
     const palette = {
@@ -244,7 +244,7 @@ export async function exportAnalyticsPresentation({
 
     const reportingRangeLabel =
       validAnalyticsDates.length > 0
-        ? `${formatPresentationDate(validAnalyticsDates[0])} â€“ ${formatPresentationDate(
+        ? `${formatPresentationDate(validAnalyticsDates[0])} – ${formatPresentationDate(
             validAnalyticsDates[validAnalyticsDates.length - 1]
           )}`
         : "Current available records";
@@ -811,7 +811,7 @@ export async function exportAnalyticsPresentation({
       color: "FFFFFF",
       margin: 0,
     });
-    titleSlide.addText(`Generated ${generatedDateLabel}  â€¢  ${analyticsFilterSummary}`, {
+    titleSlide.addText(`Generated ${generatedDateLabel}  •  ${analyticsFilterSummary}`, {
       x: 1.06,
       y: 5.6,
       w: 5.2,
@@ -851,11 +851,11 @@ export async function exportAnalyticsPresentation({
     addCard(titleSlide, 7.3, 4.38, 5.2, 1.42, {
       title: "Inside this report",
       body:
-        "Caseload summary  â€¢  Client population  â€¢  Demographics  â€¢  Presenting concerns  â€¢  C-SSRS risk  â€¢  4Ps coverage  â€¢  Records activity",
+        "Caseload summary  •  Client population  •  Demographics  •  Presenting concerns  •  C-SSRS risk  •  4Ps coverage  •  Records activity",
       fillColor: palette.primarySoft,
       valueFontSize: 16,
     });
-    titleSlide.addText(`${CLINIC_NAME}  â€¢  ${APP_PRODUCT_NAME}`, {
+    titleSlide.addText(`${CLINIC_NAME}  •  ${APP_PRODUCT_NAME}`, {
       x: 0.82,
       y: 6.83,
       w: 7.2,
@@ -1000,13 +1000,13 @@ export async function exportAnalyticsPresentation({
     addCard(riskSlide, 4.85, 1.35, 3.65, 1.08, {
       title: "C-SSRS completion",
       value: cssrsCompletionShare,
-      body: `${cssrsCompletedForIdeationCount} completed / ${clientsWithSuicidalIdeation.length} needed â€¢ ${cssrsPendingForIdeationCount} pending`,
+      body: `${cssrsCompletedForIdeationCount} completed / ${clientsWithSuicidalIdeation.length} needed • ${cssrsPendingForIdeationCount} pending`,
       accentColor: palette.secondary,
     });
     addCard(riskSlide, 8.95, 1.35, 3.35, 1.08, {
       title: "Elevated C-SSRS",
       value: elevatedCssrsCount.toLocaleString(),
-      body: "Severity 4â€“5 or recent behavior",
+      body: "Severity 4–5 or recent behavior",
       accentColor: palette.danger,
     });
     addBarChart(riskSlide, 0.75, 2.85, 3.7, 3.3, "Severity", cssrsSeverityDistribution, palette.danger);

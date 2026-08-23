@@ -1,10 +1,10 @@
-﻿# Supabase Auth email templates
+# Supabase Auth email templates
 
 These templates use one restrained Clinic design for authentication and
 security messages. They intentionally contain no client information, marketing
 copy, remote images, tracking pixels, or unrelated links.
 
-Hosted Supabase projects apply these files through **Authentication â†’ Emails â†’
+Hosted Supabase projects apply these files through **Authentication → Emails →
 Email Templates**. Projects created on the free tier after June 3, 2026 must
 configure custom SMTP before Supabase allows customized templates.
 
@@ -16,7 +16,7 @@ they are until that sender account can be configured and tested.
 
 | Supabase template | Subject | File |
 | --- | --- | --- |
-| Invite user | Youâ€™re invited to HPC Client Management | `invite.html` |
+| Invite user | You’re invited to HPC Client Management | `invite.html` |
 | Confirm sign up | Confirm your HPC Client Management account | `confirmation.html` |
 | Reset password | Reset your HPC Client Management password | `recovery.html` |
 | Magic link | Your HPC Client Management sign-in link | `magic_link.html` |
