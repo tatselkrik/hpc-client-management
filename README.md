@@ -46,93 +46,97 @@ milestones.
 
 ## Application tour
 
-The approved screenshots below use staging test records. Clinic-specific
-branding, account details, and identifying information have been blurred.
-
-### Appointment Calendar
-
-> **Screenshot placeholder:** Weekly Schedule view for version 0.3.5. Replace
-> this callout with `docs/screenshots/calendar-week-v0.3.5.jpg` after the new
-> redacted screenshot is approved.
+The approved version 0.3.5 screenshots below have clinic-specific account
+details and identifying information blurred.
 
 <details>
-<summary><strong>Daily appointment status board</strong></summary>
+<summary><strong>Login</strong></summary>
 
-> **Screenshot placeholder:** Daily status board and appointment timeline.
-> Replace with `docs/screenshots/calendar-status-board-v0.3.5.jpg` after the
-> redacted screenshot is approved.
+![HPC Client Management sign-in screen](docs/screenshots/login-v0.3.5.jpg)
 
 </details>
 
 <details>
-<summary><strong>Team availability and clinic setup</strong></summary>
+<summary><strong>Dashboard</strong></summary>
 
-> **Screenshot placeholder:** Team availability and Admin clinic setup. Replace
-> with `docs/screenshots/calendar-availability-v0.3.5.jpg` after the redacted
-> screenshot is approved.
-
-</details>
-
-### Existing workspaces
-
-![HPC Client Management dashboard](docs/screenshots/dashboard-v0.2.2.jpg)
-
-<details>
-<summary><strong>Client workspace</strong></summary>
-
-![HPC Client Management client workspace](docs/screenshots/clients-v0.2.2.jpg)
+![HPC Client Management dashboard](docs/screenshots/dashboard-v0.3.5.jpg)
 
 </details>
 
 <details>
-<summary><strong>4Ps case conceptualization</strong></summary>
+<summary><strong>Clients</strong></summary>
 
-![HPC Client Management 4Ps case conceptualization](docs/screenshots/case-conceptualization-v0.2.2.jpg)
+![HPC Client Management client workspace](docs/screenshots/clients-v0.3.5.jpg)
 
 </details>
 
 <details>
-<summary><strong>Analytics and reporting</strong></summary>
+<summary><strong>Calendar</strong></summary>
 
-![HPC Client Management analytics](docs/screenshots/analytics-v0.2.2.jpg)
+![HPC Client Management appointment calendar](docs/screenshots/calendar-v0.3.5.jpg)
+
+</details>
+
+<details>
+<summary><strong>Status Board</strong></summary>
+
+![HPC Client Management appointment status board](docs/screenshots/calendar-status-board-v0.3.5.jpg)
+
+</details>
+
+<details>
+<summary><strong>My Availability</strong></summary>
+
+![HPC Client Management clinician availability](docs/screenshots/calendar-my-availability-v0.3.5.jpg)
+
+</details>
+
+<details>
+<summary><strong>Team Availability</strong></summary>
+
+![HPC Client Management team availability](docs/screenshots/calendar-team-availability-v0.3.5.jpg)
+
+</details>
+
+<details>
+<summary><strong>Clinic Setup</strong></summary>
+
+![HPC Client Management clinic calendar setup](docs/screenshots/calendar-clinic-setup-v0.3.5.jpg)
+
+</details>
+
+<details>
+<summary><strong>Analytics</strong></summary>
+
+![HPC Client Management analytics](docs/screenshots/analytics-v0.3.5.jpg)
 
 </details>
 
 <details>
 <summary><strong>Care Team</strong></summary>
 
-![HPC Client Management Care Team](docs/screenshots/care-team-v0.2.2.jpg)
+![HPC Client Management Care Team](docs/screenshots/care-team-v0.3.5.jpg)
 
 </details>
 
 <details>
-<summary><strong>Settings, backup, and audit activity</strong></summary>
+<summary><strong>Settings</strong></summary>
 
-![HPC Client Management settings](docs/screenshots/settings-v0.2.2.jpg)
-
-</details>
-
-<details>
-<summary><strong>Profile and multi-factor authentication</strong></summary>
-
-![HPC Client Management profile and MFA settings](docs/screenshots/profile-v0.2.2.jpg)
+![HPC Client Management settings](docs/screenshots/settings-v0.3.5.jpg)
 
 </details>
 
 <details>
-<summary><strong>About and signed updates</strong></summary>
+<summary><strong>About</strong></summary>
 
-![HPC Client Management About page and signed updater](docs/screenshots/about-v0.2.2.jpg)
-
-> **Screenshot placeholder:** Refresh this image with the 0.3.5 release notes
-> after the updated About page is captured and redacted.
+![HPC Client Management About page and signed updater](docs/screenshots/about-v0.3.5.jpg)
 
 </details>
 
 <details>
-<summary><strong>Sign in</strong></summary>
+<summary><strong>Profile</strong></summary>
 
-![HPC Client Management sign-in screen](docs/screenshots/login-v0.2.2.jpg)
+![HPC Client Management profile and multi-factor authentication](docs/screenshots/profile-v0.3.5.jpg)
 
 </details>
 

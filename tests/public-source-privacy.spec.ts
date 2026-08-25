@@ -40,15 +40,19 @@ const privateMarkers = [
 ];
 
 const approvedScreenshots = [
-  "docs/screenshots/about-v0.2.2.jpg",
-  "docs/screenshots/analytics-v0.2.2.jpg",
-  "docs/screenshots/care-team-v0.2.2.jpg",
-  "docs/screenshots/case-conceptualization-v0.2.2.jpg",
-  "docs/screenshots/clients-v0.2.2.jpg",
-  "docs/screenshots/dashboard-v0.2.2.jpg",
-  "docs/screenshots/login-v0.2.2.jpg",
-  "docs/screenshots/profile-v0.2.2.jpg",
-  "docs/screenshots/settings-v0.2.2.jpg",
+  "docs/screenshots/about-v0.3.5.jpg",
+  "docs/screenshots/analytics-v0.3.5.jpg",
+  "docs/screenshots/calendar-clinic-setup-v0.3.5.jpg",
+  "docs/screenshots/calendar-my-availability-v0.3.5.jpg",
+  "docs/screenshots/calendar-status-board-v0.3.5.jpg",
+  "docs/screenshots/calendar-team-availability-v0.3.5.jpg",
+  "docs/screenshots/calendar-v0.3.5.jpg",
+  "docs/screenshots/care-team-v0.3.5.jpg",
+  "docs/screenshots/clients-v0.3.5.jpg",
+  "docs/screenshots/dashboard-v0.3.5.jpg",
+  "docs/screenshots/login-v0.3.5.jpg",
+  "docs/screenshots/profile-v0.3.5.jpg",
+  "docs/screenshots/settings-v0.3.5.jpg",
 ];
 
 async function collectPublicFiles(): Promise<string[]> {
@@ -109,18 +113,34 @@ test("public source excludes private operational artifacts", async () => {
   expect(files.some((path) => path.startsWith("private-backups/"))).toBe(false);
 });
 
-test("calendar tour uses placeholders until redacted screenshots are approved", async () => {
+test("application tour keeps approved screenshots ordered and collapsible", async () => {
   const files = await collectPublicFiles();
   const readme = await readFile(resolve(root, "README.md"), "utf8");
-  const pendingCalendarScreenshots = [
-    "docs/screenshots/calendar-week-v0.3.5.jpg",
+  const screenshotTour = [
+    "docs/screenshots/login-v0.3.5.jpg",
+    "docs/screenshots/dashboard-v0.3.5.jpg",
+    "docs/screenshots/clients-v0.3.5.jpg",
+    "docs/screenshots/calendar-v0.3.5.jpg",
     "docs/screenshots/calendar-status-board-v0.3.5.jpg",
-    "docs/screenshots/calendar-availability-v0.3.5.jpg",
+    "docs/screenshots/calendar-my-availability-v0.3.5.jpg",
+    "docs/screenshots/calendar-team-availability-v0.3.5.jpg",
+    "docs/screenshots/calendar-clinic-setup-v0.3.5.jpg",
+    "docs/screenshots/analytics-v0.3.5.jpg",
+    "docs/screenshots/care-team-v0.3.5.jpg",
+    "docs/screenshots/settings-v0.3.5.jpg",
+    "docs/screenshots/about-v0.3.5.jpg",
+    "docs/screenshots/profile-v0.3.5.jpg",
   ];
 
-  for (const path of pendingCalendarScreenshots) {
-    expect(readme).toContain(`**Screenshot placeholder:**`);
-    expect(readme).toContain(path);
-    expect(files).not.toContain(path);
+  let previousPosition = -1;
+  for (const path of screenshotTour) {
+    expect(files).toContain(path);
+    const position = readme.indexOf(path);
+    expect(position).toBeGreaterThan(previousPosition);
+    expect(readme.lastIndexOf("<details>", position)).toBeGreaterThan(
+      readme.lastIndexOf("</details>", position)
+    );
+    previousPosition = position;
   }
+  expect(readme).not.toContain("**Screenshot placeholder:**");
 });
