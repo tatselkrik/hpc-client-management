@@ -270,4 +270,7 @@ remain in approved private storage.
 
 ## License
 
-All rights reserved.
+Copyright (c) 2026 Reynato "Kirk" Republica. All rights reserved. See
+[`LICENSE`](LICENSE) for the portfolio-source and reuse boundary.
+
+For vulnerability-reporting guidance, see [`SECURITY.md`](SECURITY.md).
