@@ -1,3 +1,4 @@
+import { useMfaVerificationRequired } from "../../lib/authPolicy";
 import type { Dispatch, SetStateAction } from "react";
 
 import {
@@ -71,6 +72,7 @@ export function AppRootRenderer({
   loginProps,
   ...authenticatedLayoutProps
 }: AppRootRendererProps) {
+  const requiresMfa = useMfaVerificationRequired();
   if (showPasswordRecoveryScreen) {
     return <PasswordRecoveryScreen {...passwordRecoveryProps} />;
   }
@@ -79,7 +81,7 @@ export function AppRootRenderer({
     return <AuthCheckingScreen />;
   }
 
-  if (showMfaChallengeScreen) {
+  if (requiresMfa && showMfaChallengeScreen) {
     return <MfaChallengeScreen {...mfaChallengeProps} />;
   }
 

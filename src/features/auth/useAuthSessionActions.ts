@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
+import { refreshAuthenticationPolicy } from "../../lib/authPolicy";
 import { supabase } from "../../lib/supabase";
 import { feedbackMessages } from "../../lib/feedbackMessages";
 import type {
@@ -136,6 +137,20 @@ export function useAuthSessionActions({
   setIsRecoveryCapsLockOn,
 }: UseAuthSessionActionsOptions) {
   const evaluateMfaChallengeRequirement = useCallback(async (): Promise<"challenge" | "verified" | "error"> => {
+    let requiresMfa: boolean;
+    try {
+      requiresMfa = await refreshAuthenticationPolicy();
+    } catch {
+      setMfaChallengeMessage("Could not check the clinic authentication policy. Please try signing in again.");
+      setShowMfaChallengeScreen(false);
+      return "error";
+    }
+    if (!requiresMfa) {
+      setShowMfaChallengeScreen(false);
+      setMfaChallengeMessage("");
+      setMfaChallengeCodeInput("");
+      return "verified";
+    }
     const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
     if (error) {
@@ -178,10 +193,16 @@ export function useAuthSessionActions({
 
     await loadMfaState();
 
-    const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-
-    if (assurance.error || assurance.data.currentLevel !== "aal2") {
-      return true;
+    let requiresMfa: boolean;
+    try {
+      requiresMfa = await refreshAuthenticationPolicy();
+    } catch {
+      setStatus("Could not check the clinic authentication policy. Please sign in again.");
+      return false;
+    }
+    if (requiresMfa) {
+      const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (assurance.error || assurance.data.currentLevel !== "aal2") return true;
     }
 
     await loadClients();
@@ -196,6 +217,7 @@ export function useAuthSessionActions({
     loadDashboardAnnouncement,
     loadMfaState,
     loadProfile,
+    setStatus,
   ]);
 
   const handleLogin = useCallback(async () => {

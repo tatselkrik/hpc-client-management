@@ -1,4 +1,5 @@
 import { save } from "@tauri-apps/plugin-dialog";
+import { CLINIC_ICON_URL, CLINIC_LOGO_URL } from "../../lib/branding";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import type {
@@ -117,6 +118,8 @@ const toChartItems = (items: DistributionItem[], emptyLabel: string) => {
 };
 
 const loadPresentationImage = async (assetPath: string) => {
+  // Embedded private PNGs need no fetch (also respects native connect-src CSP).
+  if (assetPath.startsWith("data:image/png;base64,")) return assetPath;
   const assetUrl =
     typeof window === "undefined"
       ? assetPath
@@ -188,8 +191,8 @@ export async function exportAnalyticsPresentation({
     const chartType = pptx.ChartType ?? {};
     const shapeType = pptx.ShapeType ?? {};
     const [clinicLogoData, clinicIconData] = await Promise.all([
-      loadPresentationImage("/hpc-logo.svg"),
-      loadPresentationImage("/hpc-icon.svg"),
+      loadPresentationImage(CLINIC_LOGO_URL),
+      loadPresentationImage(CLINIC_ICON_URL),
     ]);
 
     const palette = {

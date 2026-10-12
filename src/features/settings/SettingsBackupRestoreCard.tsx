@@ -169,7 +169,7 @@ export function SettingsBackupRestoreCard({
             <span className="settings-clinic-kicker">Admin confirmation</span>
             <h4 id="settings-restore-title">Restore this clinic backup?</h4>
             <p>
-              This merge can overwrite records with matching IDs. Sign-in and fresh MFA are
+              This merge can overwrite records with matching IDs. A password sign-in within the last five minutes is
               required. Type <strong>RESTORE</strong> to continue.
             </p>
             <input

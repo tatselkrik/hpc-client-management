@@ -1,7 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const host = process.env.TAURI_DEV_HOST;
+const brandingDirectory = process.env.CLINIC_BRANDING_DIR;
+const privateImage = (filename: string) => {
+  const bytes = readFileSync(resolve(brandingDirectory!, filename));
+  if (bytes.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a") {
+    throw new Error(`Expected PNG branding asset: ${filename}`);
+  }
+  return JSON.stringify(`data:image/png;base64,${bytes.toString("base64")}`);
+};
 
 const packagePath = (packageName: string) => `/node_modules/${packageName}/`;
 
@@ -43,6 +53,10 @@ const supabasePackagePrefixes = [
 // https://vite.dev/config/
 export default defineConfig(async () => ({
   plugins: [react()],
+  define: brandingDirectory ? {
+    "import.meta.env.VITE_CLINIC_LOGO_URL": privateImage("logo.png"),
+    "import.meta.env.VITE_CLINIC_ICON_URL": privateImage("icon.png"),
+  } : {},
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

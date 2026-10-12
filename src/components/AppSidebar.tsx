@@ -1,4 +1,5 @@
 import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { CLINIC_ICON_URL, CLINIC_LOGO_URL } from "../lib/branding";
 import {
   AboutIcon,
   AnalyticsIcon,
@@ -101,7 +102,7 @@ export function AppSidebar({
               }
             >
               <img
-                src={isSidebarCompact ? "/hpc-icon.svg" : "/hpc-logo.svg"}
+                src={isSidebarCompact ? CLINIC_ICON_URL : CLINIC_LOGO_URL}
                 alt={CLINIC_NAME}
                 className={isSidebarCompact ? "brand-logo-icon" : "brand-logo"}
               />

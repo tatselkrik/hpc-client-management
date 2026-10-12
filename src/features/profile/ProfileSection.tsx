@@ -1,3 +1,4 @@
+import { MFA_ENROLLMENT_ENABLED, useMfaVerificationRequired } from "../../lib/authPolicy";
 import { StatusMessage } from "../../components/StatusMessage";
 import type { ChangeEvent, RefObject } from "react";
 import { SectionHeader } from "../../components/SectionHeader";
@@ -121,6 +122,7 @@ export function ProfileSection({
   mfaMessage,
   mfaEnrollmentRequired,
 }: ProfileSectionProps) {
+  const requiresMfa = useMfaVerificationRequired();
   const mfaStatusLabel = getMfaSetupStateLabel(
     mfaAssurance.currentLevel,
     mfaAssurance.nextLevel,
@@ -128,15 +130,15 @@ export function ProfileSection({
     Boolean(mfaEnrollment)
   );
   const shouldShowSensitiveMfaCode =
-    mfaAssurance.nextLevel === "aal2" ||
-    mfaFactors.some((factor) => factor.status === "verified");
+    requiresMfa && (mfaAssurance.nextLevel === "aal2" ||
+    mfaFactors.some((factor) => factor.status === "verified"));
 
   return (
     <div className="page-content profile-page">
       <WorkspaceHeader
         eyebrow="Account and security"
         title="Profile"
-        description="Manage your clinic identity, sign-in details, password, profile picture, and multi-factor authentication."
+        description="Manage your clinic identity, sign-in details, password, and profile picture."
         meta={
           <>
             <strong>{getProfileDisplayName(profile?.full_name)}</strong>
@@ -145,11 +147,11 @@ export function ProfileSection({
         }
       />
 
-      {mfaEnrollmentRequired && (
+      {requiresMfa && mfaEnrollmentRequired && (
         <div className="panel status-message">
-          MFA setup is required before this account can access clinic records. Go to
-          Security below, add an authenticator app, scan the QR code, and verify the
-          6-digit code.
+          The clinic backend update is pending. This account has no registered
+          authenticator and cannot access clinic records until the administrator
+          completes the password-only rollout. New MFA enrollment is disabled.
         </div>
       )}
 
@@ -408,7 +410,7 @@ export function ProfileSection({
           <StatusMessage className="profile-status-text" message={profilePasswordMessage} />
         </div>
 
-        <div className="panel profile-panel profile-section-card profile-section-card-wide">
+        {MFA_ENROLLMENT_ENABLED && <div className="panel profile-panel profile-section-card profile-section-card-wide">
           <SectionHeader
             className="section-header"
             title="Multi-factor authentication"
@@ -593,7 +595,7 @@ export function ProfileSection({
           )}
 
           <StatusMessage className="profile-status-text" message={mfaMessage} />
-        </div>
+        </div>}
       </div>
     </div>
   );

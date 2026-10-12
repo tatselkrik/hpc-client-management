@@ -1,5 +1,8 @@
 type JwtClaims = {
   aal?: string;
+  sub?: string;
+  role?: string;
+  is_anonymous?: boolean;
   amr?: Array<{
     method?: string;
     timestamp?: number;
@@ -22,32 +25,36 @@ export function readValidatedJwtClaims(token: string): JwtClaims | null {
   }
 }
 
-export function requireFreshMfaSession(token: string, maxAgeSeconds = 5 * 60) {
+// Call only after auth.getUser(token) has validated the token. Token refresh does
+// not count as reauthentication; use the password AMR timestamp, never iat.
+export function requireFreshPasswordSession(token: string, maxAgeSeconds = 5 * 60) {
   const claims = readValidatedJwtClaims(token);
   const nowSeconds = Math.floor(Date.now() / 1000);
 
-  if (claims?.aal !== "aal2") {
-    return "Complete MFA verification before performing this administrative action.";
+  if (!hasAuthenticatedSession(token)) {
+    return "Sign in before performing this administrative action.";
   }
 
-  const latestMfaVerification = Math.max(
-    ...((claims.amr ?? [])
-      .filter((entry) => entry.method === "totp" || entry.method === "otp")
+  const latestPasswordVerification = Math.max(
+    ...((claims?.amr ?? [])
+      .filter((entry) => entry.method === "password")
       .map((entry) => entry.timestamp ?? 0)),
     0,
   );
 
   if (
-    !latestMfaVerification ||
-    nowSeconds - latestMfaVerification > maxAgeSeconds ||
-    latestMfaVerification > nowSeconds + 60
+    !latestPasswordVerification ||
+    nowSeconds - latestPasswordVerification > maxAgeSeconds ||
+    latestPasswordVerification > nowSeconds + 60
   ) {
-    return "Please sign in again and complete MFA before performing this administrative action.";
+    return "Please sign in again with your password before performing this administrative action.";
   }
 
   return null;
 }
 
-export function hasRequiredMfa(token: string) {
-  return readValidatedJwtClaims(token)?.aal === "aal2";
+export function hasAuthenticatedSession(token: string) {
+  const claims = readValidatedJwtClaims(token);
+  return Boolean(claims?.sub && claims.role === "authenticated" &&
+    claims.is_anonymous !== true && ["aal1", "aal2"].includes(claims.aal ?? ""));
 }

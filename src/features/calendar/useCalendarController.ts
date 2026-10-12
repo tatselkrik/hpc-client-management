@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { supabase } from "../../lib/supabase";
+import { fetchSupabasePages } from "../../lib/supabasePagination";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import type {
   Appointment,
@@ -233,33 +234,38 @@ export function useCalendarController({
       overridesResult,
     ] =
       await Promise.all([
-        supabase
+        fetchSupabasePages(() => supabase
           .from("appointments")
           .select(APPOINTMENT_SELECT)
           .is("removed_at", null)
           .gte("starts_at", rangeStart)
           .lt("starts_at", rangeEnd)
-          .order("starts_at", { ascending: true }),
-        supabase
+          .order("starts_at", { ascending: true })
+          .order("id", { ascending: true })),
+        fetchSupabasePages(() => supabase
           .from("appointment_status_events")
           .select(APPOINTMENT_STATUS_EVENT_SELECT)
           .gte("appointments.starts_at", rangeStart)
           .lt("appointments.starts_at", rangeEnd)
-          .order("recorded_at", { ascending: true }),
-        supabase
+          .is("appointments.removed_at", null)
+          .order("recorded_at", { ascending: true })
+          .order("id", { ascending: true })),
+        fetchSupabasePages(() => supabase
           .from("appointment_services")
           .select("id, name, default_duration_minutes, is_active")
-          .order("name", { ascending: true }),
+          .order("name", { ascending: true })
+          .order("id", { ascending: true })),
         supabase
           .from("clinic_hours")
           .select("weekday, is_open, opens_at, closes_at")
           .order("weekday", { ascending: true }),
-        supabase
+        fetchSupabasePages(() => supabase
           .from("care_team_availability")
           .select("id, profile_id, weekday, starts_at, ends_at, is_active")
           .order("weekday", { ascending: true })
-          .order("starts_at", { ascending: true }),
-        supabase
+          .order("starts_at", { ascending: true })
+          .order("id", { ascending: true })),
+        fetchSupabasePages(() => supabase
           .from("care_team_availability_overrides")
           .select(
             "id, profile_id, availability_date, starts_at, ends_at, availability_kind, note"
@@ -267,7 +273,8 @@ export function useCalendarController({
           .gte("availability_date", addCalendarDays(anchorDate, -14))
           .lte("availability_date", addCalendarDays(anchorDate, 45))
           .order("availability_date", { ascending: true })
-          .order("starts_at", { ascending: true }),
+          .order("starts_at", { ascending: true })
+          .order("id", { ascending: true })),
       ]);
 
     const firstError = [

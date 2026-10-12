@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
-import { requireFreshMfaSession } from "../_shared/security.ts";
+import { requireFreshPasswordSession } from "../_shared/security.ts";
 
 const MAX_REQUEST_BYTES = 25 * 1024 * 1024;
 const MAX_RESTORE_ROWS = 100_000;
@@ -61,9 +61,6 @@ serve(async (req) => {
 
     if (!token) return respond({ error: "Missing authorization token." }, 401);
 
-    const freshMfaError = requireFreshMfaSession(token);
-    if (freshMfaError) return respond({ error: freshMfaError }, 403);
-
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
@@ -74,6 +71,9 @@ serve(async (req) => {
     } = await supabase.auth.getUser(token);
 
     if (userError || !user) return respond({ error: "Unauthorized." }, 401);
+
+    const freshSessionError = requireFreshPasswordSession(token);
+    if (freshSessionError) return respond({ error: freshSessionError }, 403);
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")

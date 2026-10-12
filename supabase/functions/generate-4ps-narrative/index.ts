@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
-import { hasRequiredMfa } from "../_shared/security.ts";
+import { hasAuthenticatedSession } from "../_shared/security.ts";
 
 
 const allowedRoles = new Set([
@@ -189,8 +189,8 @@ serve(async (req) => {
       return respond({ error: "Unauthorized." }, 401);
     }
 
-    if (!hasRequiredMfa(token)) {
-      return respond({ error: "Complete MFA verification before generating a narrative." }, 403);
+    if (!hasAuthenticatedSession(token)) {
+      return respond({ error: "Sign in before generating a narrative." }, 403);
     }
 
     const { data: callerProfile, error: callerProfileError } = await supabase

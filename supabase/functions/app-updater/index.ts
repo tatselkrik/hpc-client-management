@@ -7,7 +7,7 @@ import {
   isCorsOriginAllowed,
   jsonResponse,
 } from "../_shared/cors.ts";
-import { hasRequiredMfa } from "../_shared/security.ts";
+import { hasAuthenticatedSession } from "../_shared/security.ts";
 
 type ParsedVersion = {
   main: [number, number, number];
@@ -107,8 +107,8 @@ serve(async (req) => {
     } = await supabase.auth.getUser(token);
 
     if (userError || !user) return respond({ error: "Unauthorized." }, 401);
-    if (!hasRequiredMfa(token)) {
-      return respond({ error: "Complete MFA verification before checking for updates." }, 403);
+    if (!hasAuthenticatedSession(token)) {
+      return respond({ error: "Sign in before checking for updates." }, 403);
     }
 
     const { data: profile, error: profileError } = await supabase

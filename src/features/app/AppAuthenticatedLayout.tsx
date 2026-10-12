@@ -1,3 +1,4 @@
+import { useMfaVerificationRequired } from "../../lib/authPolicy";
 import type { Dispatch, SetStateAction } from "react";
 import { AppShell } from "../../components/AppShell";
 import type {
@@ -89,7 +90,8 @@ export function AppAuthenticatedLayout({
   handleRefreshPhoneUpload,
   handleLogout,
 }: AppAuthenticatedLayoutProps) {
-  const isMfaEnrollmentRequired = profileProps.mfaEnrollmentRequired;
+  const requiresMfa = useMfaVerificationRequired();
+  const isMfaEnrollmentRequired = requiresMfa && profileProps.mfaEnrollmentRequired;
   const displayedSection: Section = isMfaEnrollmentRequired ? "profile" : activeSection;
   const handleSectionChange: Dispatch<SetStateAction<Section>> = (nextSection) => {
     if (isMfaEnrollmentRequired) {

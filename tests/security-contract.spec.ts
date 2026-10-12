@@ -33,12 +33,12 @@ test("Staff cannot edit or deactivate an Admin in protected services", async () 
   expect(deactivateService).toContain("is_active: false");
 });
 
-test("Care Team administration requires a recently verified MFA method", async () => {
+test("Care Team administration requires a recent password sign-in", async () => {
   const security = await readProjectFile("supabase/functions/_shared/security.ts");
 
-  expect(security).toContain("claims.amr");
-  expect(security).toContain('entry.method === "totp" || entry.method === "otp"');
-  expect(security).toContain("nowSeconds - latestMfaVerification > maxAgeSeconds");
+  expect(security).toContain("claims?.amr");
+  expect(security).toContain('entry.method === "password"');
+  expect(security).toContain("nowSeconds - latestPasswordVerification > maxAgeSeconds");
 });
 
 test("database migration deactivates Interns and requires MFA for protected records", async () => {
@@ -176,7 +176,7 @@ test("clinic information is editable only by MFA-verified Admin and Staff accoun
   expect(migration).toContain('id = 1');
 });
 
-test("backup restore is Admin-only, fresh-MFA protected, and merge-only", async () => {
+test("backup restore is Admin-only, fresh-password protected, and merge-only", async () => {
   const service = await readProjectFile(
     "supabase/functions/restore-clinic-backup/index.ts"
   );
@@ -184,7 +184,7 @@ test("backup restore is Admin-only, fresh-MFA protected, and merge-only", async 
     "supabase/migrations/20260809000500_experience_improvements.sql"
   );
 
-  expect(service).toContain("requireFreshMfaSession(token)");
+  expect(service).toContain("requireFreshPasswordSession(token)");
   expect(service).toContain('!== "admin"');
   expect(service).toContain("Only an Admin can restore a clinic backup.");
   expect(migration).toContain("on conflict (%I) do update");
@@ -194,10 +194,10 @@ test("backup restore is Admin-only, fresh-MFA protected, and merge-only", async 
   expect(migration).not.toContain("delete from public.clients");
 });
 
-test("update checks require an active MFA-verified account", async () => {
+test("update checks require an active authenticated account", async () => {
   const source = await readProjectFile("supabase/functions/check-app-update/index.ts");
 
-  expect(source).toContain("hasRequiredMfa(token)");
+  expect(source).toContain("hasAuthenticatedSession(token)");
   expect(source).toContain("profile.is_active === false");
   expect(source).toContain('.from("app_releases")');
 });
@@ -213,7 +213,7 @@ test("production release publication targets only the stable channel", async () 
   expect(migration).not.toContain("where channel = 'staging'");
 });
 
-test("update services require private storage and an active MFA-verified account", async () => {
+test("update services require private storage and an active authenticated account", async () => {
   const migration = await readProjectFile(
     "supabase/migrations/20260810000300_private_app_updates.sql"
   );
@@ -225,7 +225,7 @@ test("update services require private storage and an active MFA-verified account
   expect(migration).toContain("public = false");
   expect(migration).toContain("alter table public.app_release_artifacts enable row level security");
   expect(migration).toContain("Release publication is restricted to the service role");
-  expect(updaterFunction).toContain("hasRequiredMfa(token)");
+  expect(updaterFunction).toContain("hasAuthenticatedSession(token)");
   expect(updaterFunction).toContain("profile.is_active === false");
   expect(updaterFunction).toContain("createSignedUrl(artifact.object_path, 10 * 60)");
   expect(tauriConfig).toContain('"createUpdaterArtifacts": true');

@@ -16,6 +16,9 @@ export async function fetchSupabasePages<T>(
   buildQuery: () => SupabaseRangeQuery<T>,
   pageSize = SUPABASE_DEFAULT_PAGE_SIZE
 ): Promise<SupabasePageResponse<T>> {
+  if (!Number.isInteger(pageSize) || pageSize < 1) {
+    throw new Error("Page size must be a positive integer.");
+  }
   const rows: T[] = [];
   let from = 0;
 
@@ -30,10 +33,12 @@ export async function fetchSupabasePages<T>(
     const page = data ?? [];
     rows.push(...page);
 
-    if (page.length < pageSize) {
+    // The server may cap responses below the requested page size. Only an
+    // empty page proves exhaustion; advance by the actual number received.
+    if (page.length === 0) {
       return { data: rows, error: null };
     }
 
-    from += pageSize;
+    from += page.length;
   }
 }

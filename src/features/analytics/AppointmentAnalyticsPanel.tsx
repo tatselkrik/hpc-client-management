@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { fetchSupabasePages } from "../../lib/supabasePagination";
 import type { AppointmentClientStage, AppointmentMode, AppointmentStatus } from "../../appShared";
 
 type AppointmentAnalyticsRow = {
@@ -14,13 +15,17 @@ export function AppointmentAnalyticsPanel() {
 
   useEffect(() => {
     let isMounted = true;
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
+    const end = new Date();
+    const start = new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    void supabase
+    void fetchSupabasePages(() => supabase
       .from("appointments")
       .select("status, client_stage_at_booking, appointment_mode")
+      .is("removed_at", null)
       .gte("starts_at", start.toISOString())
+      .lt("starts_at", end.toISOString())
+      .order("starts_at", { ascending: true })
+      .order("id", { ascending: true }))
       .then(({ data, error }) => {
         if (!isMounted) return;
         if (error) {
@@ -45,7 +50,7 @@ export function AppointmentAnalyticsPanel() {
     const resolved = completed + cancelled + noShows;
 
     return [
-      { label: "Appointments", value: rows.length, detail: "booked in the last 30 days" },
+      { label: "Appointments", value: rows.length, detail: "scheduled to start in the past 30 days" },
       { label: "Completed", value: completed, detail: resolved ? `${((completed / resolved) * 100).toFixed(1)}% of resolved visits` : "No resolved visits yet" },
       { label: "Cancelled", value: cancelled, detail: `${noShows} no-show${noShows === 1 ? "" : "s"}` },
       { label: "First-timers", value: firstTimers, detail: "booked as new clients" },

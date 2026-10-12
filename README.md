@@ -6,9 +6,27 @@ HPC Client Management is a Windows desktop application for clinic client
 records, clinical documentation, care-team access, analytics, appointment
 scheduling, and day-to-day administrative workflows.
 
-**Current version:** 0.3.5 · **Platform:** Windows desktop · **Status:** Stable
+**Current version:** 0.3.6 · **Platform:** Windows desktop · **Status:** Stable
 
-## Version 0.3.5 highlights
+[User guide](docs/user-guide-0.3.6.md) · [Release log](#release-log) ·
+[Application tour](#application-tour) · [Developer setup](#developer-setup)
+
+## What's new in 0.3.6
+
+- Email-and-password sign-in after the coordinated backend update, with no MFA
+  enrollment or account-factor controls. Previously enrolled authenticators are
+  retired by the deployment operator; future MFA would require fresh enrollment.
+- Current-password confirmation for account changes and a recent password
+  sign-in for protected administrative actions.
+- Reliable calendar loading across larger appointment and availability lists.
+- Availability is checked again when reinstating cancelled or no-show bookings.
+- Appointment analytics exclude removed bookings and future appointments from
+  the recent 30-day summary.
+
+Clinical-care workflows are unchanged. See [authentication and rollout
+requirements](docs/authentication.md) and the [full changelog](CHANGELOG.md).
+
+## Appointment Calendar
 
 - Staff and Admin can book and manage appointments for existing clients and
   provisional first-timers without creating a client before intake.
@@ -22,8 +40,9 @@ scheduling, and day-to-day administrative workflows.
 - Database permissions, row-level-security helpers, audit identity stamping,
   and foreign-key indexes are hardened without changing clinical-care records.
 
-See the [release history](CHANGELOG.md) for the stable 0.1.0, 0.2.2, and 0.3.5
-milestones.
+Calendar is internal-only: clients book by contacting the clinic, and Staff or
+Admin enters the appointment. Messaging, billing, payments, SMS, video-call
+integrations, and a client portal are not included.
 
 ## Core capabilities
 
@@ -39,15 +58,53 @@ milestones.
 - Dashboard priorities and clinic-wide analytics
 - CSV and PowerPoint exports
 - Email-invited care-team accounts and role-based access
-- Required multi-factor authentication, idle-session locking, and audit history
+- Password-only sign-in on the updated backend, idle-session locking, and audit
+  history
 - Structured backup export and Admin-confirmed merge restore
 - Support for authenticated, privately distributed signed updates when an
   operator configures an updater endpoint and signing key
 
+## Installation and updates
+
+This repository distributes source, not the clinic's production installer.
+Authorized clinic users receive the privately configured Windows installer or
+use **About → Check for Updates** in a compatible installation. The private
+updater verifies the installer signature before installation and restart.
+
+An older MFA-dependent installation must be replaced with the current installer
+before using a backend where MFA has been retired. Uninstalling the application
+is not normally required. Installing the desktop update does not apply database
+migrations or configure Supabase automatically.
+
+The deployment operator must back up and verify the backend, coordinate the
+authentication transition, and deploy the matching migrations and Edge
+Functions. Public GitHub source releases and private desktop-update publication
+are separate steps.
+
+## Release log
+
+Only stable milestones are listed here; intermediate development and validation
+builds are included in the next stable release.
+
+| Version | Released | Summary |
+| --- | --- | --- |
+| [0.3.6](CHANGELOG.md#036---2026-10-12) | 2026-10-12 | Password-only authentication transition, calendar correctness and loading fixes, and updated operator documentation |
+| [0.3.5](CHANGELOG.md#035---2026-08-24) | 2026-08-24 | Appointment Calendar, availability, status workflow, scheduling analytics, and database hardening |
+| [0.2.2](CHANGELOG.md#022---2026-08-20) | 2026-08-20 | Clinic deployment baseline, role-based access, backups, reporting, and signed updates |
+| [0.1.0](CHANGELOG.md#010---2026-08-07) | 2026-08-07 | Initial desktop client records and clinical-documentation workspace |
+
+See [CHANGELOG.md](CHANGELOG.md) for the complete milestone notes and
+[GitHub Releases](https://github.com/tatselkrik/hpc-client-management/releases)
+for tagged source snapshots. Earlier release notes describe the behavior at the
+time, including MFA before 0.3.6.
+
 ## Application tour
 
 The approved version 0.3.5 screenshots below have clinic-specific account
-details and identifying information blurred.
+details and identifying information blurred. They are historical examples:
+0.3.6 no longer provides MFA enrollment in Profile, and About shows the newer
+version and release notes. Updated screenshots will be added after privacy
+review; the approved Calendar gallery is retained below.
 
 <details>
 <summary><strong>Login</strong></summary>
@@ -136,7 +193,7 @@ details and identifying information blurred.
 <details>
 <summary><strong>Profile</strong></summary>
 
-![HPC Client Management profile and multi-factor authentication](docs/screenshots/profile-v0.3.5.jpg)
+![Historical version 0.3.5 profile with MFA controls, removed in 0.3.6](docs/screenshots/profile-v0.3.5.jpg)
 
 </details>
 
@@ -161,7 +218,23 @@ The deployed clinic application is configured separately with local environment
 values and private operational assets. Those values are intentionally not
 recoverable from this repository.
 
-## Technology
+## Documentation
+
+- [Version 0.3.6 user guide](docs/user-guide-0.3.6.md): sign-in, role permissions,
+  records, appointments, administration, and updates
+- [Release history](CHANGELOG.md): stable milestones
+- [Authentication and rollout requirements](docs/authentication.md)
+- [Appointment Calendar architecture](docs/appointment-calendar.md)
+- [Supabase migration runbook](docs/supabase-migration-runbook.md)
+- [Post-migration verification](docs/supabase-post-migration-verification.sql)
+- [Appointment Calendar verification](docs/verify-appointment-calendar.sql)
+- [Database-hardening verification](docs/verify-database-hardening.sql)
+- [Authentication-trigger verification](docs/verify-live-auth-triggers.sql)
+- [Historical version 0.3.5 user guide](docs/user-guide-0.3.5.md)
+
+## Developer setup
+
+### Technology
 
 | Layer | Technology |
 | --- | --- |
@@ -170,7 +243,7 @@ recoverable from this repository.
 | Backend | Supabase Auth, Postgres, Storage, Row Level Security, and Edge Functions |
 | Reporting | Recharts and PptxGenJS |
 
-## Repository structure
+### Repository structure
 
 ```text
 src/                  React application and feature modules
@@ -183,11 +256,9 @@ public/               Generic application assets
 tests/                Role, workflow, security, calendar, and privacy checks
 ```
 
-## Getting started
-
 ### Requirements
 
-- Node.js and npm
+- Node.js 22 and npm (matching GitHub CI)
 - Rust and the Windows prerequisites for Tauri
 - A Supabase project
 - Supabase CLI for migration and Edge Function deployment
@@ -239,7 +310,7 @@ The public Tauri configuration intentionally has no live updater endpoint. An
 operator must configure private updater settings outside public source before
 building a deployable signed release.
 
-## Supabase setup
+### Supabase setup
 
 Apply the migrations in `supabase/migrations/` to a new Supabase project in
 timestamp order, deploy the Edge Functions, configure server-side secrets, and
@@ -249,17 +320,6 @@ records.
 
 See the [migration runbook](docs/supabase-migration-runbook.md) for the generic
 setup sequence.
-
-## Documentation
-
-- [Version 0.3.5 user guide](docs/user-guide-0.3.5.md)
-- [Appointment Calendar architecture](docs/appointment-calendar.md)
-- [Release history](CHANGELOG.md)
-- [Supabase migration runbook](docs/supabase-migration-runbook.md)
-- [Post-migration verification](docs/supabase-post-migration-verification.sql)
-- [Appointment Calendar verification](docs/verify-appointment-calendar.sql)
-- [Database-hardening verification](docs/verify-database-hardening.sql)
-- [Authentication-trigger verification](docs/verify-live-auth-triggers.sql)
 
 ## Data handling
 

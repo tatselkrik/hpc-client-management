@@ -261,7 +261,7 @@ export function useCareTeamManagement({
       setCareTeamInviteForm(emptyCareTeamInviteForm);
 
       setCareTeamStatus(
-        `Invitation sent to ${trimmedEmail}. They must set their own password and enroll in MFA before using the workspace.`
+        `Invitation sent to ${trimmedEmail}. They must set their own password before using the workspace.`
       );
     } finally {
       setIsInvitingCareTeam(false);

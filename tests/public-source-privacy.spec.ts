@@ -5,6 +5,7 @@ import { extname, resolve } from "node:path";
 import { promisify } from "node:util";
 
 import { expect, test } from "@playwright/test";
+import JSZip from "jszip";
 
 const root = process.cwd();
 const execFileAsync = promisify(execFile);
@@ -111,6 +112,43 @@ test("public source excludes private operational artifacts", async () => {
     files.filter((path) => path.startsWith("docs/screenshots/")).sort()
   ).toEqual(approvedScreenshots);
   expect(files.some((path) => path.startsWith("private-backups/"))).toBe(false);
+});
+
+test("historical Word XML follows public privacy checks", async () => {
+  const gitOptions = ["-c", `safe.directory=${root.replaceAll("\\", "/")}`];
+  const gitText = async (args: string[]) => {
+    const { stdout } = await execFileAsync("git", [...gitOptions, ...args], {
+      cwd: root, encoding: "utf8", maxBuffer: 20 * 1024 * 1024,
+    });
+    return stdout;
+  };
+  const revisions = (await gitText(["rev-list", "HEAD", "--tags"]))
+    .trim().split("\n");
+  const inspected = new Set<string>();
+  const findings: string[] = [];
+
+  for (const revision of revisions) {
+    const paths = (await gitText(["ls-tree", "-r", "--name-only", revision]))
+      .trim().split("\n").filter((path) => path.endsWith(".docx"));
+    for (const path of paths) {
+      const object = (await gitText(["rev-parse", `${revision}:${path}`])).trim();
+      if (inspected.has(object)) continue;
+      inspected.add(object);
+      const { stdout } = await execFileAsync("git", [...gitOptions, "cat-file", "blob", object], {
+        cwd: root, encoding: "buffer", maxBuffer: 20 * 1024 * 1024,
+      });
+      const archive = await JSZip.loadAsync(stdout, { checkCRC32: true });
+      for (const part of Object.values(archive.files)) {
+        if (part.dir || !/\.(xml|rels)$/i.test(part.name)) continue;
+        const content = (await part.async("string")).toLowerCase();
+        if (publicValuePatterns.some((pattern) => pattern.test(content)) ||
+            privateMarkers.some((marker) => content.includes(marker.toLowerCase()))) {
+          findings.push(`${path}: ${part.name} contains a private marker`);
+        }
+      }
+    }
+  }
+  expect(findings).toEqual([]);
 });
 
 test("application tour keeps approved screenshots ordered and collapsible", async () => {

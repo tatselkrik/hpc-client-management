@@ -55,5 +55,5 @@ Before applying a tested migration to a production clinic project:
 4. Apply the tested migrations once; never rerun a committed migration merely
    to repair migration history.
 5. Repeat the read-only and behavioral verification.
-6. Confirm role boundaries, MFA enforcement, audit history, backup restoration,
+6. Confirm role boundaries, the configured authentication policy, audit history, backup restoration,
    and appointment conflict prevention with fictional records before normal use.

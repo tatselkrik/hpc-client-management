@@ -4,7 +4,42 @@ This file records the stable public milestones of HPC Client Management.
 Intermediate development and validation builds are consolidated into the next
 stable release.
 
-## Unreleased
+## 0.3.6 - 2026-10-12
+
+### Authentication and account security
+
+- Added coordinated email-and-password sign-in for every role on the updated
+  backend, without MFA enrollment or factor-management controls.
+- Retained existing authenticator verification when connected to an older
+  MFA-required backend. Missing transition capability does not bypass MFA;
+  other policy failures stop sign-in.
+- Added backend support for retiring MFA requirements. Deployment operators
+  disable configured MFA methods and clear existing registrations separately;
+  enabling MFA again would require fresh enrollment.
+- Preserved current-password confirmation for profile email and password
+  changes, and required a password sign-in within five minutes for protected
+  care-team administration and Admin backup restore.
+- Retained active-account checks, role and clinician boundaries, private file
+  access, idle locking, and audit history. Password-only sign-in provides less
+  protection against stolen passwords than MFA.
+
+### Calendar correctness and loading
+
+- Rechecked clinician availability when reinstating cancelled or no-show
+  appointments, even when the appointment time is unchanged.
+- Added deterministic pagination for appointments, status history, services,
+  and clinician availability, including support for lower server page limits.
+- Excluded removed bookings and future appointments from the recent 30-day
+  appointment analytics summary.
+- Preserved existing client records and clinical-care workflows.
+
+### Distribution and documentation
+
+- Kept public application assets generic while allowing private deployments to
+  supply their own interface and native installer icons.
+- Updated the in-app release notes, organized the README and stable release log,
+  and added a versioned 0.3.6 user guide and authentication rollout guidance.
+- Preserved the approved screenshot gallery and earlier stable release history.
 
 ## 0.3.5 - 2026-08-24
 

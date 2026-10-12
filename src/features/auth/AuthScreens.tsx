@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { CLINIC_NAME } from "../../appShared";
+import { CLINIC_LOGO_URL } from "../../lib/branding";
 
 type AsyncAction = () => void | Promise<void>;
 
@@ -11,7 +12,7 @@ export function AuthCheckingScreen(_props: AuthCheckingScreenProps) {
       <div className="login-card">
         <div className="login-brand">
           <img
-            src="/hpc-logo.svg"
+            src={CLINIC_LOGO_URL}
             alt={CLINIC_NAME}
             className="login-brand-logo"
           />
@@ -58,7 +59,7 @@ export function LoginScreen({
       <div className="login-card">
         <div className="login-brand">
           <img
-            src="/hpc-logo.svg"
+            src={CLINIC_LOGO_URL}
             alt={CLINIC_NAME}
             className="login-brand-logo"
           />
@@ -155,7 +156,7 @@ export function PasswordRecoveryScreen({
       <div className="login-card mfa-card">
         <div className="login-brand">
           <img
-            src="/hpc-logo.svg"
+            src={CLINIC_LOGO_URL}
             alt={CLINIC_NAME}
             className="login-brand-logo"
           />
@@ -251,7 +252,7 @@ export function MfaChallengeScreen({
       <div className="login-card mfa-card">
         <div className="login-brand">
           <img
-            src="/hpc-logo.svg"
+            src={CLINIC_LOGO_URL}
             alt={CLINIC_NAME}
             className="login-brand-logo"
           />

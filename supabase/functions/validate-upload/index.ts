@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
-import { hasRequiredMfa } from "../_shared/security.ts";
+import { hasAuthenticatedSession } from "../_shared/security.ts";
 
 function createServiceRoleClient(supabaseUrl: string, serviceRoleKey: string) {
   return createClient(supabaseUrl, serviceRoleKey, {
@@ -299,9 +299,9 @@ async function validateDesktopCaller({
     return { error: "Unauthorized.", status: 401, user: null, profile: null };
   }
 
-  if (!hasRequiredMfa(token)) {
+  if (!hasAuthenticatedSession(token)) {
     return {
-      error: "Complete MFA verification before uploading files.",
+      error: "Sign in before uploading files.",
       status: 403,
       user: null,
       profile: null,

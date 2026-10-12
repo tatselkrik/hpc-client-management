@@ -1,5 +1,6 @@
 import type { ChangeEvent } from "react";
 
+import { MFA_ENROLLMENT_ENABLED } from "../../lib/authPolicy";
 import { supabase } from "../../lib/supabase";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import type {
@@ -495,6 +496,10 @@ export function useProfileAccountActions({
   };
 
   const handleStartMfaEnrollment = async () => {
+    if (!MFA_ENROLLMENT_ENABLED) {
+      setMfaMessage("Authenticator enrollment is disabled in this release.");
+      return;
+    }
     const friendlyName = mfaFriendlyNameInput.trim() || DEFAULT_MFA_FRIENDLY_NAME;
     const existingEnrollment = mfaEnrollment;
 
@@ -591,6 +596,7 @@ export function useProfileAccountActions({
   };
 
   const handleVerifyMfaEnrollment = async () => {
+    if (!MFA_ENROLLMENT_ENABLED) return;
     if (!mfaEnrollment) return;
 
     const code = mfaVerificationCodeInput.trim();

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+import { refreshAuthenticationPolicy, useMfaVerificationRequired } from "../../lib/authPolicy";
 import { supabase } from "../../lib/supabase";
 import { feedbackMessages } from "../../lib/feedbackMessages";
 import type {
@@ -15,6 +16,7 @@ const emptyMfaAssurance = (): AuthenticatorAssuranceState => ({
 });
 
 export function useProfileMfaState() {
+  const requiresMfa = useMfaVerificationRequired();
   const [mfaFactors, setMfaFactors] = useState<MfaFactor[]>([]);
   const [mfaAssurance, setMfaAssurance] =
     useState<AuthenticatorAssuranceState>(emptyMfaAssurance());
@@ -30,6 +32,23 @@ export function useProfileMfaState() {
   const [isMfaChallengeSubmitting, setIsMfaChallengeSubmitting] = useState(false);
 
   const loadMfaState = useCallback(async () => {
+    let required: boolean;
+    try {
+      required = await refreshAuthenticationPolicy();
+    } catch {
+      setMfaEnrollmentRequired(true);
+      setMfaMessage("Could not check the clinic authentication policy. Please sign in again.");
+      return;
+    }
+    if (!required) {
+      setMfaFactors([]);
+      setMfaEnrollmentRequired(false);
+      setShowMfaChallengeScreen(false);
+      setMfaEnrollment(null);
+      setMfaAssurance(emptyMfaAssurance());
+      setMfaMessage("");
+      return;
+    }
     const [factorsResult, assuranceResult] = await Promise.all([
       supabase.auth.mfa.listFactors(),
       supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
@@ -93,9 +112,9 @@ export function useProfileMfaState() {
 
   const hasVerifiedMfaForProfileChanges = useCallback(
     () =>
-      mfaFactors.some((factor) => factor.status === "verified") ||
-      mfaAssurance.nextLevel === "aal2",
-    [mfaAssurance.nextLevel, mfaFactors]
+      requiresMfa && (mfaFactors.some((factor) => factor.status === "verified") ||
+      mfaAssurance.nextLevel === "aal2"),
+    [mfaAssurance.nextLevel, mfaFactors, requiresMfa]
   );
 
   const confirmMfaForSensitiveProfileChange = useCallback(
@@ -104,6 +123,12 @@ export function useProfileMfaState() {
       setMessage: (value: string) => void,
       actionLabel: string
     ) => {
+      try {
+        if (!(await refreshAuthenticationPolicy())) return true;
+      } catch {
+        setMessage("Could not check the clinic authentication policy. Please try again.");
+        return false;
+      }
       const assuranceResult = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
       if (assuranceResult.error) {

@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
-import { requireFreshMfaSession } from "../_shared/security.ts";
+import { requireFreshPasswordSession } from "../_shared/security.ts";
 
 
 const roleOptions = new Set([
@@ -109,7 +109,7 @@ serve(async (req) => {
       return respond({ error: "Unauthorized." }, 401);
     }
 
-    const freshSessionError = requireFreshMfaSession(token);
+    const freshSessionError = requireFreshPasswordSession(token);
     if (freshSessionError) {
       return respond({ error: freshSessionError }, 403);
     }
@@ -244,7 +244,7 @@ serve(async (req) => {
         role,
         hpc_representative_name: hpcRepresentativeName,
         delivery: "email_invitation_required_password_setup",
-        mfa_required: true,
+        mfa_required: false,
       },
     });
 
