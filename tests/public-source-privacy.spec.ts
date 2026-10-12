@@ -31,11 +31,11 @@ const textExtensions = new Set([
 // Exact deployment markers are supplied only by a private local audit.
 const privateMarkers: string[] = JSON.parse(process.env.HPC_PRIVATE_AUDIT_MARKERS ?? "[]");
 const publicValuePatterns = [
-  /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
-  /sb_secret_[A-Za-z0-9_-]{20,}/,
-  /gh[pousr]_[A-Za-z0-9]{30,}/,
-  /AKIA[A-Z0-9]{16}/,
-  /eyJ[A-Za-z0-9_-]{25,}\.[A-Za-z0-9_-]{25,}\.[A-Za-z0-9_-]{25,}/,
+  /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i,
+  /sb_secret_[A-Za-z0-9_-]{20,}/i,
+  /gh[pousr]_[A-Za-z0-9]{30,}/i,
+  /AKIA[A-Z0-9]{16}/i,
+  /eyJ[A-Za-z0-9_-]{25,}\.[A-Za-z0-9_-]{25,}\.[A-Za-z0-9_-]{25,}/i,
   /https?:\/\/[a-z0-9]{20}\.supabase\.co\b/i,
 ];
 
@@ -112,6 +112,10 @@ test("public source excludes private operational artifacts", async () => {
     files.filter((path) => path.startsWith("docs/screenshots/")).sort()
   ).toEqual(approvedScreenshots);
   expect(files.some((path) => path.startsWith("private-backups/"))).toBe(false);
+});
+
+test("credential checks also apply to case-normalized Word XML", () => {
+  expect(publicValuePatterns.every((pattern) => pattern.ignoreCase)).toBe(true);
 });
 
 test("historical Word XML follows public privacy checks", async () => {
