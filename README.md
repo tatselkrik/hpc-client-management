@@ -6,12 +6,21 @@ HPC Client Management is a Windows desktop application for clinic client
 records, clinical documentation, care-team access, analytics, appointment
 scheduling, and day-to-day administrative workflows.
 
-**Current version:** 0.3.6 · **Platform:** Windows desktop · **Status:** Stable
+**Current version:** 0.3.7
 
-[User guide](docs/user-guide-0.3.6.md) · [Release log](#release-log) ·
+**Platform:** Windows desktop · **Distribution:** Public source; production configuration is supplied privately
+
+[User guide](docs/user-guide-0.3.7.md) · [Release log](#release-log) ·
 [Application tour](#application-tour) · [Developer setup](#developer-setup)
 
-## What's new in 0.3.6
+## What's new in 0.3.7
+
+- Editable Analytics presentations use larger charts and continuation slides.
+- Export reporting windows follow selected client filters; appointment outcomes
+  retain their separately labeled 30-day window.
+- CSV formula protection, Philippine-time month labels and 4Ps flags are corrected.
+
+## Authentication and calendar baseline (0.3.6)
 
 - Email-and-password sign-in after the coordinated backend update, with no MFA
   enrollment or account-factor controls. Previously enrolled authenticators are
@@ -83,11 +92,12 @@ are separate steps.
 
 ## Release log
 
-Only stable milestones are listed here; intermediate development and validation
-builds are included in the next stable release.
+Versioned source changes are recorded below. Selected stable milestones also
+have tagged releases; source history does not publish a production installer.
 
 | Version | Released | Summary |
 | --- | --- | --- |
+| [0.3.7](CHANGELOG.md#037---2026-10-16) | 2026-10-16 | Editable presentation export improvements, reporting filters, CSV formula handling and Philippine-time fixes |
 | [0.3.6](CHANGELOG.md#036---2026-10-12) | 2026-10-12 | Password-only authentication transition, calendar correctness and loading fixes, and updated operator documentation |
 | [0.3.5](CHANGELOG.md#035---2026-08-24) | 2026-08-24 | Appointment Calendar, availability, status workflow, scheduling analytics, and database hardening |
 | [0.2.2](CHANGELOG.md#022---2026-08-20) | 2026-08-20 | Clinic deployment baseline, role-based access, backups, reporting, and signed updates |
@@ -220,7 +230,7 @@ recoverable from this repository.
 
 ## Documentation
 
-- [Version 0.3.6 user guide](docs/user-guide-0.3.6.md): sign-in, role permissions,
+- [Version 0.3.7 user guide](docs/user-guide-0.3.7.md): sign-in, role permissions,
   records, appointments, administration, and updates
 - [Release history](CHANGELOG.md): stable milestones
 - [Authentication and rollout requirements](docs/authentication.md)

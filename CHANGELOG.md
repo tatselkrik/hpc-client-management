@@ -1,8 +1,14 @@
 # Release history
 
-This file records the stable public milestones of HPC Client Management.
-Intermediate development and validation builds are consolidated into the next
-stable release.
+This file records versioned source changes. Selected stable milestones also
+have tagged GitHub releases; intermediate source commits remain in Git history.
+
+## 0.3.7 - 2026-10-16
+
+- Redesigned editable Analytics presentations with larger type, clear reporting
+  scope, complete category coverage and appointment outcomes.
+- Corrected CSV formula handling, Philippine-time month labels and 4Ps flags.
+- Preserved record management, calendar, sign-in and clinical-care workflows.
 
 ## 0.3.6 - 2026-10-12
 

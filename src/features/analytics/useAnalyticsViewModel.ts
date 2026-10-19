@@ -37,6 +37,7 @@ import {
   addDaysToDateKey,
   getInclusiveDaySpan,
 } from "./analyticsDateHelpers";
+import { formatReportingPeriod } from "./analyticsExportHelpers";
 import {
   buildActivityDeltaMeta,
   buildRecordActivityTrendSeries,
@@ -119,6 +120,7 @@ export type AnalyticsViewModel = {
   analyticsCounsellingReasonOptions: AnalyticsFilterOption[];
   analyticsCategoryOptions: AnalyticsFilterOption[];
   analyticsFilterSummary: string;
+  analyticsReportingPeriod?: string;
   analyticsDefaultRepresentativeFilter: string;
   canUseAllRepresentativeAnalytics: boolean;
   canUseIndividualRepresentativeAnalytics: boolean;
@@ -1527,6 +1529,7 @@ export function useAnalyticsViewModel({
       analyticsCounsellingReasonOptions,
       analyticsCategoryOptions,
       analyticsFilterSummary,
+      analyticsReportingPeriod: formatReportingPeriod(analyticsDateRangeBounds.start, analyticsDateRangeBounds.end),
       analyticsDefaultRepresentativeFilter: shouldDefaultAnalyticsRepresentativeToAssigned
         ? assignedHpcRepresentativeName
         : "",
@@ -1590,6 +1593,7 @@ export function useAnalyticsViewModel({
       analyticsDrilldownGroups,
       analyticsExportStatus,
       analyticsFilterSummary,
+      analyticsDateRangeBounds,
       analyticsLoading,
       analyticsMessage,
       analyticsOperationalMetrics,

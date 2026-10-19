@@ -34,6 +34,10 @@ import { AnalyticsFiltersPanel } from "./AnalyticsFiltersPanel";
 import { AnalyticsQuickRead, AnalyticsSummaryMetrics } from "./AnalyticsOverview";
 import { AppointmentAnalyticsPanel } from "./AppointmentAnalyticsPanel";
 import type { AnalyticsViewModel } from "./useAnalyticsViewModel";
+import {
+  clinicDateKey, escapeAnalyticsCsvCell, formatAnalyticsMonth,
+  type AppointmentExportSnapshot,
+} from "./analyticsExportHelpers";
 
 type RecordActivityTrendItem = {
   key: string;
@@ -96,6 +100,8 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
   const [drilldownPageSize, setDrilldownPageSize] =
     useState<DrilldownPageSize>("20");
   const [isCsvExporting, setIsCsvExporting] = useState(false);
+  const [appointmentExportSnapshot, setAppointmentExportSnapshot] =
+    useState<AppointmentExportSnapshot | null>(null);
   const normalizedDefaultRepresentativeFilter = analyticsDefaultRepresentativeFilter.trim();
   const isRepresentativeFilterLocked =
     Boolean(normalizedDefaultRepresentativeFilter) &&
@@ -150,14 +156,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
   );
 
   const formatMonth = useCallback((value: string | null | undefined) => {
-    if (!value) return "";
-
-    const parsedDate = new Date(value);
-    if (!Number.isNaN(parsedDate.getTime())) {
-      return parsedDate.toISOString().slice(0, 7);
-    }
-
-    return value.slice(0, 7);
+    return formatAnalyticsMonth(value);
   }, []);
 
   const formatMonthLabel = useCallback((monthKey: string) => {
@@ -1093,8 +1092,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
   );
 
   const escapeCsvCell = (value: string | number | null | undefined) => {
-    const raw = value == null ? "" : String(value);
-    return `"${raw.replace(/"/g, '""')}"`;
+    return escapeAnalyticsCsvCell(value);
   };
 
   const formatYesNo = (value: boolean) => (value ? "Yes" : "No");
@@ -1191,7 +1189,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
         : 0;
       const fourPsFilledCellCount = getFourPsFilledCellCount(fourPsRecord);
       const narrativeReportPresent = hasTextValue(fourPsRecord?.narrative_report);
-      const fourPsComplete = narrativeReportPresent;
+      const fourPsComplete = hasCompleteFourPsRows(fourPsRecord);
 
       return [
         generatedAt,
@@ -1257,7 +1255,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
     setAnalyticsExportStatus(feedbackMessages.loading("Preparing de-identified client data CSV export"));
 
     try {
-      const fileDateStamp = new Date().toISOString().slice(0, 10);
+      const fileDateStamp = clinicDateKey();
       const fileName = `hpc-client-data-deidentified-${fileDateStamp}.csv`;
       const selectedSavePath = await save({
         title: "Save de-identified client data CSV",
@@ -1275,8 +1273,8 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
           ? selectedSavePath
           : `${selectedSavePath}.csv`;
 
-      await writeFile(finalSavePath, new TextEncoder().encode(buildAnalyticsCsv()));
-      setAnalyticsExportStatus(`De-identified client data CSV saved to ${finalSavePath}.`);
+      await writeFile(finalSavePath, new TextEncoder().encode("\uFEFF" + buildAnalyticsCsv()));
+      setAnalyticsExportStatus(`De-identified client data CSV saved to ${finalSavePath}. Treat this file as confidential; client codes apply only to this export.`);
     } catch (error) {
       const message = getErrorDetail(error, "Unknown CSV export error");
       setAnalyticsExportStatus(feedbackMessages.error("We could not create the CSV export.", message));
@@ -1304,6 +1302,8 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
           analyticsCssrsRecords: filteredCssrsRecords,
           analyticsClient4PsRecords: filteredFourPsRecords,
           analyticsFilterSummary: fullFilterSummary,
+          reportingRangeLabel: viewModel.analyticsReportingPeriod,
+          appointmentSnapshot: appointmentExportSnapshot,
           visibleIntakeSeries,
           ageDistribution,
           sexDistribution,
@@ -1514,7 +1514,7 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
         sexOptions={sexOptions}
       />
 
-      <AppointmentAnalyticsPanel />
+      <AppointmentAnalyticsPanel onSnapshot={setAppointmentExportSnapshot} />
 
       <AnalyticsQuickRead
         filterSummary={fullFilterSummary}

@@ -6,7 +6,7 @@ HPC Client Management is a privacy-safe public source snapshot of a privately
 configured Windows clinic application. It is not a hosted service or a publicly
 supported production distribution.
 
-Security maintenance applies to the current public version, `0.3.6`. Earlier
+Security maintenance applies to the current public version, `0.3.7`. Earlier
 versions are retained as project history and are not separately supported.
 
 ## Reporting a security concern

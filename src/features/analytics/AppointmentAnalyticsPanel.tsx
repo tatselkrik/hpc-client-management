@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { fetchSupabasePages } from "../../lib/supabasePagination";
 import type { AppointmentClientStage, AppointmentMode, AppointmentStatus } from "../../appShared";
+import { buildAppointmentExportSnapshot, type AppointmentExportSnapshot } from "./analyticsExportHelpers";
 
 type AppointmentAnalyticsRow = {
   status: AppointmentStatus;
@@ -9,7 +10,9 @@ type AppointmentAnalyticsRow = {
   appointment_mode: AppointmentMode;
 };
 
-export function AppointmentAnalyticsPanel() {
+export function AppointmentAnalyticsPanel({ onSnapshot }: {
+  onSnapshot?: (snapshot: AppointmentExportSnapshot | null) => void;
+}) {
   const [rows, setRows] = useState<AppointmentAnalyticsRow[]>([]);
   const [message, setMessage] = useState("Loading appointment operations…");
 
@@ -17,6 +20,7 @@ export function AppointmentAnalyticsPanel() {
     let isMounted = true;
     const end = new Date();
     const start = new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+    onSnapshot?.(null);
 
     void fetchSupabasePages(() => supabase
       .from("appointments")
@@ -30,16 +34,25 @@ export function AppointmentAnalyticsPanel() {
         if (!isMounted) return;
         if (error) {
           setMessage(`Appointment operations are unavailable. ${error.message}`);
+          onSnapshot?.(null);
           return;
         }
         setRows((data ?? []) as AppointmentAnalyticsRow[]);
+        onSnapshot?.(buildAppointmentExportSnapshot(
+          (data ?? []) as AppointmentAnalyticsRow[], start.toISOString(), end.toISOString()
+        ));
         setMessage("");
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setMessage("Appointment operations are unavailable. Please try again.");
+        onSnapshot?.(null);
       });
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [onSnapshot]);
 
   const metrics = useMemo(() => {
     const completed = rows.filter((row) => row.status === "completed").length;

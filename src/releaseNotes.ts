@@ -1,9 +1,8 @@
-export const APP_RELEASE_NOTES_VERSION = "0.3.6";
+export const APP_RELEASE_NOTES_VERSION = "0.3.7";
 
 export const APP_RELEASE_NOTES = [
-  "Email-and-password sign-in on the updated backend for all roles, with no MFA enrollment controls. Older backends retain existing authenticator verification until their coordinated update.",
-  "Account changes retain password confirmation; protected care-team administration and backup restore require a recent password sign-in.",
-  "Improved calendar loading for larger appointment histories and team availability lists.",
-  "Corrected appointment analytics to exclude removed bookings and visits scheduled in the future.",
-  "The accompanying backend update rechecks clinician availability when restoring cancelled or no-show appointments. Existing clinical-care workflows are unchanged.",
+  "Redesigned Analytics presentations with the approved navy and ivory layout, larger editable charts, and readable continuation slides for longer category and clinician lists.",
+  "Exported reporting windows now match the selected client filters. Appointment outcomes retain their separate, clearly labeled 30-day operations window.",
+  "CSV exports retain the same columns, protect formula-looking text in spreadsheets, use Philippine-time months, and match the dashboard's 4Ps completion definition.",
+  "Analytics export improvements preserve record management, calendar, sign-in, permissions and clinical-care workflows.",
 ] as const;
