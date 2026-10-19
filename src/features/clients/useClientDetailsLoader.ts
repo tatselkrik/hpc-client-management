@@ -49,6 +49,8 @@ const getLegacyPreExistingDiagnosisDetails = (
 
 
 type UseClientDetailsLoaderArgs = {
+  setClientDraftIdentity: Dispatch<SetStateAction<{ id: string; updatedAt: string } | null>>;
+  isCurrentClient: (id: string) => boolean;
   clients: ClientListItem[];
   setClientForm: Dispatch<SetStateAction<ClientForm>>;
   setChildrenForms: Dispatch<SetStateAction<ChildForm[]>>;
@@ -57,6 +59,8 @@ type UseClientDetailsLoaderArgs = {
 };
 
 export function useClientDetailsLoader({
+  setClientDraftIdentity,
+  isCurrentClient,
   clients,
   setClientForm,
   setChildrenForms,
@@ -68,7 +72,8 @@ export function useClientDetailsLoader({
       clientId: string,
       isCurrentRequest: () => boolean = () => true
     ) => {
-      if (!clientId) return;
+      if (!clientId || !isCurrentClient(clientId)) return;
+      setClientDraftIdentity(null);
 
       setClientMessage(feedbackMessages.loading("Loading client"));
 
@@ -78,7 +83,7 @@ export function useClientDetailsLoader({
         .eq("id", clientId)
         .single();
 
-      if (!isCurrentRequest()) return;
+      if (!isCurrentRequest() || !isCurrentClient(clientId)) return;
 
       if (clientError) {
         setClientMessage(feedbackMessages.loadFailed("client record", clientError.message));
@@ -91,7 +96,7 @@ export function useClientDetailsLoader({
         .eq("client_id", clientId)
         .order("created_at", { ascending: true });
 
-      if (!isCurrentRequest()) return;
+      if (!isCurrentRequest() || !isCurrentClient(clientId)) return;
 
       if (childrenError) {
         setClientMessage(feedbackMessages.loadFailed("client child records", childrenError.message));
@@ -205,10 +210,13 @@ export function useClientDetailsLoader({
         serializeClientOverviewState(nextClientForm, nextChildrenForms)
       );
 
+      setClientDraftIdentity({ id: clientId, updatedAt: clientData.updated_at });
       setClientMessage("");
     },
     [
       clients,
+      setClientDraftIdentity,
+      isCurrentClient,
       setChildrenForms,
       setClientForm,
       setClientMessage,

@@ -1,7 +1,7 @@
 {
   "name": "hpc-client-management",
   "private": true,
-  "version": "0.3.7",
+  "version": "0.3.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -26,6 +26,11 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "recharts": "^3.8.1"
+  },
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.3"
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

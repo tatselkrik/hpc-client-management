@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 import { refreshAuthenticationPolicy } from "../../lib/authPolicy";
 import { supabase } from "../../lib/supabase";
+import { allowInteractiveSession, lockClinicalSession } from "../../lib/clinicalSession";
 import { feedbackMessages } from "../../lib/feedbackMessages";
 import type {
   ClientListItem,
@@ -188,6 +189,7 @@ export function useAuthSessionActions({
     const profileLoaded = await loadProfile();
 
     if (!profileLoaded) {
+      clearAuthenticatedProfile();
       return false;
     }
 
@@ -197,6 +199,8 @@ export function useAuthSessionActions({
     try {
       requiresMfa = await refreshAuthenticationPolicy();
     } catch {
+      clearAuthenticatedProfile();
+      lockClinicalSession();
       setStatus("Could not check the clinic authentication policy. Please sign in again.");
       return false;
     }
@@ -211,6 +215,7 @@ export function useAuthSessionActions({
     await loadClientCategories();
     return true;
   }, [
+    clearAuthenticatedProfile,
     loadCareTeamProfiles,
     loadClientCategories,
     loadClients,
@@ -251,8 +256,14 @@ export function useAuthSessionActions({
       return;
     }
 
+    if (!data.user) {
+      setLoading(false);
+      setStatus("Sign-in did not return a user. Please try again.");
+      return;
+    }
+    allowInteractiveSession(data.user.id);
     setIsAuthGateChecking(true);
-    setUserEmail(data.user?.email ?? null);
+    setUserEmail(data.user.email ?? null);
 
     const mfaStatus = await evaluateMfaChallengeRequirement();
 
@@ -401,9 +412,11 @@ export function useAuthSessionActions({
   const handleLogout = useCallback(async (reason: "manual" | "idle" = "manual") => {
     const isIdleLock = reason === "idle";
 
-    setLoading(true);
-
-    await writeAuditLog(
+    // Hide and discard the entire authenticated workspace before any network
+    // operation. Audit/revocation failures must never leave clinical data open.
+    lockClinicalSession();
+    clearAuthenticatedProfile();
+    const audit = writeAuditLog(
       "Auth",
       isIdleLock ? "Idle Session Locked" : "Signed Out",
       "session",
@@ -415,15 +428,9 @@ export function useAuthSessionActions({
           : "Signed out from the clinic app.",
         idle_timeout_minutes: isIdleLock ? CLINICAL_IDLE_LOCK_MINUTES : undefined,
       }
-    );
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      setStatus(feedbackMessages.error("We could not sign you out.", error.message));
-      setLoading(false);
-      return;
-    }
+    ).catch(() => undefined);
+    const revocation = supabase.auth.signOut().catch(() => undefined);
+    await Promise.allSettled([audit, revocation]);
 
     clearAuthenticatedProfile();
     resetProfileAccountState();
@@ -600,7 +607,11 @@ export function useAuthSessionActions({
   return {
     evaluateMfaChallengeRequirement,
     refreshAuthenticatedAppData,
-    handleLogin,
+    handleLogin: async () => {
+      try { await handleLogin(); }
+      catch { lockClinicalSession(); setStatus("Sign-in could not finish. Please try again."); }
+      finally { setLoading(false); setIsAuthGateChecking(false); }
+    },
     handleForgotPassword,
     handleCompletePasswordRecovery,
     handleLogout,

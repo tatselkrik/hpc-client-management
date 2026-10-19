@@ -25,6 +25,7 @@ type ClientRepresentativeRecord = {
 
 export function useCurrentUserPermissions(profile: Profile | null) {
   const profileDisplayRole = getProfileDisplayRole(profile?.role);
+  const isVerifiedProfile = profile?.is_active === true && ["Admin", "Staff", "Psychologist / Counselor"].includes(profileDisplayRole);
   const {
     canManageCareTeam,
     canManageAdminAccounts,
@@ -67,6 +68,7 @@ export function useCurrentUserPermissions(profile: Profile | null) {
 
   const canCurrentProfileAccessClient = useCallback(
     (client: ClientRepresentativeRecord) => {
+      if (!isVerifiedProfile) return false;
       if (!isClientAccessLimitedToAssignedRepresentative) return true;
       if (!assignedHpcRepresentativeName) return false;
 
@@ -75,11 +77,12 @@ export function useCurrentUserPermissions(profile: Profile | null) {
         assignedHpcRepresentativeName.toLowerCase()
       );
     },
-    [assignedHpcRepresentativeName, isClientAccessLimitedToAssignedRepresentative]
+    [isVerifiedProfile, assignedHpcRepresentativeName, isClientAccessLimitedToAssignedRepresentative]
   );
 
   const canCurrentProfileUseClientInPrimaryAnalytics = useCallback(
     (client: ClientRepresentativeRecord) => {
+      if (!isVerifiedProfile) return false;
       if (!isPrimaryAnalyticsLimitedToAssignedRepresentative) return true;
       if (!assignedHpcRepresentativeName) return false;
 
@@ -88,7 +91,7 @@ export function useCurrentUserPermissions(profile: Profile | null) {
         assignedHpcRepresentativeName.toLowerCase()
       );
     },
-    [assignedHpcRepresentativeName, isPrimaryAnalyticsLimitedToAssignedRepresentative]
+    [isVerifiedProfile, assignedHpcRepresentativeName, isPrimaryAnalyticsLimitedToAssignedRepresentative]
   );
 
   return {

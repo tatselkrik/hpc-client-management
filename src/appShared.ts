@@ -300,11 +300,8 @@ export const CLIENT_FILE_ALLOWED_MIME_TYPES = [
   "image/webp",
   "text/plain",
   "text/csv",
-  "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-excel",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "application/vnd.ms-powerpoint",
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ] as const;
 export const CLIENT_FILE_ALLOWED_EXTENSIONS = [
@@ -315,11 +312,8 @@ export const CLIENT_FILE_ALLOWED_EXTENSIONS = [
   ".webp",
   ".txt",
   ".csv",
-  ".doc",
   ".docx",
-  ".xls",
   ".xlsx",
-  ".ppt",
   ".pptx",
 ] as const;
 export const CLIENT_FILE_ACCEPT = [
@@ -327,7 +321,7 @@ export const CLIENT_FILE_ACCEPT = [
   ...CLIENT_FILE_ALLOWED_EXTENSIONS,
 ].join(",");
 export const CLIENT_FILE_ALLOWED_LABEL =
-  "PDF, image, text, CSV, Word, Excel, or PowerPoint files up to 25 MB";
+  "PDF, JPG, PNG, WebP, text, CSV, DOCX, XLSX, or PPTX files up to 25 MB; convert legacy Office formats to PDF";
 
 export const getClientFileValidationMessage = (file: File) => {
   if (file.size > CLIENT_FILE_MAX_BYTES) {
@@ -602,7 +596,7 @@ export const getCareTeamMemberDisplayName = (
 
 export const APP_BUILD_INFO = {
   product_name: APP_PRODUCT_NAME,
-  version: import.meta.env.VITE_APP_VERSION ?? "0.3.7",
+  version: import.meta.env.VITE_APP_VERSION ?? "0.3.8",
   identifier:
     import.meta.env.VITE_APP_IDENTIFIER ?? "com.example.hpcclientmanagement",
   channel: import.meta.env.VITE_APP_CHANNEL === "staging" ? "staging" : "stable",

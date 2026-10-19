@@ -1,3 +1,6 @@
+import { buildProtectedAnalyticsCsv } from "../../lib/protectedAnalyticsCsv";
+import { recordExportPreparation } from "../../lib/exportAudit";
+import { assertClinicalSession, getClinicalSessionGeneration } from "../../lib/clinicalSession";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./analytics.css";
 import { SectionHeader } from "../../components/SectionHeader";
@@ -1238,10 +1241,11 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
       ];
     });
 
-    return [headers, ...rows].map((row) => row.map(escapeCsvCell).join(",")).join("\n");
+    return buildProtectedAnalyticsCsv(headers, rows, escapeCsvCell, viewModel.analyticsReportingPeriod);
   };
 
   const handleAnalyticsCsvExport = async () => {
+    const generation = getClinicalSessionGeneration();
     if (isCsvExporting) return;
 
     if (!canOpenClientLevelAnalytics) {
@@ -1252,13 +1256,13 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
     }
 
     setIsCsvExporting(true);
-    setAnalyticsExportStatus(feedbackMessages.loading("Preparing de-identified client data CSV export"));
+    setAnalyticsExportStatus(feedbackMessages.loading("Preparing grouped client statistics CSV export"));
 
     try {
       const fileDateStamp = clinicDateKey();
-      const fileName = `hpc-client-data-deidentified-${fileDateStamp}.csv`;
+      const fileName = `hpc-client-statistics-${fileDateStamp}.csv`;
       const selectedSavePath = await save({
-        title: "Save de-identified client data CSV",
+        title: "Save grouped client statistics CSV",
         defaultPath: fileName,
         filters: [{ name: "CSV", extensions: ["csv"] }],
       });
@@ -1268,13 +1272,12 @@ export function AnalyticsSection({ viewModel }: AnalyticsSectionProps) {
         return;
       }
 
-      const finalSavePath =
-        selectedSavePath.toLowerCase().endsWith(".csv")
-          ? selectedSavePath
-          : `${selectedSavePath}.csv`;
+      const finalSavePath = selectedSavePath;
 
+      await recordExportPreparation("Grouped CSV", filteredClientRows.length, generation);
+      assertClinicalSession(generation);
       await writeFile(finalSavePath, new TextEncoder().encode("\uFEFF" + buildAnalyticsCsv()));
-      setAnalyticsExportStatus(`De-identified client data CSV saved to ${finalSavePath}. Treat this file as confidential; client codes apply only to this export.`);
+      setAnalyticsExportStatus(`Grouped client statistics CSV saved to ${finalSavePath}. Treat this file as confidential; small groups are suppressed.`);
     } catch (error) {
       const message = getErrorDetail(error, "Unknown CSV export error");
       setAnalyticsExportStatus(feedbackMessages.error("We could not create the CSV export.", message));

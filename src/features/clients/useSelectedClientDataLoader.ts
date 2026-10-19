@@ -6,6 +6,7 @@ type ClientAccessRecord = {
 };
 
 type UseSelectedClientDataLoaderArgs = {
+  setClientDraftIdentity: Dispatch<SetStateAction<{ id: string; updatedAt: string } | null>>;
   selectedClientId: string;
   clients: ClientAccessRecord[];
   analyticsClients: ClientAccessRecord[];
@@ -45,6 +46,7 @@ type UseSelectedClientDataLoaderArgs = {
 };
 
 export function useSelectedClientDataLoader({
+  setClientDraftIdentity,
   selectedClientId,
   clients,
   analyticsClients,
@@ -68,13 +70,19 @@ export function useSelectedClientDataLoader({
   setClientMessage,
 }: UseSelectedClientDataLoaderArgs) {
   const selectedClientLoadRequestRef = useRef(0);
+  const lastSelection = useRef<{ id: string; access: typeof canCurrentProfileAccessClient } | null>(null);
+  useEffect(() => () => { selectedClientLoadRequestRef.current += 1; lastSelection.current = null; }, []);
 
   useEffect(() => {
+    // Dataset refreshes must not discard a dirty draft for the same selection.
+    if (lastSelection.current?.id === selectedClientId && lastSelection.current.access === canCurrentProfileAccessClient) return;
+    lastSelection.current = { id: selectedClientId, access: canCurrentProfileAccessClient };
     const requestId = ++selectedClientLoadRequestRef.current;
     const isCurrentRequest = () =>
       selectedClientLoadRequestRef.current === requestId;
 
     const clearSelectedClientViews = () => {
+      setClientDraftIdentity(null);
       resetClientForm();
       clearClient4Ps();
       setClientOverviewBaselineSnapshot("");
@@ -89,6 +97,7 @@ export function useSelectedClientDataLoader({
     };
 
     const run = async () => {
+      clearSelectedClientViews();
       if (!selectedClientId) {
         clearSelectedClientViews();
         return;
@@ -118,7 +127,9 @@ export function useSelectedClientDataLoader({
       ]);
     };
 
-    void run();
+    void run().catch(() => {
+      if (isCurrentRequest()) setClientMessage("We could not load this client. Select the client again to retry.");
+    });
   }, [
     analyticsClients,
     canCurrentProfileAccessClient,
@@ -133,6 +144,7 @@ export function useSelectedClientDataLoader({
     loadProgressNotes,
     resetClientForm,
     selectedClientId,
+    setClientDraftIdentity,
     setAssessmentPreviewLoading,
     setAssessmentPreviewUrl,
     setClientMessage,

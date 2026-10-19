@@ -1,3 +1,5 @@
+import { recordExportPreparation } from "../../lib/exportAudit";
+import { assertClinicalSession, getClinicalSessionGeneration } from "../../lib/clinicalSession";
 import { clinicDateKey, formatExportDate, formatReportingPeriod, wrapAnalyticsChartLabel, type AppointmentExportSnapshot } from "./analyticsExportHelpers";
 import { save } from "@tauri-apps/plugin-dialog";
 import { CLINIC_ICON_URL, CLINIC_LOGO_URL } from "../../lib/branding";
@@ -109,6 +111,7 @@ const loadPresentationImage = async (assetPath: string) => {
 };
 
 export async function exportAnalyticsPresentation(params: AnalyticsPresentationExportParams) {
+  const generation = getClinicalSessionGeneration();
   if (params.isAnalyticsExporting) return;
   const { setAnalyticsExportStatus, setIsAnalyticsExporting } = params;
   setAnalyticsExportStatus(feedbackMessages.loading("Preparing presentation deck"));
@@ -326,8 +329,10 @@ export async function exportAnalyticsPresentation(params: AnalyticsPresentationE
       filters: [{ name: "PowerPoint", extensions: ["pptx"] }],
     });
     if (!selected) { setAnalyticsExportStatus(feedbackMessages.cancelled("Presentation export")); return; }
-    const finalPath = selected.toLowerCase().endsWith(".pptx") ? selected : selected + ".pptx";
+    const finalPath = selected;
     const bytes = await pptx.write({ outputType: "arraybuffer" });
+    await recordExportPreparation("PowerPoint", params.analyticsClientRows.length, generation);
+    assertClinicalSession(generation);
     await writeFile(finalPath, new Uint8Array(bytes as ArrayBuffer));
     setAnalyticsExportStatus("Clinic analytics presentation saved to " + finalPath + ".");
   } catch (error) {

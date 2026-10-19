@@ -7,7 +7,7 @@ import {
   type SetStateAction,
 } from "react";
 
-import { supabase } from "../../lib/supabase";
+import { createVerifiedClientFileUrl } from "../../lib/uploadValidation";
 import { feedbackMessages } from "../../lib/feedbackMessages";
 import type {
   ClientAssessment,
@@ -93,9 +93,7 @@ export function useClientFileWorkflow({
 
       setDocumentPreviewLoading(true);
 
-      const { data, error } = await supabase.storage
-        .from(CLIENT_FILE_CONFIG.document.bucket)
-        .createSignedUrl(document.storage_path, 60 * 60);
+      const { data, error } = await createVerifiedClientFileUrl(CLIENT_FILE_CONFIG.document.bucket, document, "client_document");
 
       if (requestId !== documentPreviewRequestRef.current) return;
 
@@ -106,7 +104,7 @@ export function useClientFileWorkflow({
         return;
       }
 
-      setDocumentPreviewUrl(data.signedUrl);
+      setDocumentPreviewUrl(data?.signedUrl ?? "");
       setDocumentPreviewLoading(false);
     },
     [setDocumentsMessage]
@@ -118,9 +116,7 @@ export function useClientFileWorkflow({
 
       setAssessmentPreviewLoading(true);
 
-      const { data, error } = await supabase.storage
-        .from(CLIENT_FILE_CONFIG.assessment.bucket)
-        .createSignedUrl(assessment.storage_path, 60 * 60);
+      const { data, error } = await createVerifiedClientFileUrl(CLIENT_FILE_CONFIG.assessment.bucket, assessment, "client_assessment");
 
       if (requestId !== assessmentPreviewRequestRef.current) return;
 
@@ -131,7 +127,7 @@ export function useClientFileWorkflow({
         return;
       }
 
-      setAssessmentPreviewUrl(data.signedUrl);
+      setAssessmentPreviewUrl(data?.signedUrl ?? "");
       setAssessmentPreviewLoading(false);
     },
     [setAssessmentsMessage]

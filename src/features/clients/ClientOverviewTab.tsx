@@ -14,6 +14,7 @@ import {
 } from "../../appShared";
 
 type ClientOverviewTabProps = {
+  isClientOverviewReady: boolean;
   clientForm: ClientForm;
   categoryOptions: string[];
   hpcRepresentativeOptions: string[];
@@ -44,6 +45,7 @@ type ClientOverviewTabProps = {
 };
 
 export function ClientOverviewTab({
+  isClientOverviewReady,
   clientForm,
   categoryOptions,
   hpcRepresentativeOptions,
@@ -83,6 +85,8 @@ export function ClientOverviewTab({
     isHpcRepresentativeLocked && normalizedLockedHpcRepresentativeName
       ? normalizedLockedHpcRepresentativeName
       : clientForm.hpc_representative;
+
+  if (!isClientOverviewReady) return <div className="panel"><SectionHeader className="section-header" title="Client Overview" /><StatusMessage message={clientMessage || "Loading the selected client…"} /></div>;
 
   return (
 <div className="panel">

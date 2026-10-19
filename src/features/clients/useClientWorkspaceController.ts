@@ -122,6 +122,10 @@ export function useClientWorkspaceController({
   const [clientYearFilter, setClientYearFilter] = useState("all");
   const [clientMonthFilter, setClientMonthFilter] = useState("all");
   const [selectedClientId, setSelectedClientId] = useState("");
+  const selectedClientIdRef = useRef(selectedClientId);
+  selectedClientIdRef.current = selectedClientId;
+  const isCurrentClient = useCallback((id: string) => selectedClientIdRef.current === id, []);
+  const [clientDraftIdentity, setClientDraftIdentity] = useState<{ id: string; updatedAt: string } | null>(null);
 
   const clientSortMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -375,6 +379,8 @@ export function useClientWorkspaceController({
 
   const loadClientDetails = useClientDetailsLoader({
     clients,
+    setClientDraftIdentity,
+    isCurrentClient,
     setClientForm,
     setChildrenForms,
     setClientOverviewBaselineSnapshot,
@@ -495,6 +501,7 @@ export function useClientWorkspaceController({
 
   useSelectedClientDataLoader({
     selectedClientId,
+    setClientDraftIdentity,
     clients,
     analyticsClients,
     canCurrentProfileAccessClient,
@@ -563,6 +570,8 @@ export function useClientWorkspaceController({
     handleSaveClientOverview,
   } = useClientSave({
     selectedClientId,
+    clientDraftIdentity,
+    isCurrentClient,
     clientForm,
     childrenForms,
     canCreateClientRecords,
@@ -656,6 +665,7 @@ export function useClientWorkspaceController({
       loading,
       selectedClientId,
       isClientOverviewDirty,
+      isClientOverviewReady: clientDraftIdentity?.id === selectedClientId,
       updateClientForm,
       updateSiblingOrderPart,
       toggleCounsellingReason,

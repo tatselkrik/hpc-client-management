@@ -1,4 +1,5 @@
 import { useMfaVerificationRequired } from "../../lib/authPolicy";
+import { normalizeCareTeamRole } from "../../security/rolePolicy";
 import type { Dispatch, SetStateAction } from "react";
 
 import {
@@ -55,6 +56,7 @@ type LoginRendererProps = {
 };
 
 export type AppRootRendererProps = AppAuthenticatedLayoutProps & {
+  auditWarning?: string;
   showPasswordRecoveryScreen: boolean;
   isAuthGateChecking: boolean;
   showMfaChallengeScreen: boolean;
@@ -64,6 +66,7 @@ export type AppRootRendererProps = AppAuthenticatedLayoutProps & {
 };
 
 export function AppRootRenderer({
+  auditWarning,
   showPasswordRecoveryScreen,
   isAuthGateChecking,
   showMfaChallengeScreen,
@@ -85,9 +88,11 @@ export function AppRootRenderer({
     return <MfaChallengeScreen {...mfaChallengeProps} />;
   }
 
-  if (!authenticatedLayoutProps.userEmail) {
+  if (!authenticatedLayoutProps.userEmail || !authenticatedLayoutProps.profile?.id ||
+      authenticatedLayoutProps.profile.is_active !== true ||
+      !["Admin", "Staff", "Psychologist / Counselor"].includes(normalizeCareTeamRole(authenticatedLayoutProps.profile.role))) {
     return <LoginScreen {...loginProps} />;
   }
 
-  return <AppAuthenticatedLayout {...authenticatedLayoutProps} />;
+  return <>{auditWarning && <div role="alert" className="audit-warning">{auditWarning}</div>}<AppAuthenticatedLayout {...authenticatedLayoutProps} /></>;
 }

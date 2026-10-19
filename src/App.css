@@ -14,3 +14,9 @@
 
 @import "./styles/themes/index.css";
 @import "./styles/components/index.css";
+
+.backup-passphrase-dialog { max-width: 34rem; border: 1px solid #aaa; border-radius: 12px; padding: 24px; }
+.backup-passphrase-dialog::backdrop { background: #0008; }
+.backup-passphrase-dialog label { display: block; margin: 16px 0; }
+.backup-passphrase-dialog input { display: block; width: 100%; margin-top: 6px; }
+.backup-passphrase-dialog button { margin-right: 10px; }

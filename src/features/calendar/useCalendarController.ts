@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { supabase } from "../../lib/supabase";
 import { fetchSupabasePages } from "../../lib/supabasePagination";
@@ -212,10 +212,17 @@ export function useCalendarController({
     );
   }, [appointments, selectedProviderId, visibleDates]);
 
+  const calendarRequest = useRef(0);
+  const calendarKey = useRef("");
+  calendarKey.current = `${profile?.id ?? ""}:${anchorDate}`;
+  useEffect(() => () => { calendarRequest.current += 1; }, []);
   const loadCalendar = useCallback(async (
     { preserveMessage = false }: LoadCalendarOptions = {}
   ) => {
     if (!profile?.id) return false;
+    const request = ++calendarRequest.current;
+    const key = `${profile.id}:${anchorDate}`;
+    const isCurrent = () => request === calendarRequest.current && key === calendarKey.current;
 
     setIsLoadingCalendar(true);
     if (!preserveMessage) {
@@ -225,6 +232,7 @@ export function useCalendarController({
     const rangeStart = toPhilippineIso(addCalendarDays(anchorDate, -14), "00:00");
     const rangeEnd = toPhilippineIso(addCalendarDays(anchorDate, 46), "00:00");
 
+    try {
     const [
       appointmentsResult,
       statusEventsResult,
@@ -277,6 +285,7 @@ export function useCalendarController({
           .order("id", { ascending: true })),
       ]);
 
+    if (!isCurrent()) return false;
     const firstError = [
       appointmentsResult.error,
       statusEventsResult.error,
@@ -307,6 +316,10 @@ export function useCalendarController({
     if (!preserveMessage) setCalendarMessage("");
     setIsLoadingCalendar(false);
     return true;
+    } catch (error) {
+      if (isCurrent()) { setCalendarMessage(feedbackMessages.loadFailed("calendar", getErrorDetail(error))); setIsLoadingCalendar(false); }
+      return false;
+    }
   }, [anchorDate, profile?.id]);
 
   useEffect(() => {
@@ -437,8 +450,8 @@ export function useCalendarController({
     };
 
     const result = draft.id
-      ? await supabase.from("appointments").update(payload).eq("id", draft.id)
-      : await supabase.from("appointments").insert(payload);
+      ? await supabase.from("appointments").update(payload).eq("id", draft.id).select("id").single()
+      : await supabase.from("appointments").insert(payload).select("id").single();
 
     if (result.error) {
       setCalendarMessage(
@@ -465,7 +478,7 @@ export function useCalendarController({
           cancellation_reason:
             nextStatus === "cancelled" ? cancellationReason.trim() : null,
         })
-        .eq("id", appointment.id);
+        .eq("id", appointment.id).select("id").single();
 
       if (error) {
         setCalendarMessage(feedbackMessages.saveFailed("appointment", error.message));
@@ -498,7 +511,7 @@ export function useCalendarController({
           removed_at: new Date().toISOString(),
           removal_reason: trimmedReason,
         })
-        .eq("id", appointment.id);
+        .eq("id", appointment.id).select("id").single();
 
       if (error) {
         setCalendarMessage(
@@ -583,7 +596,7 @@ export function useCalendarController({
       const { error } = await supabase
         .from("care_team_availability")
         .delete()
-        .eq("id", id);
+        .eq("id", id).select("id").single();
       setCalendarMessage(
         error
           ? feedbackMessages.error("We could not remove the availability.", error.message)
@@ -650,7 +663,7 @@ export function useCalendarController({
       const { error } = await supabase
         .from("care_team_availability_overrides")
         .delete()
-        .eq("id", id);
+        .eq("id", id).select("id").single();
       setCalendarMessage(
         error
           ? feedbackMessages.error("We could not remove the exception.", error.message)
@@ -670,17 +683,8 @@ export function useCalendarController({
     async (hours: ClinicHours[]) => {
       setIsSavingCalendar(true);
       try {
-        for (const day of hours) {
-          const { error } = await supabase
-            .from("clinic_hours")
-            .update({
-              is_open: day.is_open,
-              opens_at: day.is_open ? day.opens_at : null,
-              closes_at: day.is_open ? day.closes_at : null,
-            })
-            .eq("weekday", day.weekday);
-          if (error) throw error;
-        }
+        const { error } = await supabase.rpc("hpc_save_clinic_hours", { p_hours: hours });
+        if (error) throw error;
         await refreshAfterMutation(feedbackMessages.saved("Clinic hours"));
       } catch (error) {
         setCalendarMessage(

@@ -1,6 +1,7 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
 
 import { supabase } from "../../lib/supabase";
+import { getClinicalSessionGeneration, isClinicalSessionLocked, lockClinicalSession, observeClinicalIdentity } from "../../lib/clinicalSession";
 import { feedbackMessages } from "../../lib/feedbackMessages";
 import {
   clearPasswordRecoveryHash,
@@ -43,10 +44,20 @@ export function useAuthGateBootstrap({
   setUserEmail,
 }: UseAuthGateBootstrapOptions) {
   useEffect(() => {
+    let disposed = false;
+    const generation = getClinicalSessionGeneration();
+    const isCurrent = () => !disposed && generation === getClinicalSessionGeneration();
     const checkSession = async () => {
       setIsAuthGateChecking(true);
+      try {
+      if (isClinicalSessionLocked()) {
+        setUserEmail(null);
+        setStatus("Session locked. Please sign in again.");
+        return;
+      }
 
       const { data, error } = await supabase.auth.getSession();
+      if (!isCurrent() || isClinicalSessionLocked()) return;
 
       if (error) {
         setStatus(feedbackMessages.error("We could not check your session.", getFriendlyAuthErrorMessage(error)));
@@ -55,6 +66,7 @@ export function useAuthGateBootstrap({
       }
 
       if (data.session?.user?.email) {
+        if (!observeClinicalIdentity(data.session.user.id)) return;
         setUserEmail(data.session.user.email);
 
         const isInvitation = getHasAccountInvitationHash();
@@ -72,6 +84,7 @@ export function useAuthGateBootstrap({
         }
 
         const mfaStatus = await evaluateMfaChallengeRequirement();
+        if (!isCurrent() || isClinicalSessionLocked()) return;
 
         if (mfaStatus === "challenge") {
           setStatus("Enter your authenticator code to continue.");
@@ -80,22 +93,32 @@ export function useAuthGateBootstrap({
         }
 
         if (mfaStatus === "error") {
-          await supabase.auth.signOut();
+          lockClinicalSession();
+          void supabase.auth.signOut().catch(() => undefined);
           setUserEmail(null);
           setIsAuthGateChecking(false);
           return;
         }
 
-        await refreshAuthenticatedAppData();
+        const loaded = await refreshAuthenticatedAppData();
+        if (isCurrent() && !loaded) setUserEmail(null);
       } else {
         setDashboardAnnouncement(emptyDashboardAnnouncement());
         setShowMfaChallengeScreen(false);
       }
 
-      setIsAuthGateChecking(false);
+      } catch {
+        if (isCurrent()) {
+          setUserEmail(null);
+          setStatus("We could not load your session. Please sign in again.");
+        }
+      } finally {
+        if (isCurrent()) setIsAuthGateChecking(false);
+      }
     };
 
     void checkSession();
+    return () => { disposed = true; };
   }, [
     evaluateMfaChallengeRequirement,
     refreshAuthenticatedAppData,
@@ -113,6 +136,12 @@ export function useAuthGateBootstrap({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        setUserEmail(null);
+        lockClinicalSession();
+      } else if (session && !observeClinicalIdentity(session.user.id)) {
+        return;
+      }
       if (event === "PASSWORD_RECOVERY") {
         setIsInvitationPasswordSetup(false);
         setUserEmail(session?.user?.email ?? null);

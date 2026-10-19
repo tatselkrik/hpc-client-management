@@ -1,11 +1,9 @@
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 
 import { supabase } from "../../lib/supabase";
+import { getClinicalSessionGeneration, isClinicalSessionLocked } from "../../lib/clinicalSession";
 import type { Profile } from "../../appShared";
-import {
-  PROFILE_PICTURES_BUCKET,
-  PROFILE_PICTURE_SIGNED_URL_TTL_SECONDS,
-} from "../../appShared";
+import { createVerifiedProfilePictureUrl } from "../../lib/uploadValidation";
 
 type UseAuthenticatedProfileBootstrapOptions = {
   setStatus: Dispatch<SetStateAction<string>>;
@@ -29,12 +27,16 @@ export function useAuthenticatedProfileBootstrap({
   }, []);
 
   const loadProfile = useCallback(async () => {
+    const generation = getClinicalSessionGeneration();
+    const isCurrent = () => generation === getClinicalSessionGeneration() && !isClinicalSessionLocked();
     const {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser();
+    if (!isCurrent()) return false;
 
     if (userError || !user) {
+      clearAuthenticatedProfile();
       setStatus(userError?.message ?? "No signed-in user found.");
       return false;
     }
@@ -44,8 +46,10 @@ export function useAuthenticatedProfileBootstrap({
       .select("id, full_name, role, avatar_path, hpc_representative_name, is_active")
       .eq("id", user.id)
       .maybeSingle();
+    if (!isCurrent()) return false;
 
     if (error) {
+      clearAuthenticatedProfile();
       setStatus(`Profile load failed: ${error.message}`);
       setProfile(null);
       return false;
@@ -59,7 +63,7 @@ export function useAuthenticatedProfileBootstrap({
       return false;
     }
 
-    if (data.is_active === false) {
+    if (data.is_active !== true) {
       setStatus("Your account has been deactivated. Please contact an administrator.");
       setProfile(null);
       setUserEmail(null);
@@ -70,15 +74,14 @@ export function useAuthenticatedProfileBootstrap({
     let nextAvatarUrl = "";
 
     if (data.avatar_path?.trim()) {
-      const signedAvatar = await supabase.storage
-        .from(PROFILE_PICTURES_BUCKET)
-        .createSignedUrl(data.avatar_path, PROFILE_PICTURE_SIGNED_URL_TTL_SECONDS);
+      const signedAvatar = await createVerifiedProfilePictureUrl(data.avatar_path);
 
       if (!signedAvatar.error) {
         nextAvatarUrl = signedAvatar.data?.signedUrl ?? "";
       }
     }
 
+    if (!isCurrent()) return false;
     setProfile(data);
     setUserEmail(user.email ?? null);
     setProfileNameInput(data.full_name ?? "");
@@ -86,7 +89,7 @@ export function useAuthenticatedProfileBootstrap({
     setProfileAvatarUrl(nextAvatarUrl);
     setStatus("Profile loaded successfully.");
     return true;
-  }, [setProfileEmailInput, setProfileNameInput, setStatus]);
+  }, [clearAuthenticatedProfile, setProfileEmailInput, setProfileNameInput, setStatus]);
 
   return {
     userEmail,

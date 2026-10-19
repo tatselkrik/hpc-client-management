@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useClinicClock } from "../../lib/useClinicClock";
 
 import type { DashboardAnnouncement } from "../../appShared";
 
@@ -11,6 +12,7 @@ export function useDashboardAnnouncementView({
   dashboardAnnouncement,
   dismissedAnnouncementKey,
 }: UseDashboardAnnouncementViewOptions) {
+  const now = useClinicClock();
   return useMemo(() => {
     const announcementSignature = dashboardAnnouncement.id
       ? `${dashboardAnnouncement.id}:${dashboardAnnouncement.updated_at.trim()}`
@@ -18,8 +20,8 @@ export function useDashboardAnnouncementView({
 
     const isDashboardAnnouncementExpired = (() => {
       if (!dashboardAnnouncement.expiry_date) return false;
-      const expiryAt = new Date(`${dashboardAnnouncement.expiry_date}T23:59:59`);
-      return Number.isFinite(expiryAt.getTime()) && expiryAt.getTime() < Date.now();
+      const expiryAt = new Date(`${dashboardAnnouncement.expiry_date}T23:59:59+08:00`);
+      return Number.isFinite(expiryAt.getTime()) && expiryAt.getTime() < now;
     })();
 
     const shouldShowDashboardAnnouncement =
@@ -29,7 +31,7 @@ export function useDashboardAnnouncementView({
         dismissedAnnouncementKey !== announcementSignature);
 
     const dashboardAnnouncementExpiryLabel = dashboardAnnouncement.expiry_date
-      ? new Date(`${dashboardAnnouncement.expiry_date}T00:00:00`).toLocaleDateString()
+      ? new Date(`${dashboardAnnouncement.expiry_date}T00:00:00+08:00`).toLocaleDateString()
       : "No expiry date";
 
     return {
@@ -38,5 +40,5 @@ export function useDashboardAnnouncementView({
       shouldShowDashboardAnnouncement,
       dashboardAnnouncementExpiryLabel,
     };
-  }, [dashboardAnnouncement, dismissedAnnouncementKey]);
+  }, [dashboardAnnouncement, dismissedAnnouncementKey, now]);
 }

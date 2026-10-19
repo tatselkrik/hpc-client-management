@@ -55,8 +55,8 @@ export function SettingsBackupRestoreCard({
       />
 
       <p className="settings-module-copy">
-        Export clinic records to a JSON package, review its contents, and restore records safely
-        into this same Supabase project.
+        Export an encrypted backup protected by a passphrase, review its contents, and restore
+        records into this same clinic. Keep the passphrase separately; it cannot be recovered.
       </p>
 
       {canManageCareTeam ? (
@@ -77,7 +77,7 @@ export function SettingsBackupRestoreCard({
               onClick={() => void handleExportClinicBackup()}
               disabled={isExportingBackup || isRestoringBackup}
             >
-              {isExportingBackup ? "Exporting backup…" : "Export backup (.json)"}
+              {isExportingBackup ? "Exporting backup…" : "Export encrypted backup"}
             </button>
 
             <button
@@ -92,7 +92,7 @@ export function SettingsBackupRestoreCard({
             <input
               ref={backupRestoreInputRef}
               type="file"
-              accept=".json,application/json"
+              accept=".hpcbackup,.json,application/json"
               className="hidden-file-input"
               onChange={(event) => void handleRestorePackageSelected(event)}
             />
@@ -150,7 +150,7 @@ export function SettingsBackupRestoreCard({
             </div>
           ) : (
             <div className="empty-state">
-              Choose a JSON backup to inspect its table counts before restoring anything.
+              Choose a encrypted backup to inspect its table counts before restoring anything.
             </div>
           )}
         </div>

@@ -3,6 +3,21 @@
 This file records versioned source changes. Selected stable milestones also
 have tagged GitHub releases; intermediate source commits remain in Git history.
 
+## 0.3.8 - 2026-10-19
+
+- Added immediate local session locking, identity-scoped workspace cleanup and
+  memory-only sign-in sessions. Restarting the app requires signing in again.
+- Bound client drafts to the loaded record and added atomic, conflict-checked
+  client/child saves, clinic-hours changes and audited care-team administration.
+- Added consistent passphrase-encrypted backups and bounded restore requests.
+- Validated uploaded content before access, retained existing linked files for
+  review, and preserved exact object-version checks through service-only metadata.
+- Added audited aggregate CSV exports with small-group suppression, minimized
+  analytics projections, refreshed updater authorization and narrower file writes.
+- Patched the image parser dependency and retained all 0.3.7 export improvements.
+- Includes two database migrations and five changed Edge Functions; deployment
+  operators must apply the matching backend changes before updating desktops.
+
 ## 0.3.7 - 2026-10-16
 
 - Redesigned editable Analytics presentations with larger type, clear reporting

@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
 import { requireFreshPasswordSession } from "../_shared/security.ts";
 
@@ -172,56 +172,11 @@ serve(async (req) => {
   if (targetProfileBefore.is_active === false) {
     return respond({ error: "This care team account is inactive." }, 409);
   }
-  const previousRepresentativeName = normalizeHpcRepresentativeName(
-    targetProfileBefore.hpc_representative_name,
-  );
-  const roleChanged = previousRole !== nextRole;
-  const representativeChanged = previousRepresentativeName !== nextHpcRepresentativeName;
-
-  const { data: updatedProfile, error: updateError } = await supabase
-    .from("profiles")
-    .update({
-      role: nextRole,
-      hpc_representative_name:
-        roleRequiresRepresentative(nextRole)
-          ? nextHpcRepresentativeName || null
-          : null,
-    })
-    .eq("id", targetProfileId)
-    .select("id, full_name, role, email, avatar_path, hpc_representative_name, is_active")
-    .maybeSingle();
-
-  if (updateError) {
-    return respond({ error: updateError.message }, 500);
-  }
-
-  if (!updatedProfile) {
-    return respond({ error: "Care team member was not found." }, 404);
-  }
-
-  await supabase.from("audit_logs").insert({
-    actor_user_id: user.id,
-    actor_email: user.email ?? callerProfile?.email ?? null,
-    actor_name: callerProfile?.full_name ?? null,
-    module: "Care Team",
-    action:
-      representativeChanged && !roleChanged
-        ? "Representative Assignment Updated"
-        : "Role Updated",
-    target_type: "profile",
-    target_id: targetProfileId,
-    target_label: updatedProfile.full_name ?? updatedProfile.email ?? targetProfileId,
-    details: {
-      email: updatedProfile.email ?? targetProfileBefore.email ?? null,
-      previous_role: previousRole,
-      next_role: nextRole,
-      previous_hpc_representative_name: previousRepresentativeName || null,
-      next_hpc_representative_name:
-        roleRequiresRepresentative(nextRole) ? nextHpcRepresentativeName || null : null,
-      target_is_active: updatedProfile.is_active ?? targetProfileBefore.is_active ?? true,
-      source: "edge_function",
-    },
+  const { data: updatedProfile, error: updateError } = await supabase.rpc("hpc_manage_team_service", {
+    p_actor_id: user.id, p_target_id: targetProfileId, p_action: "role",
+    p_role: nextRole, p_representative: roleRequiresRepresentative(nextRole) ? nextHpcRepresentativeName || null : null,
   });
+  if (updateError || !updatedProfile) return respond({ error: updateError?.message ?? "The account was not updated." }, 409);
 
   return respond({ profile: updatedProfile, audit_log_written: true });
 });

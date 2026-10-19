@@ -36,6 +36,7 @@ export type ClientTabContentProps = ClientOverviewTabProps &
   };
 
 export function ClientTabContent({
+  isClientOverviewReady,
   activeClientTab,
   hasSuicidalIdeation,
   cssrsClientName,
@@ -120,9 +121,11 @@ export function ClientTabContent({
   canManageAssessments,
   canDeleteAssessments,
 }: ClientTabContentProps) {
+  if (!isClientOverviewReady) return <div role="status">{clientMessage || "Loading the selected client…"}</div>;
   if (activeClientTab === "overview") {
     return (
       <ClientOverviewTab
+        isClientOverviewReady={isClientOverviewReady}
         clientForm={clientForm}
         categoryOptions={categoryOptions}
         hpcRepresentativeOptions={hpcRepresentativeOptions}

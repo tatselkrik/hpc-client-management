@@ -2,6 +2,9 @@ import { ChangeEvent, useRef, useState } from "react";
 import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { supabase } from "../../lib/supabase";
+import { encryptBackup, decryptBackup, isEncryptedBackup } from "../../lib/backupEncryption";
+import { requestBackupPassphrase } from "../../lib/requestBackupPassphrase";
+import { assertClinicalSession, getClinicalSessionGeneration } from "../../lib/clinicalSession";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { getSupabaseFunctionErrorMessage } from "../../lib/supabaseFunctionErrors";
 
@@ -23,7 +26,6 @@ type UseBackupToolsOptions = {
 
 const MAX_RESTORE_REVIEW_BYTES = 25 * 1024 * 1024;
 
-const BACKUP_EXPORT_PAGE_SIZE = 1000;
 const BACKUP_FORMAT_VERSION = 2;
 
 type ClinicBackupPackage = {
@@ -36,35 +38,6 @@ type ClinicBackupPackage = {
   source_project_ref: string;
   tables: Record<string, Record<string, unknown>[]>;
 };
-
-type BackupTableKey = (typeof BACKUP_TABLE_CONFIG)[number]["key"];
-
-const fetchBackupTableRows = async (tableKey: BackupTableKey) => {
-  const rows: Record<string, unknown>[] = [];
-  let from = 0;
-
-  while (true) {
-    const to = from + BACKUP_EXPORT_PAGE_SIZE - 1;
-    const { data, error } = await supabase
-      .from(tableKey)
-      .select("*")
-      .range(from, to);
-
-    if (error) {
-      throw error;
-    }
-
-    const pageRows = (data ?? []) as Record<string, unknown>[];
-    rows.push(...pageRows);
-
-    if (pageRows.length < BACKUP_EXPORT_PAGE_SIZE) {
-      return rows;
-    }
-
-    from += BACKUP_EXPORT_PAGE_SIZE;
-  }
-};
-
 
 export function useBackupTools({
   canManageCareTeam,
@@ -82,6 +55,7 @@ export function useBackupTools({
   const canRestoreClinicBackup = profile?.role?.trim().toLowerCase() === "admin";
 
   const handleExportClinicBackup = async () => {
+    const generation = getClinicalSessionGeneration();
     if (!canManageCareTeam) {
       setBackupToolsStatus(feedbackMessages.permissionDenied("Only Admin or Staff accounts can export clinic backups."));
       return;
@@ -91,22 +65,17 @@ export function useBackupTools({
     setBackupToolsStatus(feedbackMessages.loading("Preparing backup export"));
 
     try {
-      const tableResults = [];
-
-      for (const table of BACKUP_TABLE_CONFIG) {
-        setBackupToolsStatus(feedbackMessages.loading(`Exporting ${table.label}`));
-
-        try {
-          tableResults.push({
-            key: table.key,
-            label: table.label,
-            rows: await fetchBackupTableRows(table.key),
-          });
-        } catch (error) {
-          const message = getErrorDetail(error);
-          throw new Error(`Unable to export ${table.label}: ${message}`);
-        }
-      }
+      const passphrase = await requestBackupPassphrase("encrypt");
+      if (passphrase === null) { setBackupToolsStatus(feedbackMessages.cancelled("backup export")); return; }
+      assertClinicalSession(generation);
+      const { data: tables, error: snapshotError } = await supabase.rpc("hpc_export_backup");
+      if (snapshotError) throw snapshotError;
+      assertClinicalSession(generation);
+      const tableResults = BACKUP_TABLE_CONFIG.map((table) => {
+        const rows = tables?.[table.key];
+        if (!Array.isArray(rows)) throw new Error("The server did not return a complete backup snapshot.");
+        return { ...table, rows: rows as Record<string, unknown>[] };
+      });
 
       const exportedAt = new Date().toISOString();
       const sourceProjectRef = new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0];
@@ -121,8 +90,10 @@ export function useBackupTools({
         tables: Object.fromEntries(tableResults.map((table) => [table.key, table.rows])),
       };
 
+      const encrypted = await encryptBackup(JSON.stringify(payload), passphrase);
+      assertClinicalSession(generation);
       const fileName = sanitizeFileName(
-        `hpc-clinic-backup-${exportedAt.replace(/[:]/g, "-").replace(/\.\d+Z$/, "Z")}.json`
+        `hpc-clinic-backup-${exportedAt.replace(/[:]/g, "-").replace(/\.\d+Z$/, "Z")}.hpcbackup`
       );
 
       let savedLocationLabel = fileName;
@@ -131,7 +102,7 @@ export function useBackupTools({
         const selectedSavePath = await save({
           title: "Save clinic backup",
           defaultPath: fileName,
-          filters: [{ name: "JSON Backup", extensions: ["json"] }],
+          filters: [{ name: "Encrypted Backup", extensions: ["hpcbackup"] }],
         });
 
         if (!selectedSavePath) {
@@ -140,12 +111,9 @@ export function useBackupTools({
           return;
         }
 
-        const finalSavePath =
-          selectedSavePath.toLowerCase().endsWith(".json")
-            ? selectedSavePath
-            : `${selectedSavePath}.json`;
-
-        await writeFile(finalSavePath, new TextEncoder().encode(JSON.stringify(payload, null, 2)));
+        const finalSavePath = selectedSavePath;
+        assertClinicalSession(generation);
+        await writeFile(finalSavePath, new TextEncoder().encode(encrypted));
         savedLocationLabel = finalSavePath;
       } catch (saveDialogError) {
         const message = getErrorDetail(saveDialogError);
@@ -168,7 +136,7 @@ export function useBackupTools({
         })),
       });
       setRestorePackage(payload);
-      setBackupToolsStatus(`Backup saved to ${savedLocationLabel}.`);
+      setBackupToolsStatus(`Encrypted backup saved to ${savedLocationLabel}. Keep its passphrase separately; it is required to restore this file.`);
     } catch (error) {
       const message = getErrorDetail(error);
       setBackupToolsStatus(feedbackMessages.error("We could not create the backup.", message));
@@ -188,18 +156,26 @@ export function useBackupTools({
       return;
     }
 
+    setRestorePackage(null);
+    setRestorePreview(null);
     setBackupToolsStatus(feedbackMessages.loading("Reviewing restore package"));
 
     try {
-      if (!selectedFile.name.toLowerCase().endsWith(".json")) {
-        throw new Error("Choose a .json backup package.");
+      if (!/\.(json|hpcbackup)$/i.test(selectedFile.name)) {
+        throw new Error("Choose an encrypted .hpcbackup file or a legacy .json backup.");
       }
 
       if (selectedFile.size > MAX_RESTORE_REVIEW_BYTES) {
         throw new Error("The selected package is too large to review in the app.");
       }
 
-      const rawText = await selectedFile.text();
+      let rawText = await selectedFile.text();
+      const envelope: unknown = JSON.parse(rawText);
+      if (isEncryptedBackup(envelope)) {
+        const passphrase = await requestBackupPassphrase("decrypt");
+        if (passphrase === null) { setBackupToolsStatus(feedbackMessages.cancelled("backup review")); return; }
+        rawText = await decryptBackup(envelope, passphrase);
+      }
       const parsed = JSON.parse(rawText) as {
         format_version?: unknown;
         export_id?: unknown;

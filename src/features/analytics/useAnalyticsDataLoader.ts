@@ -33,6 +33,11 @@ type UseAnalyticsDataLoaderOptions = {
   assessmentsLength: number;
 };
 
+// Dashboard deliberately requests only the common fields. The remaining
+// summary fields are optional until the Analytics projection is requested.
+type AnalyticsClientSummaryRow = Pick<AnalyticsClientInsight, "id"> &
+  Partial<Omit<AnalyticsClientInsight, "id">>;
+
 export function useAnalyticsDataLoader({
   activeSection,
   userEmail,
@@ -53,7 +58,7 @@ export function useAnalyticsDataLoader({
     useState<AnalyticsCssrsInsight[]>([]);
   const [analyticsClient4PsRecords, setAnalyticsClient4PsRecords] =
     useState<AnalyticsClient4PsInsight[]>([]);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
   const [analyticsMessage, setAnalyticsMessage] = useState("");
   const [analyticsExportStatus, setAnalyticsExportStatus] = useState("");
   const [isAnalyticsExporting, setIsAnalyticsExporting] = useState(false);
@@ -73,14 +78,29 @@ export function useAnalyticsDataLoader({
     useState<AnalyticsCssrsRiskFilter>("all");
 
   const analyticsLoadRequestRef = useRef(0);
+  const identityRef = useRef(userEmail);
+  identityRef.current = userEmail;
+  const sectionRef = useRef(activeSection);
+  sectionRef.current = activeSection;
+  useEffect(() => {
+    analyticsLoadRequestRef.current += 1;
+    setAnalyticsClients([]); setAnalyticsProgressNotes([]); setAnalyticsDocuments([]);
+    setAnalyticsAssessments([]); setAnalyticsCssrsRecords([]); setAnalyticsClient4PsRecords([]);
+    setAnalyticsMessage(""); setAnalyticsLoading(true);
+    return () => { analyticsLoadRequestRef.current += 1; };
+  }, [userEmail]);
 
   const loadAnalyticsData = useCallback(async () => {
+    const identity = identityRef.current;
+    const section = sectionRef.current;
+    if (!identity) return;
     const requestId = ++analyticsLoadRequestRef.current;
-    const isCurrentAnalyticsRequest = () => analyticsLoadRequestRef.current === requestId;
+    const isCurrentAnalyticsRequest = () => analyticsLoadRequestRef.current === requestId && identityRef.current === identity && sectionRef.current === section;
 
     setAnalyticsLoading(true);
     setAnalyticsMessage(feedbackMessages.loading("Loading analytics"));
 
+    try {
     const [
       clientsResponse,
       notesResponse,
@@ -89,12 +109,14 @@ export function useAnalyticsDataLoader({
       cssrsResponse,
       client4PsResponse,
     ] = await Promise.all([
-      fetchSupabasePages(() =>
-        supabase
-          .from("clients")
-          .select("id, client_name, age, sex, intake_source, sibling_order, sexual_orientation, marital_status, educational_attainment, employment_status, occupation, partner_age, partner_sexual_orientation, years_together, partner_educational_attainment, partner_employment_status, pre_existing_psychiatric_diagnosis, pre_existing_psychiatric_diagnosis_details, hpc_representative, intake_date, client_status, category_path, created_at, updated_at, counselling_reasons")
+      fetchSupabasePages<AnalyticsClientSummaryRow>(() => ({
+        range: (from, to) => supabase
+          .from("hpc_analytics_clients")
+          .select(section === "dashboard" ? "id, client_name, hpc_representative, intake_date, client_status, category_path, created_at, updated_at, counselling_reasons" : "*")
           .order("updated_at", { ascending: false })
-      ),
+          .range(from, to)
+          .overrideTypes<AnalyticsClientSummaryRow[], { merge: false }>()
+      })),
       fetchSupabasePages(() =>
         supabase
           .from("progress_notes")
@@ -115,13 +137,13 @@ export function useAnalyticsDataLoader({
       ),
       fetchSupabasePages(() =>
         supabase
-          .from("client_cssrs")
+          .from("hpc_analytics_cssrs")
           .select("client_id, positive_severity, behavior, ideation_answers, demeanor_selections, protective_factor_texts, updated_at")
           .order("updated_at", { ascending: false })
       ),
       fetchSupabasePages(() =>
         supabase
-          .from("client_4ps")
+          .from("hpc_analytics_4ps")
           .select("*")
           .order("updated_at", { ascending: false })
       ),
@@ -189,10 +211,7 @@ export function useAnalyticsDataLoader({
           typeof client.pre_existing_psychiatric_diagnosis === "string"
             ? client.pre_existing_psychiatric_diagnosis
             : null,
-        pre_existing_psychiatric_diagnosis_details:
-          typeof client.pre_existing_psychiatric_diagnosis_details === "string"
-            ? client.pre_existing_psychiatric_diagnosis_details
-            : null,
+        pre_existing_psychiatric_diagnosis_details: null,
         hpc_representative:
           typeof client.hpc_representative === "string"
             ? client.hpc_representative
@@ -269,6 +288,9 @@ export function useAnalyticsDataLoader({
 
     setAnalyticsMessage("");
     setAnalyticsLoading(false);
+    } catch {
+      if (isCurrentAnalyticsRequest()) { setAnalyticsMessage("We could not load analytics. Reopen the workspace to retry."); setAnalyticsLoading(false); }
+    }
   }, []);
 
   useEffect(() => {

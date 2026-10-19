@@ -53,3 +53,28 @@ export async function validateStoredUploadOnServer(
         : "Server-side upload validation rejected this file.",
   };
 }
+
+export async function createVerifiedClientFileUrl(
+  bucket: string,
+  file: { client_id: string; storage_path: string; original_file_name: string | null; mime_type: string | null; file_size_bytes: number | null },
+  context: "client_document" | "client_assessment",
+) {
+  let result = await supabase.storage.from(bucket).createSignedUrl(file.storage_path, 60 * 60);
+  if (result.error) {
+    const checked = await validateStoredUploadOnServer({ context, bucket, client_id: file.client_id, storage_path: file.storage_path, file_name: file.original_file_name || file.storage_path.split("/").pop() || "", mime_type: file.mime_type, file_size_bytes: file.file_size_bytes ?? 0 });
+    if (!checked.ok) return { data: null, error: new Error(checked.message) };
+    result = await supabase.storage.from(bucket).createSignedUrl(file.storage_path, 60 * 60);
+  }
+  return result;
+}
+
+export async function createVerifiedProfilePictureUrl(storagePath: string) {
+  const bucket = "profile-pictures";
+  let result = await supabase.storage.from(bucket).createSignedUrl(storagePath, 60 * 60);
+  if (result.error) {
+    const checked = await validateStoredUploadOnServer({ context: "profile_picture", bucket, storage_path: storagePath, file_name: storagePath.split("/").pop() || "", mime_type: null, file_size_bytes: 0 });
+    if (!checked.ok) return { data: null, error: new Error(checked.message) };
+    result = await supabase.storage.from(bucket).createSignedUrl(storagePath, 60 * 60);
+  }
+  return result;
+}

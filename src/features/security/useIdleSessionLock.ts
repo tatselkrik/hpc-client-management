@@ -47,7 +47,12 @@ export function useIdleSessionLock({ enabled, onIdle }: UseIdleSessionLockOption
       if (isLockingRef.current) return;
 
       isLockingRef.current = true;
-      void onIdleRef.current();
+      void Promise.resolve().then(() => onIdleRef.current()).catch(() => {
+        // The action locks locally first. Also permit another attempt if an
+        // unexpected caller fails before it can disable this idle hook.
+        isLockingRef.current = false;
+        resetIdleTimer();
+      });
     };
 
     const resetIdleTimer = () => {

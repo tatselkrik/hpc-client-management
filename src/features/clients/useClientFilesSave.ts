@@ -2,6 +2,7 @@ import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { supabase } from "../../lib/supabase";
+import { assertClinicalSession, getClinicalSessionGeneration } from "../../lib/clinicalSession";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import { validateStoredUploadOnServer } from "../../lib/uploadValidation";
 import type {
@@ -62,6 +63,7 @@ const downloadStorageFileToDisk = async ({
   storagePath: string;
   fileName: string;
 }) => {
+  const generation = getClinicalSessionGeneration();
   const downloadResult = await supabase.storage.from(bucket).download(storagePath);
 
   if (downloadResult.error) {
@@ -79,6 +81,7 @@ const downloadStorageFileToDisk = async ({
   }
 
   const fileBytes = new Uint8Array(await downloadResult.data.arrayBuffer());
+  assertClinicalSession(generation);
   await writeFile(selectedSavePath, fileBytes);
 
   return selectedSavePath;
@@ -350,6 +353,7 @@ export function useClientFilesSave({
   };
 
   const downloadClientFile = async (kind: ClientFileKind, item: ClientFileItem) => {
+    const generation = getClinicalSessionGeneration();
     const config = CLIENT_FILE_CONFIG[kind];
     const setMessage = messageSetterByKind[kind];
     const fileLabel =
@@ -361,6 +365,9 @@ export function useClientFilesSave({
     setMessage(feedbackMessages.loading(`Preparing ${fileLabel} for download`));
 
     try {
+      const checked = await validateStoredUploadOnServer({ context: kind === "document" ? "client_document" : "client_assessment", bucket: config.bucket, storage_path: item.storage_path, file_name: fileLabel, mime_type: item.mime_type, file_size_bytes: item.file_size_bytes ?? 0, client_id: item.client_id });
+      if (!checked.ok) throw new Error(checked.message);
+      assertClinicalSession(generation);
       const savedPath = await downloadStorageFileToDisk({
         bucket: config.bucket,
         storagePath: item.storage_path,

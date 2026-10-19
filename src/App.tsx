@@ -3,8 +3,10 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import "./App.css";
+import { getClinicalSessionGeneration, subscribeClinicalSession } from "./lib/clinicalSession";
 import { AppRootRenderer } from "./features/app/AppRootRenderer";
 import { useAppRootProps } from "./features/app/useAppRootProps";
 import { useAboutUpdates } from "./features/about/useAboutUpdates";
@@ -32,12 +34,13 @@ import {
 const shouldStartWithCompactSidebar = () =>
   typeof window !== "undefined" && window.innerWidth <= 1024;
 
-function App() {
+function AppSession() {
   useDesktopAuthDeepLinks();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginCapsLockOn, setIsLoginCapsLockOn] = useState(false);
+  const [auditWarning, setAuditWarning] = useState("");
   const [status, setStatus] = useState("Please sign in.");
   const [loading, setLoading] = useState(false);
   const [isAuthGateChecking, setIsAuthGateChecking] = useState(true);
@@ -75,14 +78,16 @@ function App() {
   ) => {
     if (!auditWriterRef.current) return;
 
-    await auditWriterRef.current(
+    try { await auditWriterRef.current(
       module,
       action,
       targetType,
       targetId,
       targetLabel,
       details
-    );
+    ); } catch {
+      setAuditWarning("A change may have completed, but its audit record could not be written. Ask an administrator to review the audit log before repeating the action.");
+    }
   }, []);
 
   const evaluateMfaChallengeRequirementForProfile = useCallback(async () => {
@@ -366,7 +371,10 @@ function App() {
     },
   });
 
-  return <AppRootRenderer {...appRootProps} />;
+  return <AppRootRenderer {...appRootProps} auditWarning={auditWarning} />;
 }
 
-export default App;
+export default function App() {
+  const generation = useSyncExternalStore(subscribeClinicalSession, getClinicalSessionGeneration);
+  return <AppSession key={generation} />;
+}

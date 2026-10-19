@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
 import { requireFreshPasswordSession } from "../_shared/security.ts";
 
@@ -200,58 +200,17 @@ serve(async (req) => {
       );
     }
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .upsert(
-        {
-          id: createdUser.user.id,
-          email,
-          full_name: fullName,
-          role,
-          hpc_representative_name: hpcRepresentativeName,
-          is_active: true,
-        },
-        { onConflict: "id" },
-      )
-      .select("id, email, full_name, role, hpc_representative_name, is_active")
-      .single();
-
-    if (profileError) {
-      // The Auth trigger creates new profiles as inactive. If activation fails,
-      // retain that inactive account for review instead of permanently deleting it.
-      await supabase
-        .from("profiles")
-        .update({ is_active: false })
-        .eq("id", createdUser.user.id);
-
-      return respond(
-        { error: `${profileError.message} The invited account was retained as inactive.` },
-        400,
-      );
-    }
-
-    await supabase.from("audit_logs").insert({
-      actor_user_id: caller.id,
-      actor_email: caller.email ?? callerProfile.email ?? null,
-      actor_name: callerProfile.full_name ?? null,
-      module: "Care Team",
-      action: "Invited Member Account",
-      target_type: "profile",
-      target_id: createdUser.user.id,
-      target_label: fullName,
-      details: {
-        email,
-        role,
-        hpc_representative_name: hpcRepresentativeName,
-        delivery: "email_invitation_required_password_setup",
-        mfa_required: false,
-      },
+    const { data: profile, error: profileError } = await supabase.rpc("hpc_manage_team_service", {
+      p_actor_id: caller.id, p_target_id: createdUser.user.id, p_action: "invite",
+      p_role: role, p_representative: hpcRepresentativeName, p_full_name: fullName,
     });
+    if (profileError || !profile) return respond({ error: "Invitation sent, but activation was not completed. Ask an Admin to review the account." }, 409);
 
     return respond({
       ok: true,
       userId: createdUser.user.id,
       profile,
+      audit_log_written: true,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

@@ -1,3 +1,4 @@
+import { useClinicClock } from "../../lib/useClinicClock";
 import { StatusMessage } from "../../components/StatusMessage";
 import { AnalyticsIcon, ClientsIcon } from "../../components/icons";
 import type {
@@ -78,11 +79,12 @@ const getAttentionTone = (label: string) => {
   return "neutral";
 };
 
-const dashboardDateLabel = new Intl.DateTimeFormat(undefined, {
+const formatDashboardTodayLabel = (now: number) => new Intl.DateTimeFormat("en-PH", {
+  timeZone: "Asia/Manila",
   weekday: "long",
   month: "long",
   day: "numeric",
-}).format(new Date());
+}).format(new Date(now));
 
 export function DashboardSection({
   analyticsLoading,
@@ -109,6 +111,7 @@ export function DashboardSection({
   assessmentsMessage,
   analyticsMessage,
 }: DashboardSectionProps) {
+  const dashboardDateLabel = formatDashboardTodayLabel(useClinicClock());
   const attentionTotal = dashboardAttentionItems.reduce((total, item) => total + item.value, 0);
 
   const renderDashboardClientLinks = (
@@ -116,6 +119,7 @@ export function DashboardSection({
     emptyLabel: string,
     tab: ClientTab
   ) => {
+    if (analyticsLoading || analyticsMessage) return <p className="dashboard-empty-state" role="status">{analyticsLoading ? "Checking follow-ups…" : "Follow-up checks are unavailable. Reload the workspace."}</p>;
     if (clients.length === 0) {
       return (
         <p className="dashboard-empty-state dashboard-attention-empty">

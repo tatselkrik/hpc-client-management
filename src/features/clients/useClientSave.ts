@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { supabase } from "../../lib/supabase";
-import { feedbackMessages } from "../../lib/feedbackMessages";
+import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
 import type { ChildForm, ClientForm, ClientTab } from "../../appShared";
 import {
   getTodayDateInputValue,
@@ -19,6 +19,8 @@ type WriteAuditLog = (
 ) => Promise<void>;
 
 type UseClientSaveParams = {
+  clientDraftIdentity: { id: string; updatedAt: string } | null;
+  isCurrentClient: (id: string) => boolean;
   selectedClientId: string;
   clientForm: ClientForm;
   childrenForms: ChildForm[];
@@ -71,6 +73,8 @@ const validateRequiredClientOverviewFields = (clientForm: ClientForm) => {
 };
 
 export function useClientSave({
+  clientDraftIdentity,
+  isCurrentClient,
   selectedClientId,
   clientForm,
   childrenForms,
@@ -169,6 +173,10 @@ export function useClientSave({
 
   const handleSaveClientOverview = async () => {
     if (!selectedClientId) return;
+    if (!isCurrentClient(selectedClientId) || clientDraftIdentity?.id !== selectedClientId || !clientDraftIdentity.updatedAt) {
+      setClientMessage("Wait for the selected client to load successfully before saving.");
+      return;
+    }
 
     const lockedRepresentativeName = getLockedRepresentativeName();
 
@@ -192,9 +200,8 @@ export function useClientSave({
     setLoading(true);
     setClientMessage(feedbackMessages.loading("Saving client overview"));
 
-    const { error: clientError } = await supabase
-      .from("clients")
-      .update({
+    try {
+    const clientPayload = {
         intake_source: toNullableText(effectiveClientForm.intake_source),
         intake_source_other:
           effectiveClientForm.intake_source === "Others"
@@ -281,25 +288,7 @@ export function useClientSave({
             : null,
         time_started: effectiveClientForm.time_started || null,
         time_ended: effectiveClientForm.time_ended || null,
-      })
-      .eq("id", selectedClientId);
-
-    if (clientError) {
-      setClientMessage(feedbackMessages.saveFailed("client overview", clientError.message));
-      setLoading(false);
-      return;
-    }
-
-    const { error: deleteChildrenError } = await supabase
-      .from("client_children")
-      .delete()
-      .eq("client_id", selectedClientId);
-
-    if (deleteChildrenError) {
-      setClientMessage(feedbackMessages.saveFailed("client child records", deleteChildrenError.message));
-      setLoading(false);
-      return;
-    }
+      };
 
     const childrenToInsert = childrenForms
       .filter(
@@ -322,35 +311,24 @@ export function useClientSave({
             : null,
       }));
 
-    if (childrenToInsert.length > 0) {
-      const { error: insertChildrenError } = await supabase
-        .from("client_children")
-        .insert(childrenToInsert);
-
-      if (insertChildrenError) {
-        setClientMessage(feedbackMessages.saveFailed("client child records", insertChildrenError.message));
-        setLoading(false);
-        return;
-      }
-    }
-
+    const { data, error } = await supabase.rpc("save_client_overview", {
+      p_client_id: selectedClientId,
+      p_expected_updated_at: clientDraftIdentity.updatedAt,
+      p_client: clientPayload,
+      p_children: childrenToInsert,
+    });
+    if (error) throw error;
+    if (data?.id !== selectedClientId) throw new Error("The client was not saved. Reload the record and try again.");
     await loadClients();
-    await loadClientDetails(selectedClientId);
-    await writeAuditLog(
-      "Clients",
-      "Updated Overview",
-      "client",
-      selectedClientId,
-      effectiveClientForm.client_name.trim() || "Unnamed Client",
-      {
-        summary: "Updated client overview/intake details.",
-        status: effectiveClientForm.client_status,
-        category_path: toNullableText(effectiveClientForm.category_path),
-        hpc_representative: toNullableText(effectiveClientForm.hpc_representative),
-      }
-    );
-    setClientMessage(feedbackMessages.saved("client overview"));
-    setLoading(false);
+    if (isCurrentClient(selectedClientId)) {
+      await loadClientDetails(selectedClientId);
+      setClientMessage(feedbackMessages.saved("client overview"));
+    }
+    } catch (error) {
+      if (isCurrentClient(selectedClientId)) setClientMessage(feedbackMessages.saveFailed("client overview", getErrorDetail(error)));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {

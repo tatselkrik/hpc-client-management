@@ -36,13 +36,19 @@ export function buildSingleActivitySeries(
     counts.set(monthKey, (counts.get(monthKey) ?? 0) + 1);
   });
 
-  return [...counts.entries()]
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([monthKey, value]) => ({
-      key: monthKey,
-      label: formatMonthKeyLabel(monthKey),
-      value,
-    }));
+  const months = [...counts.keys()].sort();
+  if (!months.length) return [];
+  const [year, month] = months[0].split("-").map(Number);
+  const cursor = new Date(Date.UTC(year, month - 1, 1));
+  const last = months[months.length - 1];
+  const result: AnalyticsActivitySeriesItem[] = [];
+  while (result.length < 2400) {
+    const key = cursor.toISOString().slice(0, 7);
+    if (key > last) break;
+    result.push({ key, label: formatMonthKeyLabel(key), value: counts.get(key) ?? 0 });
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  }
+  return result;
 }
 
 export function buildActivityDeltaMeta(
@@ -68,7 +74,7 @@ export function buildActivityDeltaMeta(
 
   return {
     direction: getTrendDirection(delta),
-    message: `${formatTrendDelta(delta)} vs previous period`,
+    message: `${formatTrendDelta(delta)} vs previous calendar month`,
   };
 }
 

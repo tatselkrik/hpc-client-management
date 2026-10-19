@@ -247,13 +247,20 @@ export function useAboutUpdates() {
     setIsInstallingUpdate(true);
 
     try {
-      const update = pendingUpdateRef.current ?? (await checkNativeUpdater());
+      await releasePendingUpdate();
+      const update = await checkNativeUpdater();
       if (!update) {
         setAvailableUpdate(null);
         setAboutMessage("The update is no longer available. This installation is up to date.");
         return;
       }
 
+      if (update.version !== availableUpdate.version) {
+        await update.close();
+        setAvailableUpdate(null);
+        setAboutMessage("The available version changed. Check for updates again before installing.");
+        return;
+      }
       pendingUpdateRef.current = update;
       let downloadedBytes = 0;
       let totalBytes: number | undefined;

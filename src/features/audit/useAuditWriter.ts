@@ -28,7 +28,7 @@ export function useAuditWriter({
     targetLabel,
     details = {}
   ) => {
-    await supabase.rpc("log_audit_event", {
+    const { error } = await supabase.rpc("log_audit_event", {
       p_module: module,
       p_action: action,
       p_target_type: targetType,
@@ -36,6 +36,8 @@ export function useAuditWriter({
       p_target_label: targetLabel,
       p_details: details,
     });
+
+    if (error) throw new Error(`Audit record could not be written: ${error.message}`);
 
     if (activeSection === "settings" && canManageCareTeam) {
       await loadAuditLogs(auditLogFilter);

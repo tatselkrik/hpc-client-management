@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
+import { validateUploadContent } from "../_shared/uploadContent.ts";
 import { hasAuthenticatedSession } from "../_shared/security.ts";
 
 function createServiceRoleClient(supabaseUrl: string, serviceRoleKey: string) {
@@ -162,33 +163,29 @@ function isSafeStoragePath(storagePath: string) {
   );
 }
 
-function splitStoragePath(storagePath: string) {
-  const parts = storagePath.split("/");
-  const name = parts.pop() ?? "";
-  return {
-    folder: parts.join("/"),
-    name,
-  };
-}
-
 async function getStorageObjectMetadata(
   supabase: ServiceRoleClient,
   bucket: string,
   storagePath: string,
 ) {
-  const { folder, name } = splitStoragePath(storagePath);
-  const { data, error } = await supabase.storage.from(bucket).list(folder, {
-    limit: 100,
-    search: name,
+  // Keep the database timestamp text intact: Storage list() truncates it to
+  // milliseconds, which cannot pass the proof RPC's exact version comparison.
+  const { data, error } = await supabase.rpc("hpc_get_upload_metadata_service", {
+    p_bucket: bucket,
+    p_path: storagePath,
   });
 
   if (error) {
     throw new Error(`Storage lookup failed: ${error.message}`);
   }
 
-  const object = (data ?? []).find((item) => item.name === name);
+  const object = data as {
+    id?: unknown;
+    updated_at?: unknown;
+    metadata?: Record<string, unknown> | null;
+  } | null;
 
-  if (!object) {
+  if (!object || typeof object.id !== "string" || typeof object.updated_at !== "string") {
     throw new Error("Uploaded file was not found in storage.");
   }
 
@@ -197,6 +194,8 @@ async function getStorageObjectMetadata(
   const rawMimeType = metadata?.mimetype ?? metadata?.mimeType ?? metadata?.contentType;
 
   return {
+    objectId: object.id,
+    updatedAt: object.updated_at,
     size:
       typeof rawSize === "number" && Number.isFinite(rawSize)
         ? rawSize
@@ -212,6 +211,11 @@ async function removeRejectedUpload(
 ) {
   if (!bucket || !storagePath) return;
 
+  // Preserve an existing linked record's bytes for administrator review.
+  const table = bucket === "profile-pictures" ? "profiles" : bucket === "client-documents" ? "client_documents" : "client_assessments";
+  const column = bucket === "profile-pictures" ? "avatar_path" : "storage_path";
+  const linked = await supabase.from(table).select("id").eq(column, storagePath).limit(1);
+  if (linked.error || linked.data?.length) return;
   await supabase.storage.from(bucket).remove([storagePath]);
 }
 
@@ -254,7 +258,10 @@ function validateFileShape({
     return "Uploaded file size does not match the saved metadata.";
   }
 
-  const extension = getExtension(fileName) || getExtension(storagePath);
+  const extension = getExtension(storagePath) || getExtension(fileName);
+  const namedExtension = getExtension(fileName);
+  const sameImageType = [extension, namedExtension].every((value) => value === ".jpg" || value === ".jpeg");
+  if (namedExtension !== extension && !sameImageType) return "The file name does not match its stored format.";
   const hasAllowedExtension = rule.allowedExtensions.has(extension);
   const declaredMimeType = mimeType.toLowerCase();
   const effectiveMimeType = storageMimeType || declaredMimeType;
@@ -264,6 +271,18 @@ function validateFileShape({
   if (!hasAllowedExtension || !hasAllowedMimeType) {
     return "Unsupported file type.";
   }
+
+  const mimeByExtension: Record<string, string[]> = {
+    ".pdf": ["application/pdf"], ".jpg": ["image/jpeg"], ".jpeg": ["image/jpeg"],
+    ".png": ["image/png"], ".webp": ["image/webp"], ".txt": ["text/plain"],
+    ".csv": ["text/csv", "text/plain", "application/vnd.ms-excel"],
+    ".docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+    ".xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+    ".pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+  };
+  const expectedMime = mimeByExtension[extension];
+  if (!expectedMime || (effectiveMimeType && !expectedMime.includes(effectiveMimeType)) ||
+      (declaredMimeType && !expectedMime.includes(declaredMimeType))) return "The file extension and MIME type do not agree.";
 
   return "";
 }
@@ -333,6 +352,10 @@ async function validateDesktopCaller({
 
   if (context === "profile_picture") {
     if (!storagePath.startsWith(`${user.id}/`)) {
+      // Existing roster photos can be verified on first access after upgrading.
+      // A caller cannot use this exception to approve a new path for another user.
+      const existing = await supabase.from("profiles").select("id").eq("avatar_path", storagePath).eq("is_active", true).maybeSingle();
+      if (!existing.error && existing.data) return { error: "", status: 200, user, profile };
       return {
         error: "Profile picture uploads must be stored in your own profile folder.",
         status: 403,
@@ -611,7 +634,7 @@ serve(async (req) => {
         return respond({ error: callerCheck.error }, callerCheck.status);
       }
 
-      callerMayDeleteUpload = true;
+      callerMayDeleteUpload = context !== "profile_picture" || storagePath.startsWith(`${callerCheck.user?.id}/`);
     }
 
     const storageMetadata = await getStorageObjectMetadata(
@@ -624,15 +647,32 @@ serve(async (req) => {
       storagePath,
       fileName,
       mimeType,
-      fileSizeBytes,
+      fileSizeBytes: fileSizeBytes > 0 ? fileSizeBytes : storageMetadata.size ?? 0,
       storageSize: storageMetadata.size,
       storageMimeType: storageMetadata.mimeType,
     });
 
     if (validationMessage) {
-      await removeRejectedUpload(supabase, bucket, storagePath);
+      if (callerMayDeleteUpload) await removeRejectedUpload(supabase, bucket, storagePath);
       return respond({ error: validationMessage }, 400);
     }
+
+    const downloaded = await supabase.storage.from(bucket).download(storagePath);
+    if (downloaded.error || !downloaded.data) throw new Error("The uploaded bytes could not be checked.");
+    if (downloaded.data.size <= 0 || downloaded.data.size > rule.maxBytes || (storageMetadata.size !== null && downloaded.data.size !== storageMetadata.size)) throw new Error("The uploaded file exceeds the limit or changed during validation.");
+    const bytes = new Uint8Array(await downloaded.data.arrayBuffer());
+    const contentError = validateUploadContent(bytes, fileName);
+    if (contentError) {
+      if (callerMayDeleteUpload) await removeRejectedUpload(supabase, bucket, storagePath);
+      return respond({ error: contentError }, 400);
+    }
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    const sha256 = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2,"0")).join("");
+    const proof = await supabase.rpc("hpc_verify_upload_service", {
+      p_bucket: bucket, p_path: storagePath, p_sha256: sha256,
+      p_object_id: storageMetadata.objectId, p_updated_at: storageMetadata.updatedAt,
+    });
+    if (proof.error) throw new Error("The file changed or its validation proof could not be stored. Please retry.");
 
     if (isMobileContext && session) {
       const completion = await completeMobileUpload({

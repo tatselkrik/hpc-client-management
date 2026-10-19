@@ -689,15 +689,21 @@ export function useProfileAccountActions({
     setIsMfaWorking(false);
   };
 
+  const guarded = <Args extends unknown[]>(action: (...args: Args) => Promise<void>, clearBusy: (value: boolean) => void, message: (value: string) => void) => async (...args: Args) => {
+    try { await action(...args); }
+    catch (error) { message(feedbackMessages.error("The account action could not finish. A change may already be saved; refresh before retrying.", getErrorDetail(error))); }
+    finally { clearBusy(false); }
+  };
+
   return {
-    handleProfileSave,
-    handleProfileEmailChange,
-    handleProfilePasswordChange,
-    handleProfilePictureSelected,
-    handleRemoveProfilePicture,
-    handleStartMfaEnrollment,
-    handleCancelMfaEnrollment,
-    handleVerifyMfaEnrollment,
-    handleRemoveMfaFactor,
+    handleProfileSave: guarded(handleProfileSave, setIsProfileSavingName, setProfileMessage),
+    handleProfileEmailChange: guarded(handleProfileEmailChange, setIsProfileSavingEmail, setProfileEmailMessage),
+    handleProfilePasswordChange: guarded(handleProfilePasswordChange, setIsProfileSavingPassword, setProfilePasswordMessage),
+    handleProfilePictureSelected: guarded(handleProfilePictureSelected, setIsProfileSavingPicture, setProfilePictureMessage),
+    handleRemoveProfilePicture: guarded(handleRemoveProfilePicture, setIsProfileSavingPicture, setProfilePictureMessage),
+    handleStartMfaEnrollment: guarded(handleStartMfaEnrollment, setIsMfaWorking, setMfaMessage),
+    handleCancelMfaEnrollment: guarded(handleCancelMfaEnrollment, setIsMfaWorking, setMfaMessage),
+    handleVerifyMfaEnrollment: guarded(handleVerifyMfaEnrollment, setIsMfaWorking, setMfaMessage),
+    handleRemoveMfaFactor: guarded(handleRemoveMfaFactor, setIsMfaWorking, setMfaMessage),
   };
 }

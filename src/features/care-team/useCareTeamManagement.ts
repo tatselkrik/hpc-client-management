@@ -1,3 +1,4 @@
+import { createVerifiedProfilePictureUrl } from "../../lib/uploadValidation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { feedbackMessages } from "../../lib/feedbackMessages";
@@ -10,8 +11,6 @@ import type {
   Section,
 } from "../../appShared";
 import {
-  PROFILE_PICTURES_BUCKET,
-  PROFILE_PICTURE_SIGNED_URL_TTL_SECONDS,
   getCareTeamMemberDisplayName,
   getProfileDisplayRole,
   isLikelyEmailAddress,
@@ -126,12 +125,7 @@ export function useCareTeamManagement({
             };
           }
 
-          const signedAvatar = await supabase.storage
-            .from(PROFILE_PICTURES_BUCKET)
-            .createSignedUrl(
-              member.avatar_path,
-              PROFILE_PICTURE_SIGNED_URL_TTL_SECONDS
-            );
+          const signedAvatar = await createVerifiedProfilePictureUrl(member.avatar_path);
 
           return {
             ...member,

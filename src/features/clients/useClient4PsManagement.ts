@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { supabase } from "../../lib/supabase";
 import { feedbackMessages, getErrorDetail } from "../../lib/feedbackMessages";
@@ -39,6 +39,9 @@ export function useClient4PsManagement({
   canEditClientClinicalRecords,
   writeAuditLog,
 }: UseClient4PsManagementArgs) {
+  const currentClient = useRef(selectedClientId);
+  currentClient.current = selectedClientId;
+  const narrativeRequest = useRef(0);
   const [client4PsForm, setClient4PsForm] = useState<Client4PsForm>(() =>
     emptyClient4PsForm()
   );
@@ -144,6 +147,7 @@ export function useClient4PsManagement({
       }
 
       setIsGeneratingClient4PsNarrative(true);
+      const request = ++narrativeRequest.current;
       setClient4PsMessage(
         "Generating narrative report draft. Do not close the app while this is processing..."
       );
@@ -160,6 +164,7 @@ export function useClient4PsManagement({
           }
         );
 
+        if (currentClient.current !== selectedClientId || narrativeRequest.current !== request) return;
         if (error) {
           const message = await getSupabaseFunctionErrorMessage(error);
           setClient4PsMessage(feedbackMessages.error("We could not generate the narrative draft.", message));
@@ -171,6 +176,7 @@ export function useClient4PsManagement({
           return;
         }
 
+        if (currentClient.current !== selectedClientId || narrativeRequest.current !== request) return;
         const generatedNarrative =
           typeof data?.narrative_report === "string"
             ? stripNarrativeReportHeading(data.narrative_report)
@@ -200,10 +206,11 @@ export function useClient4PsManagement({
           "AI draft generated. Review and edit the narrative report before saving."
         );
       } catch (error) {
+        if (currentClient.current !== selectedClientId || narrativeRequest.current !== request) return;
         const message = getErrorDetail(error);
         setClient4PsMessage(feedbackMessages.error("We could not generate the narrative draft.", message));
       } finally {
-        setIsGeneratingClient4PsNarrative(false);
+        if (narrativeRequest.current === request) setIsGeneratingClient4PsNarrative(false);
       }
     },
     [
@@ -298,6 +305,8 @@ export function useClient4PsManagement({
   );
 
   const clearClient4Ps = useCallback(() => {
+    narrativeRequest.current += 1;
+    setIsGeneratingClient4PsNarrative(false);
     setClient4PsForm(emptyClient4PsForm());
     setClient4PsNarrativeReport("");
     setClient4PsNarrativeGeneratedAt(null);

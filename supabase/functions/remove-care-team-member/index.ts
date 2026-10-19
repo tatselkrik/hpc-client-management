@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.2";
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
 import { requireFreshPasswordSession } from "../_shared/security.ts";
 
@@ -132,34 +132,10 @@ serve(async (req) => {
     return respond({ error: "This care team account is already inactive." }, 409);
   }
 
-  const { error: deactivateError } = await supabase
-    .from("profiles")
-    .update({ is_active: false })
-    .eq("id", targetProfileId);
-
-  if (deactivateError) {
-    return respond({ error: deactivateError.message }, 500);
-  }
-
-  await supabase.from("audit_logs").insert({
-    actor_user_id: user.id,
-    actor_email: user.email ?? callerProfile?.email ?? null,
-    actor_name: callerProfile?.full_name ?? null,
-    module: "Care Team",
-    action: "Deactivated Member Account",
-    target_type: "profile",
-    target_id: targetProfileId,
-    target_label: targetProfile.full_name ?? targetProfile.email ?? targetProfileId,
-    details: {
-      email: targetProfile.email ?? null,
-      previous_role: targetRole,
-      previous_hpc_representative_name: targetProfile.hpc_representative_name ?? null,
-      target_was_active: targetProfile.is_active ?? true,
-      permanent: false,
-      account_data_retained: true,
-      source: "edge_function",
-    },
+  const { error: deactivateError } = await supabase.rpc("hpc_manage_team_service", {
+    p_actor_id: user.id, p_target_id: targetProfileId, p_action: "deactivate",
   });
+  if (deactivateError) return respond({ error: deactivateError.message }, 409);
 
   return respond({
     deactivated_profile_id: targetProfileId,

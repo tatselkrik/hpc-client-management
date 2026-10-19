@@ -30,7 +30,12 @@ test("Staff cannot edit or deactivate an Admin in protected services", async () 
     'callerRole === "Staff" && targetRole === "Admin"'
   );
   expect(deactivateService).not.toContain("deleteUser(");
-  expect(deactivateService).toContain("is_active: false");
+  expect(deactivateService).toContain('p_action: "deactivate"');
+  expect(updateService).toContain('supabase.rpc("hpc_manage_team_service"');
+  const transaction = await readProjectFile("supabase/migrations/20261018134142_security_integrity_0_3_7.sql");
+  expect(transaction).toContain("order by id for update");
+  expect(transaction).toContain("actor_role='staff'");
+  expect(transaction).toContain("is_active=(p_action<>'deactivate')");
 });
 
 test("Care Team administration requires a recent password sign-in", async () => {

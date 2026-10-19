@@ -6,21 +6,26 @@ HPC Client Management is a Windows desktop application for clinic client
 records, clinical documentation, care-team access, analytics, appointment
 scheduling, and day-to-day administrative workflows.
 
-**Current version:** 0.3.7
+**Current version:** 0.3.8
 
 **Platform:** Windows desktop · **Distribution:** Public source; production configuration is supplied privately
 
-[User guide](docs/user-guide-0.3.7.md) · [Release log](#release-log) ·
+[User guide](docs/user-guide-0.3.8.md) · [Release log](#release-log) ·
 [Application tour](#application-tour) · [Developer setup](#developer-setup)
 
-## What's new in 0.3.7
+## What's new in 0.3.8
 
-- Editable Analytics presentations use larger charts and continuation slides.
-- Export reporting windows follow selected client filters; appointment outcomes
-  retain their separately labeled 30-day window.
-- CSV formula protection, Philippine-time month labels and 4Ps flags are corrected.
+- Immediate local locking, identity-scoped cache cleanup and memory-only sessions.
+- Client-bound atomic saves, checked conflicts and audited administration.
+- Passphrase-encrypted backups, bounded restore requests and verified upload content.
+- Audited aggregate CSV exports with small-group suppression and narrower native writes.
+- Refreshed update authorization and a patched image parser dependency.
+- Retains the export improvements introduced in 0.3.7.
 
-## Authentication and calendar baseline (0.3.6)
+Apply the matching migrations and deploy the five changed Edge Functions before
+updating desktops. Building or installing the app does not deploy its backend.
+
+## What's new in 0.3.6
 
 - Email-and-password sign-in after the coordinated backend update, with no MFA
   enrollment or account-factor controls. Previously enrolled authenticators are
@@ -97,6 +102,7 @@ have tagged releases; source history does not publish a production installer.
 
 | Version | Released | Summary |
 | --- | --- | --- |
+| [0.3.8](CHANGELOG.md#038---2026-10-19) | 2026-10-19 | Session and access hardening, atomic audited changes, encrypted backups, verified uploads and protected exports |
 | [0.3.7](CHANGELOG.md#037---2026-10-16) | 2026-10-16 | Editable presentation export improvements, reporting filters, CSV formula handling and Philippine-time fixes |
 | [0.3.6](CHANGELOG.md#036---2026-10-12) | 2026-10-12 | Password-only authentication transition, calendar correctness and loading fixes, and updated operator documentation |
 | [0.3.5](CHANGELOG.md#035---2026-08-24) | 2026-08-24 | Appointment Calendar, availability, status workflow, scheduling analytics, and database hardening |
@@ -230,7 +236,7 @@ recoverable from this repository.
 
 ## Documentation
 
-- [Version 0.3.7 user guide](docs/user-guide-0.3.7.md): sign-in, role permissions,
+- [Version 0.3.8 user guide](docs/user-guide-0.3.8.md): sign-in, role permissions,
   records, appointments, administration, and updates
 - [Release history](CHANGELOG.md): stable milestones
 - [Authentication and rollout requirements](docs/authentication.md)
@@ -240,6 +246,7 @@ recoverable from this repository.
 - [Appointment Calendar verification](docs/verify-appointment-calendar.sql)
 - [Database-hardening verification](docs/verify-database-hardening.sql)
 - [Authentication-trigger verification](docs/verify-live-auth-triggers.sql)
+- [Version 0.3.7 export guide](docs/user-guide-0.3.7.md)
 - [Historical version 0.3.5 user guide](docs/user-guide-0.3.5.md)
 
 ## Developer setup

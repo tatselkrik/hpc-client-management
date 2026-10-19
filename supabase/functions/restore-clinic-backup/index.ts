@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.2";
 
 import { corsPreflightResponse, isCorsOriginAllowed, jsonResponse } from "../_shared/cors.ts";
 import { requireFreshPasswordSession } from "../_shared/security.ts";
+import { readBoundedJson, RequestBodyTooLargeError } from "../_shared/readBoundedJson.ts";
 
 const MAX_REQUEST_BYTES = 25 * 1024 * 1024;
 const MAX_RESTORE_ROWS = 100_000;
@@ -89,7 +90,13 @@ serve(async (req) => {
       return respond({ error: "Only an Admin can restore a clinic backup." }, 403);
     }
 
-    const backup = (await req.json().catch(() => null)) as BackupPayload | null;
+    let backup: BackupPayload | null;
+    try {
+      backup = await readBoundedJson(req, MAX_REQUEST_BYTES) as BackupPayload | null;
+    } catch (error) {
+      if (error instanceof RequestBodyTooLargeError) return respond({ error: "The restore package is too large." }, 413);
+      return respond({ error: "The restore package is not valid JSON." }, 400);
+    }
     if (!backup || typeof backup !== "object") {
       return respond({ error: "The restore package is not valid JSON." }, 400);
     }
