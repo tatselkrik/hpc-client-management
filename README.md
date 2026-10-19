@@ -25,21 +25,6 @@ scheduling, and day-to-day administrative workflows.
 Apply the matching migrations and deploy the five changed Edge Functions before
 updating desktops. Building or installing the app does not deploy its backend.
 
-## What's new in 0.3.6
-
-- Email-and-password sign-in after the coordinated backend update, with no MFA
-  enrollment or account-factor controls. Previously enrolled authenticators are
-  retired by the deployment operator; future MFA would require fresh enrollment.
-- Current-password confirmation for account changes and a recent password
-  sign-in for protected administrative actions.
-- Reliable calendar loading across larger appointment and availability lists.
-- Availability is checked again when reinstating cancelled or no-show bookings.
-- Appointment analytics exclude removed bookings and future appointments from
-  the recent 30-day summary.
-
-Clinical-care workflows are unchanged. See [authentication and rollout
-requirements](docs/authentication.md) and the [full changelog](CHANGELOG.md).
-
 ## Appointment Calendar
 
 - Staff and Admin can book and manage appointments for existing clients and
@@ -238,7 +223,7 @@ recoverable from this repository.
 
 - [Version 0.3.8 user guide](docs/user-guide-0.3.8.md): sign-in, role permissions,
   records, appointments, administration, and updates
-- [Release history](CHANGELOG.md): stable milestones
+- [Release history](CHANGELOG.md): versioned changes and stable milestones
 - [Authentication and rollout requirements](docs/authentication.md)
 - [Appointment Calendar architecture](docs/appointment-calendar.md)
 - [Supabase migration runbook](docs/supabase-migration-runbook.md)
@@ -246,8 +231,6 @@ recoverable from this repository.
 - [Appointment Calendar verification](docs/verify-appointment-calendar.sql)
 - [Database-hardening verification](docs/verify-database-hardening.sql)
 - [Authentication-trigger verification](docs/verify-live-auth-triggers.sql)
-- [Version 0.3.7 export guide](docs/user-guide-0.3.7.md)
-- [Historical version 0.3.5 user guide](docs/user-guide-0.3.5.md)
 
 ## Developer setup
 
